@@ -1,0 +1,5 @@
+region           = "eu-west-1"
+owner            = "digitalproducthaus"
+environment_name = "global"
+domain_name      = "digitalproducthaus.com"
+email_mx         = "1 SMTP.GOOGLE.COM"
