@@ -97,6 +97,13 @@ resource "aws_iam_policy" "database" {
   policy      = jsonencode(local.policy.database)
 }
 
+resource "aws_iam_policy" "developer_tools" {
+  name        = "developer_tools"
+  path        = "/dph/"
+  description = "dph policy for developer tools"
+  policy      = jsonencode(local.policy.developer_tools)
+}
+
 resource "aws_iam_policy" "monitoring" {
   name        = "monitoring"
   path        = "/dph/"

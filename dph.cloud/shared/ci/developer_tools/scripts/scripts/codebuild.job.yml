@@ -1,0 +1,59 @@
+version: 0.2
+
+#
+# -----------------------------------------------------
+# AWS Codebuild Job Environment Variables
+# -----------------------------------------------------
+#
+# CI_ACTION e.g. build, deploy, migrate
+# PROJECT_TYPE e.g. container, client, db
+# ENVIRONMENT_NAME e.g. test, prod, ci
+# WORKING_DIR e.g. .
+# CI_FOLDER e.g. ./ci
+# BUILD_ARTEFACT_PATH e.g. .
+#
+# AWS_REGION
+# AWS_SSM_PARAMETER_PATHS e.g. "path1;path2;path3;..."
+# CLUSTER_NAME
+# DESIRED_COUNT
+# CONTAINER_CPU
+# CONTAINER_MEMORY_RESERVATION
+#
+# CERT_STORE
+# CERT_NAME
+# DEV_TOOLS_STORE_SCRIPTS
+# LOAD_ENV_VARS_SCRIPT
+# CF_INVALDIATE_SCRIPT
+#
+
+phases:
+  install:
+    commands:
+      - apt-get update -y
+      - apt-get install -y jq
+
+  pre_build:
+    commands:
+      - echo "Starting pre-build"
+
+      - JOB_SCRIPT="$(echo $CI_ACTION-$PROJECT_TYPE).sh"
+      - echo "Downloading $DEV_TOOLS_STORE_SCRIPTS/1702tech/scripts/$JOB_SCRIPT"
+      - aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS/1702tech/scripts/$JOB_SCRIPT") $(echo "./$JOB_SCRIPT")
+
+      - echo "Finished pre-build"
+
+  build:
+    commands:
+      # Run: build script
+      - echo "Starting build - executing "./$JOB_SCRIPT" script"
+      - bash $(echo "./$JOB_SCRIPT")
+      - echo "Finished build - script "./$JOB_SCRIPT" executed successfully"
+
+  post_build:
+    commands:
+      - echo "Done."
+
+artifacts:
+  type: zip
+  files:
+    - ${WORKING_DIR}/${BUILD_ARTEFACT_PATH}/**/**/*

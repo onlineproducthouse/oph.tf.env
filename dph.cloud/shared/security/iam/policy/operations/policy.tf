@@ -415,6 +415,20 @@ locals {
       ]
     }
 
+    developer_tools = {
+      Version = "2012-10-17",
+      Statement = [
+        {
+          "Sid" : "ConnectionsFullAccess",
+          "Effect" : "Allow",
+          "Action" : [
+            "codestar-connections:*"
+          ],
+          "Resource" : "*"
+        },
+      ]
+    }
+
     monitoring = {
       Version = "2012-10-17",
       Statement = [
