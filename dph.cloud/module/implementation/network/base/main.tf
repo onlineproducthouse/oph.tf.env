@@ -59,5 +59,18 @@ module "eip" {
 }
 
 // set up natgw
+resource "aws_nat_gateway" "nat" {
+  count = length(var.subnets.public.cidr_block)
+
+  allocation_id = element(module.eip.eip_nat_id_list, count.index)
+  subnet_id     = element(module.public_subnet.id_list, count.index)
+
+  tags = {
+    resource_name    = "AWS NAT Gateway for ${element(module.public_subnet.id_list, count.index)}"
+    owner            = var.owner
+    environment_name = var.environment_name
+  }
+}
+
 // set up route table
 // set up route
