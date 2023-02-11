@@ -4,12 +4,6 @@
 #                                                   #
 #####################################################
 
-variable "create_dns" {
-  type        = bool
-  default     = false
-  description = "Indicate if AWS Route53 DNS is required for custom domain"
-}
-
 variable "region" {
   type = string
 }

@@ -35,11 +35,9 @@ variable "email_mx" {
 #                                                   #
 #####################################################
 
-module "base" {
-  source = "../../../../../module/implementation/network/base"
+module "dns" {
+  source = "../../../../../module/implementation/network/dns"
 
-  // DNS config
-  create_dns       = true
   region           = var.region
   owner            = var.owner
   environment_name = var.environment_name
@@ -54,13 +52,13 @@ module "base" {
 #####################################################
 
 output "hosted_zone_id" {
-  value = module.base.hosted_zone_id
+  value = module.dns.hosted_zone_id
 }
 
 output "domain_name_servers" {
-  value = module.base.domain_name_servers
+  value = module.dns.domain_name_servers
 }
 
 output "domain_name" {
-  value = module.base.domain_name
+  value = module.dns.domain_name
 }
