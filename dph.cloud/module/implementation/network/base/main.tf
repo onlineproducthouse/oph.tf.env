@@ -9,19 +9,25 @@ variable "region" {
   default = "eu-west-1"
 }
 
+variable "environment_name" {
+  type    = string
+  default = ""
+}
+
+variable "owner" {
+  type    = string
+  default = ""
+}
+
 variable "vpc" {
   description = "Configuration required to create a VPC"
 
   type = object({
-    cidr_block       = string
-    environment_name = string
-    owner            = string
+    cidr_block = string
   })
 
   default = {
-    cidr_block       = ""
-    environment_name = ""
-    owner            = ""
+    cidr_block = ""
   }
 }
 
@@ -37,12 +43,21 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    environment_name = var.vpc.environment_name
-    owner            = var.vpc.owner
+    environment_name = var.environment_name
+    owner            = var.owner
   }
 }
 
 // set up igw
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    environment_name = var.environment_name
+    owner            = var.owner
+  }
+}
+
 // set up subnets
 // set up eip
 // set up natgw
@@ -55,9 +70,15 @@ resource "aws_vpc" "vpc" {
 #                                                   #
 #####################################################
 
-output "vpc" {
-  value = {
-    id         = aws_vpc.vpc.id
-    cidr_block = aws_vpc.vpc.cidr_block
-  }
-}
+# output "vpc" {
+#   value = {
+#     id         = aws_vpc.vpc.id
+#     cidr_block = aws_vpc.vpc.cidr_block
+#   }
+# }
+
+# output "igw" {
+#   value = {
+#     id = aws_internet_gateway.igw.id
+#   }
+# }

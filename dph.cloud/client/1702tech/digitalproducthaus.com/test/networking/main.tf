@@ -71,12 +71,12 @@ variable "cidr_block" {
 module "base" {
   source = "../../../../../module/implementation/network/base"
 
-  region = var.region
+  region           = var.region
+  environment_name = var.environment_name
+  owner            = var.owner
 
   vpc = {
-    cidr_block       = var.cidr_block
-    environment_name = var.environment_name
-    owner            = var.owner
+    cidr_block = var.cidr_block
   }
 }
 
