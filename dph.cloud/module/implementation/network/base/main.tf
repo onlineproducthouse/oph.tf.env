@@ -49,6 +49,15 @@ module "public_subnet" {
 }
 
 // set up eip
+module "eip" {
+  source = "../../../interface/aws/networking/vpc/elastic_ip"
+
+  subnet_count = length(var.subnets.public.cidr_block)
+
+  environment_name = var.environment_name
+  owner            = var.owner
+}
+
 // set up natgw
 // set up route table
 // set up route
