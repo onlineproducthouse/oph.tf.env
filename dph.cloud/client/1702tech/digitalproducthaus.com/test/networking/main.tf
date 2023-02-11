@@ -38,32 +38,6 @@ provider "aws" {
 
 #####################################################
 #                                                   #
-#                     VARIABLES                     #
-#                                                   #
-#####################################################
-
-variable "region" {
-  type    = string
-  default = ""
-}
-
-variable "owner" {
-  type    = string
-  default = ""
-}
-
-variable "environment_name" {
-  type    = string
-  default = ""
-}
-
-variable "cidr_block" {
-  type    = string
-  default = ""
-}
-
-#####################################################
-#                                                   #
 #                   CONFIGURATION                   #
 #                                                   #
 #####################################################
@@ -77,6 +51,17 @@ module "base" {
 
   vpc = {
     cidr_block = var.cidr_block
+  }
+
+  subnets = {
+    private = {
+      availibility_zones = var.availibility_zones
+      cidr_block         = var.public_subnet_cidr_block
+    }
+    public = {
+      availibility_zones = var.availibility_zones
+      cidr_block         = var.private_subnet_cidr_block
+    }
   }
 }
 
