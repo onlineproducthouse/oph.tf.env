@@ -73,4 +73,24 @@ resource "aws_nat_gateway" "nat" {
 }
 
 // set up route table
+module "public_route_table" {
+  source = "../../../interface/aws/networking/vpc/route_table"
+
+  vpc_id         = aws_vpc.vpc.id
+  subnet_id_list = module.public_subnet.id_list
+
+  environment_name = var.environment_name
+  owner            = var.owner
+}
+
+module "private_route_table" {
+  source = "../../../interface/aws/networking/vpc/route_table"
+
+  vpc_id         = aws_vpc.vpc.id
+  subnet_id_list = module.private_subnet.id_list
+
+  environment_name = var.environment_name
+  owner            = var.owner
+}
+
 // set up route
