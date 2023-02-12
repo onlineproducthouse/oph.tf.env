@@ -19,6 +19,11 @@ variable "owner" {
   default = ""
 }
 
+variable "dest_cidr_block" {
+  type    = string
+  default = "0.0.0.0/0"
+}
+
 variable "vpc" {
   description = "Configuration required to create a VPC"
 

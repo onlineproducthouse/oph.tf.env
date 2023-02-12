@@ -94,3 +94,30 @@ module "private_route_table" {
 }
 
 // set up route
+module "public_route" {
+  source = "../../../interface/aws/networking/vpc/route_table/route"
+
+  count = length(module.public_route_table.route_table_id_list)
+
+  is_private = false
+
+  route_table_id = element(module.public_route_table.route_table_id_list, count.index)
+  igw_id         = aws_internet_gateway.igw.id
+  nat_gateway_id = null
+
+  destination_cidr_block = var.dest_cidr_block
+}
+
+module "private_route" {
+  source = "../../../interface/aws/networking/vpc/route_table/route"
+
+  count = length(module.private_route_table.route_table_id_list)
+
+  is_private = true
+
+  route_table_id = element(module.private_route_table.route_table_id_list, count.index)
+  igw_id         = null
+  nat_gateway_id = element(aws_nat_gateway.nat.*.id, count.index)
+
+  destination_cidr_block = var.dest_cidr_block
+}
