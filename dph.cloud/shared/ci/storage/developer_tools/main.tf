@@ -64,7 +64,7 @@ variable "environment_name" {
 #####################################################
 
 module "developer_tools" {
-  source = "../../../../module/implementation/storage/private_s3_bucket"
+  source = "../../../../module/implementation/shared/storage/private_s3_bucket"
 
   region           = var.region
   bucket_name      = "dph-developer-tools"

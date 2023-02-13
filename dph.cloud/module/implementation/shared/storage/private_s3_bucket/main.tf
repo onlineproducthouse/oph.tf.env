@@ -31,7 +31,7 @@ variable "bucket_name" {
 #####################################################
 
 module "bucket" {
-  source = "../../../interface/aws/storage/s3/bucket"
+  source = "../../../../interface/aws/storage/s3/bucket"
 
   bucket_name      = var.bucket_name
   owner            = var.owner
@@ -39,12 +39,12 @@ module "bucket" {
 }
 
 module "versioning" {
-  source    = "../../../interface/aws/storage/s3/bucket/versioning"
+  source    = "../../../../interface/aws/storage/s3/bucket/versioning"
   bucket_id = module.bucket.id
 }
 
 module "encryption" {
-  source    = "../../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  source    = "../../../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
   bucket_id = module.bucket.id
 }
 

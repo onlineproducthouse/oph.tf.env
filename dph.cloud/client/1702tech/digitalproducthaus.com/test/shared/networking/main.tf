@@ -43,7 +43,7 @@ provider "aws" {
 #####################################################
 
 module "base" {
-  source = "../../../../../../module/implementation/network/base"
+  source = "../../../../../../module/implementation/shared/network/base"
 
   region           = var.region
   environment_name = var.environment_name

@@ -74,7 +74,7 @@ variable "email_mx" {
 #####################################################
 
 module "dns" {
-  source = "../../../../../module/implementation/network/dns"
+  source = "../../../../../module/implementation/shared/network/dns"
 
   region           = var.region
   owner            = var.owner
@@ -89,14 +89,10 @@ module "dns" {
 #                                                   #
 #####################################################
 
-output "hosted_zone_id" {
-  value = module.dns.hosted_zone_id
-}
-
-output "domain_name_servers" {
-  value = module.dns.domain_name_servers
-}
-
-output "domain_name" {
-  value = module.dns.domain_name
+output "dns" {
+  value = {
+    domain_name    = module.dns.domain_name
+    hosted_zone_id = module.dns.hosted_zone_id
+    name_servers   = module.dns.domain_name_servers
+  }
 }

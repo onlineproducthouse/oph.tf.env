@@ -27,7 +27,7 @@ resource "aws_internet_gateway" "igw" {
 
 // set up subnets
 module "private_subnet" {
-  source = "../../../interface/aws/networking/vpc/subnets"
+  source = "../../../../interface/aws/networking/vpc/subnets"
 
   environment_name = var.environment_name
   owner            = var.owner
@@ -38,7 +38,7 @@ module "private_subnet" {
 }
 
 module "public_subnet" {
-  source = "../../../interface/aws/networking/vpc/subnets"
+  source = "../../../../interface/aws/networking/vpc/subnets"
 
   environment_name = var.environment_name
   owner            = var.owner
@@ -50,7 +50,7 @@ module "public_subnet" {
 
 // set up eip
 module "eip" {
-  source = "../../../interface/aws/networking/vpc/elastic_ip"
+  source = "../../../../interface/aws/networking/vpc/elastic_ip"
 
   subnet_count = length(var.subnets.public.cidr_block)
 
@@ -74,7 +74,7 @@ resource "aws_nat_gateway" "nat" {
 
 // set up route table
 module "public_route_table" {
-  source = "../../../interface/aws/networking/vpc/route_table"
+  source = "../../../../interface/aws/networking/vpc/route_table"
 
   vpc_id         = aws_vpc.vpc.id
   subnet_id_list = module.public_subnet.id_list
@@ -84,7 +84,7 @@ module "public_route_table" {
 }
 
 module "private_route_table" {
-  source = "../../../interface/aws/networking/vpc/route_table"
+  source = "../../../../interface/aws/networking/vpc/route_table"
 
   vpc_id         = aws_vpc.vpc.id
   subnet_id_list = module.private_subnet.id_list
@@ -95,7 +95,7 @@ module "private_route_table" {
 
 // set up route
 module "public_route" {
-  source = "../../../interface/aws/networking/vpc/route_table/route"
+  source = "../../../../interface/aws/networking/vpc/route_table/route"
 
   count = length(module.public_route_table.route_table_id_list)
 
@@ -109,7 +109,7 @@ module "public_route" {
 }
 
 module "private_route" {
-  source = "../../../interface/aws/networking/vpc/route_table/route"
+  source = "../../../../interface/aws/networking/vpc/route_table/route"
 
   count = length(module.private_route_table.route_table_id_list)
 

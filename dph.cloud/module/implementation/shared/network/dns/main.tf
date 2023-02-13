@@ -5,7 +5,7 @@
 #####################################################
 
 module "hosted_zone" {
-  source = "../../../../module/interface/aws/networking/route53/hosted_zone"
+  source = "../../../../../module/interface/aws/networking/route53/hosted_zone"
 
   domain_name      = var.domain_name
   owner            = var.owner
@@ -13,7 +13,7 @@ module "hosted_zone" {
 }
 
 module "email_mx" {
-  source = "../../../../module/interface/aws/networking/route53/hosted_zone/dns_record"
+  source = "../../../../../module/interface/aws/networking/route53/hosted_zone/dns_record"
 
   with_alias             = false
   zone_id                = module.hosted_zone.id
