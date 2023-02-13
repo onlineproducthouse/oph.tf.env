@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/test/networking/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/test/shared/networking/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "dph-platform-terraform-remote-state-locks"
@@ -43,7 +43,7 @@ provider "aws" {
 #####################################################
 
 module "base" {
-  source = "../../../../../module/implementation/network/base"
+  source = "../../../../../../module/implementation/network/base"
 
   region           = var.region
   environment_name = var.environment_name
