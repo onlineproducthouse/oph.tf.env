@@ -60,6 +60,8 @@ variable "environment_name" {
 #                                                   #
 #####################################################
 
+data "aws_caller_identity" "current" {}
+
 locals {
   path = "/dph/runtime/local"
 }
@@ -79,6 +81,7 @@ module "environment_variables" {
     { path : local.path, key : "DB_HOST", value : "127.0.0.1" },
     { path : local.path, key : "DB_PORT", value : "5432" },
     { path : local.path, key : "DB_NAME", value : "LocalDB" },
+    { path : local.path, key : "IMAGE_REGISTRY_BASE_URL", value : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com" },
   ]
 }
 
