@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/local/service/database/dph/config/runtime/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/service/dph-database/config/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "dph-platform-terraform-remote-state-locks"
@@ -63,26 +63,12 @@ variable "environment_name" {
 data "aws_caller_identity" "current" {}
 
 locals {
-  path = "/dph/runtime/local"
-}
-
-module "environment_variables" {
-  source = "../../../../../../../../../module/interface/aws/security/ssm/param_store"
-
-  region = var.region
-
-  owner            = var.owner
-  environment_name = var.environment_name
-
-  parameters = [
-    { path : local.path, key : "DB_PROTOCOL", value : "postgres" },
-    { path : local.path, key : "DB_USERNAME", value : "root" },
-    { path : local.path, key : "DB_PASSWORD", value : "password" },
-    { path : local.path, key : "DB_HOST", value : "127.0.0.1" },
-    { path : local.path, key : "DB_PORT", value : "5432" },
-    { path : local.path, key : "DB_NAME", value : "LocalDB" },
-    { path : local.path, key : "IMAGE_REGISTRY_BASE_URL", value : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com" },
-  ]
+  paths = {
+    build  = "/dph/config/build"
+    deploy = "/dph/config/deploy"
+    local  = "/dph/config/local"
+    test   = "/dph/config/test"
+  }
 }
 
 #####################################################
@@ -91,6 +77,6 @@ module "environment_variables" {
 #                                                   #
 #####################################################
 
-output "path" {
-  value = local.path
+output "paths" {
+  value = local.paths
 }

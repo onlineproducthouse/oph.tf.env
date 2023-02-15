@@ -130,6 +130,10 @@ module "migrate_db" {
 #                                                   #
 #####################################################
 
+output "local_environment_variables_key" {
+  value = module.local_environment_variables.key
+}
+
 output "load_environment_variables_key" {
   value = module.load_environment_variables.key
 }
