@@ -4,16 +4,22 @@
 #                                                   #
 #####################################################
 
-variable "region" {
-  type = string
-}
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "owner" {
-  type = string
-}
-
-variable "environment_name" {
-  type = string
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
 variable "domain_name" {

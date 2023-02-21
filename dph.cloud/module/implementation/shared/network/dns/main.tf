@@ -7,9 +7,8 @@
 module "hosted_zone" {
   source = "../../../../../module/interface/aws/networking/route53/hosted_zone"
 
-  domain_name      = var.domain_name
-  owner            = var.owner
-  environment_name = var.environment_name
+  domain_name = var.domain_name
+  client_info = var.client_info
 }
 
 module "email_mx" {

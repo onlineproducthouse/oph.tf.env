@@ -33,7 +33,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region = var.client_info.region
 }
 
 #####################################################
@@ -42,19 +42,22 @@ provider "aws" {
 #                                                   #
 #####################################################
 
-variable "region" {
-  type    = string
-  default = ""
-}
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "owner" {
-  type    = string
-  default = ""
-}
-
-variable "environment_name" {
-  type    = string
-  default = ""
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
 variable "domain_name" {
@@ -76,11 +79,9 @@ variable "email_mx" {
 module "dns" {
   source = "../../../../../module/implementation/shared/network/dns"
 
-  region           = var.region
-  owner            = var.owner
-  environment_name = var.environment_name
-  domain_name      = var.domain_name
-  domain_email_mx  = var.email_mx
+  client_info     = var.client_info
+  domain_name     = var.domain_name
+  domain_email_mx = var.email_mx
 }
 
 #####################################################
