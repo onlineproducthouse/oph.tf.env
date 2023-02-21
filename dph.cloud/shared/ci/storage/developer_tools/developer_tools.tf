@@ -33,7 +33,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region = var.client_info.region
 }
 
 #####################################################
@@ -44,6 +44,7 @@ provider "aws" {
 
 variable "client_info" {
   type = object({
+    region           = string
     owner            = string
     project_name     = string
     service_name     = string
@@ -51,10 +52,11 @@ variable "client_info" {
   })
 
   default = {
-    environment_name = ""
+    region           = ""
     owner            = ""
     project_name     = ""
     service_name     = ""
+    environment_name = ""
   }
 }
 
