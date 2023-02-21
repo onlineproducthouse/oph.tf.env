@@ -49,7 +49,7 @@ resource "aws_ssm_parameter" "variable" {
   tags = {
     owner            = var.client_info.owner
     project_name     = var.client_info.project_name
-    product_name     = var.client_info.service_name
+    service_name     = var.client_info.service_name
     environment_name = var.client_info.environment_name
   }
 }
