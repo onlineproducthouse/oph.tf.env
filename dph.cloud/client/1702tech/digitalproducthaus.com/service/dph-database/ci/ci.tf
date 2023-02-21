@@ -74,7 +74,7 @@ module "ci" {
 
   config_switch = {
     build          = false
-    build_artefact = false
+    build_artefact = true
     deploy         = false
     registry       = true
   }
