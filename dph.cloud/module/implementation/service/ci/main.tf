@@ -4,15 +4,24 @@
 #                                                   #
 #####################################################
 
-variable "owner" {
-  type    = string
-  default = ""
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
+
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
-variable "environment_name" {
-  type    = string
-  default = ""
-}
 
 variable "config_switch" {
   description = "Config switch allows the selection of which resources to provision"

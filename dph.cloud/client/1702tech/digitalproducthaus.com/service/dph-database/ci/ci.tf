@@ -33,7 +33,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  region = var.client_info.region
 }
 
 #####################################################
@@ -43,19 +43,22 @@ provider "aws" {
 #####################################################
 
 
-variable "region" {
-  type    = string
-  default = "eu-west-1"
-}
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "owner" {
-  type    = string
-  default = ""
-}
-
-variable "environment_name" {
-  type    = string
-  default = ""
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
 #####################################################
@@ -67,8 +70,7 @@ variable "environment_name" {
 module "ci" {
   source = "../../../../../../module/implementation/service/ci"
 
-  owner            = var.owner
-  environment_name = var.environment_name
+  client_info = var.client_info
 
   config_switch = {
     build          = false
@@ -78,8 +80,7 @@ module "ci" {
   }
 
   registry = {
-    name         = "dph/database"
-    service_name = "database"
+    name = "dph/database"
   }
 }
 
