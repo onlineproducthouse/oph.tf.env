@@ -4,16 +4,22 @@
 #                                                   #
 #####################################################
 
-variable "region" {
-  type = string
-}
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "owner" {
-  type = string
-}
-
-variable "environment_name" {
-  type = string
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
 variable "parameters" {
@@ -41,8 +47,10 @@ resource "aws_ssm_parameter" "variable" {
   overwrite = true
 
   tags = {
-    owner            = var.owner
-    environment_name = var.environment_name
+    owner            = var.client_info.owner
+    project_name     = var.client_info.project_name
+    product_name     = var.client_info.service_name
+    environment_name = var.client_info.environment_name
   }
 }
 

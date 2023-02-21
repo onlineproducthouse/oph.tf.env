@@ -9,14 +9,22 @@ variable "name" {
   default = "UnknownCodeStarConn"
 }
 
-variable "owner" {
-  type    = string
-  default = ""
-}
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "environment_name" {
-  type    = string
-  default = ""
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
 #####################################################
@@ -30,8 +38,10 @@ resource "aws_codestarconnections_connection" "conn" {
   provider_type = "Bitbucket"
 
   tags = {
-    owner            = var.owner
-    environment_name = var.environment_name
+    owner            = var.client_info.owner
+    project_name     = var.client_info.project_name
+    service_name     = var.client_info.service_name
+    environment_name = var.client_info.environment_name
   }
 }
 

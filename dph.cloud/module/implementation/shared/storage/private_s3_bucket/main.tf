@@ -4,19 +4,22 @@
 #                                                   #
 #####################################################
 
-variable "region" {
-  type    = string
-  default = "eu-west-1"
-}
+variable "client_info" {
+  type = object({
+    region           = string
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "owner" {
-  type    = string
-  default = ""
-}
-
-variable "environment_name" {
-  type    = string
-  default = ""
+  default = {
+    region           = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+    environment_name = ""
+  }
 }
 
 variable "bucket_name" {
@@ -33,9 +36,8 @@ variable "bucket_name" {
 module "bucket" {
   source = "../../../../interface/aws/storage/s3/bucket"
 
-  bucket_name      = var.bucket_name
-  owner            = var.owner
-  environment_name = var.environment_name
+  bucket_name = var.bucket_name
+  client_info = var.client_info
 }
 
 module "versioning" {
