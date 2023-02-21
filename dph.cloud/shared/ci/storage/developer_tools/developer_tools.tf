@@ -42,19 +42,20 @@ provider "aws" {
 #                                                   #
 #####################################################
 
-variable "region" {
-  type    = string
-  default = "eu-west-1"
-}
+variable "client_info" {
+  type = object({
+    owner            = string
+    project_name     = string
+    service_name     = string
+    environment_name = string
+  })
 
-variable "owner" {
-  type    = string
-  default = ""
-}
-
-variable "environment_name" {
-  type    = string
-  default = ""
+  default = {
+    environment_name = ""
+    owner            = ""
+    project_name     = ""
+    service_name     = ""
+  }
 }
 
 #####################################################
@@ -66,10 +67,8 @@ variable "environment_name" {
 module "developer_tools" {
   source = "../../../../module/implementation/shared/storage/private_s3_bucket"
 
-  region           = var.region
-  bucket_name      = "dph-developer-tools"
-  owner            = var.owner
-  environment_name = var.environment_name
+  bucket_name = "dph-developer-tools"
+  client_info = var.client_info
 }
 
 #####################################################
