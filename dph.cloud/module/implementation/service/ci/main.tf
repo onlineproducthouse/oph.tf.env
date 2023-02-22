@@ -42,3 +42,74 @@ variable "config_switch" {
     registry       = false
   }
 }
+
+#####################################################
+#                                                   #
+#                   CONFIGURATION                   #
+#                                                   #
+#####################################################
+
+resource "aws_iam_policy" "ci_policy" {
+  name        = "ci-policy-${var.client_info.project_short_name}-${var.client_info.service_name}"
+  path        = "/${var.client_info.project_short_name}/"
+  description = "${var.client_info.project_name} policy for ci"
+
+  policy = jsonencode(local.policy)
+}
+
+resource "aws_iam_role" "ci_role" {
+  name = "ci-role-${var.client_info.project_short_name}-${var.client_info.service_name}"
+  path = "/system/ci/"
+
+  force_detach_policies = true
+  managed_policy_arns   = [aws_iam_policy.ci_policy.arn]
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal : {
+          Service : "codebuild.amazonaws.com"
+        },
+      },
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal : {
+          Service : "codepipeline.amazonaws.com"
+        },
+      },
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal : {
+          Service : "ec2.amazonaws.com"
+        },
+      },
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal : {
+          Service : "ecs.amazonaws.com"
+        },
+      },
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal : {
+          Service : "ecs-tasks.amazonaws.com"
+        },
+      },
+    ]
+  })
+
+  tags = {
+    owner            = var.client_info.owner
+    environment_name = var.client_info.environment_name
+    project_name     = var.client_info.project_name
+    service_name     = var.client_info.service_name
+  }
+}
