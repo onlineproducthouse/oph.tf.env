@@ -4,10 +4,6 @@
 #                                                   #
 #####################################################
 
-locals {
-  image_registry_base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
-}
-
 module "local_env_vars" {
   source = "../../../../../../module/interface/aws/security/ssm/param_store"
 

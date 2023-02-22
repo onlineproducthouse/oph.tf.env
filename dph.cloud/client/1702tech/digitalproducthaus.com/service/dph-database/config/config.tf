@@ -69,6 +69,9 @@ variable "client_info" {
 data "aws_caller_identity" "current" {}
 
 locals {
+  image_registry_base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
+  image_registry_name     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
+
   paths = {
     build  = "/dph/config/build"
     deploy = "/dph/config/deploy"
