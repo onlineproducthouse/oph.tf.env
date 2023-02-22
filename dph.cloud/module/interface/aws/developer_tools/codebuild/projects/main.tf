@@ -24,21 +24,18 @@ variable "client_info" {
   }
 }
 
-variable "build_job" {
+variable "job" {
   type = object({
     name            = string
+    is_docker_build = bool
     service_role    = string
     build_timeout   = string
     buildspec       = string
-    is_docker_build = bool
+
     environment_variables = list(object({
       key   = string
       value = string
     }))
-    run_in_subnet      = bool
-    vpc_id             = string
-    subnets            = list(string)
-    security_group_ids = list(string)
   })
 
   default = {
@@ -47,11 +44,7 @@ variable "build_job" {
     environment_variables = []
     is_docker_build       = false
     name                  = "UnknownCodeBuild"
-    run_in_subnet         = false
-    security_group_ids    = []
     service_role          = ""
-    subnets               = []
-    vpc_id                = ""
   }
 }
 
@@ -61,11 +54,11 @@ variable "build_job" {
 #                                                   #
 #####################################################
 
-resource "aws_codebuild_project" "build_job" {
-  name           = var.build_job.name
-  service_role   = var.build_job.service_role
-  build_timeout  = var.build_job.build_timeout
-  queued_timeout = "5"
+resource "aws_codebuild_project" "job" {
+  name           = var.job.name
+  service_role   = var.job.service_role
+  build_timeout  = var.job.build_timeout
+  queued_timeout = var.job.build_timeout
 
   artifacts {
     type     = "CODEPIPELINE"
@@ -74,7 +67,7 @@ resource "aws_codebuild_project" "build_job" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = var.build_job.buildspec
+    buildspec = var.job.buildspec
   }
 
   environment {
@@ -83,29 +76,15 @@ resource "aws_codebuild_project" "build_job" {
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
 
-    privileged_mode = var.build_job.is_docker_build
+    privileged_mode = var.job.is_docker_build
 
     dynamic "environment_variable" {
-      for_each = var.build_job.environment_variables
+      for_each = var.job.environment_variables
 
       content {
         name  = environment_variable.value.key
         value = environment_variable.value.value
       }
-    }
-  }
-
-  dynamic "vpc_config" {
-    for_each = var.build_job.run_in_subnet == true ? [{
-      vpc_id             = var.build_job.vpc_id
-      subnets            = var.build_job.subnets
-      security_group_ids = var.build_job.security_group_ids
-    }] : []
-
-    content {
-      vpc_id             = var.build_job.vpc_id
-      subnets            = var.build_job.subnets
-      security_group_ids = var.build_job.security_group_ids
     }
   }
 
@@ -124,9 +103,9 @@ resource "aws_codebuild_project" "build_job" {
 #####################################################
 
 output "arn" {
-  value = aws_codebuild_project.build_job.arn
+  value = aws_codebuild_project.job.arn
 }
 
 output "name" {
-  value = aws_codebuild_project.build_job.name
+  value = aws_codebuild_project.job.name
 }

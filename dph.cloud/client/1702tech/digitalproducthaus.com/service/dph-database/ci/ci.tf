@@ -92,6 +92,15 @@ locals {
   dph_dev_tools_arn = data.terraform_remote_state.dph_dev_tools_store.outputs.arn
   buildspec_key     = data.terraform_remote_state.dph_ci_scripts.outputs.buildspec_key
 
+  shared_env_vars = [
+    { key = "AWS_REGION", value = var.client_info.region },
+    { key = "WORKING_DIR", value = "." },
+    { key = "CI_FOLDER", value = "./ci" },
+    { key = "BUILD_ARTEFACT_PATH", value = "**" },
+    { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dph_dev_tools_store.outputs.id}" },
+    { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.load_environment_variables_key },
+  ]
+
   # aws_ssm_build_paths = [
   #   data.terraform_remote_state.ci_build_database_ssm.outputs.path,
   # ]
@@ -109,10 +118,10 @@ module "ci" {
   client_info = var.client_info
 
   config_switch = {
-    build          = true
-    build_artefact = true
-    deploy         = false
-    registry       = true
+    registry           = true
+    build_artefact     = true
+    build              = true
+    deployment_targets = ["test"]
   }
 
   db_certs = {
@@ -121,32 +130,31 @@ module "ci" {
     }
   }
 
-  build_job = {
-    name            = "build-${var.client_info.project_short_name}-${var.client_info.service_name}"
-    buildspec       = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+  ci_job = {
     is_docker_build = true
+    build_timeout   = "10"
+    service_role    = ""
+  }
 
-    build_timeout      = "10"
-    service_role       = ""
-    vpc_id             = ""
-    run_in_subnet      = false
-    security_group_ids = []
-    subnets            = []
+  build_job = {
+    buildspec = "${local.dph_dev_tools_arn}${local.buildspec_key}"
 
-    environment_variables = [
+    environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "build" },
       { key = "PROJECT_TYPE", value = "container" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
-      { key = "WORKING_DIR", value = "." },
-      { key = "CI_FOLDER", value = "./ci" },
-      { key = "BUILD_ARTEFACT_PATH", value = "**" },
-
-      { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dph_dev_tools_store.outputs.id}" },
-      { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.load_environment_variables_key },
-
-      { key = "AWS_REGION", value = var.client_info.region },
       { key = "AWS_SSM_PARAMETER_PATHS", value = "" },
-    ]
+    ])
+  }
+
+  deploy_job = {
+    buildspec = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+
+    environment_variables = concat(local.shared_env_vars, [
+      { key = "CI_ACTION", value = "migrate" },
+      { key = "PROJECT_TYPE", value = "db" },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = "" },
+    ])
   }
 }
 

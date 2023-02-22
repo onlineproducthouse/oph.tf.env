@@ -29,17 +29,31 @@ variable "config_switch" {
   description = "Config switch allows the selection of which resources to provision"
 
   type = object({
-    build          = bool
-    build_artefact = bool
-    deploy         = bool
-    registry       = bool
+    registry           = bool
+    build_artefact     = bool
+    build              = bool
+    deployment_targets = list(string) // ["test", "prod"]
   })
 
   default = {
-    build          = false
-    build_artefact = false
-    deploy         = false
-    registry       = false
+    registry           = false
+    build_artefact     = false
+    build              = false
+    deployment_targets = []
+  }
+}
+
+variable "ci_job" {
+  type = object({
+    service_role    = string
+    build_timeout   = string
+    is_docker_build = bool
+  })
+
+  default = {
+    service_role    = ""
+    build_timeout   = "10"
+    is_docker_build = false
   }
 }
 
