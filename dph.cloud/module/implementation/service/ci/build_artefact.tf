@@ -3,15 +3,7 @@
 #                     VARIABLES                     #
 #                                                   #
 #####################################################
-variable "build_artefact" {
-  type = object({
-    name = string
-  })
 
-  default = {
-    name = ""
-  }
-}
 
 #####################################################
 #                                                   #
@@ -24,7 +16,7 @@ module "build_artefact" {
 
   count = var.config_switch.build_artefact == true ? 1 : 0
 
-  bucket_name = var.build_artefact.name
+  bucket_name = "${var.client_info.project_short_name}-${var.client_info.service_name}-build-artefacts"
   client_info = var.client_info
 }
 

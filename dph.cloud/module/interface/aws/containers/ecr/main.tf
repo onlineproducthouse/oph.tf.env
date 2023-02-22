@@ -4,26 +4,23 @@
 #                                                   #
 #####################################################
 
-variable "name" {
-  type    = string
-  default = "UnknownECRRepository"
-}
-
 variable "client_info" {
   type = object({
-    region           = string
-    owner            = string
-    project_name     = string
-    service_name     = string
-    environment_name = string
+    region             = string
+    owner              = string
+    project_name       = string
+    project_short_name = string
+    service_name       = string
+    environment_name   = string
   })
 
   default = {
-    region           = ""
-    owner            = ""
-    project_name     = ""
-    service_name     = ""
-    environment_name = ""
+    region             = ""
+    owner              = ""
+    project_name       = ""
+    project_short_name = ""
+    service_name       = ""
+    environment_name   = ""
   }
 }
 
@@ -34,7 +31,7 @@ variable "client_info" {
 #####################################################
 
 resource "aws_ecr_repository" "repository" {
-  name                 = var.name
+  name                 = "${var.client_info.project_short_name}/${var.client_info.service_name}"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {

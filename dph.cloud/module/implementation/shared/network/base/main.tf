@@ -10,8 +10,10 @@ resource "aws_vpc" "vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    environment_name = var.environment_name
-    owner            = var.owner
+    environment_name = var.client_info.environment_name
+    owner            = var.client_info.owner
+    service_name     = var.client_info.service_name
+    project_name     = var.client_info.project_name
   }
 }
 
@@ -20,8 +22,10 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    environment_name = var.environment_name
-    owner            = var.owner
+    environment_name = var.client_info.environment_name
+    owner            = var.client_info.owner
+    service_name     = var.client_info.service_name
+    project_name     = var.client_info.project_name
   }
 }
 
@@ -29,8 +33,7 @@ resource "aws_internet_gateway" "igw" {
 module "private_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  environment_name = var.environment_name
-  owner            = var.owner
+  client_info = var.client_info
 
   vpc_id             = aws_vpc.vpc.id
   availibility_zones = var.subnets.private.availibility_zones
@@ -40,8 +43,7 @@ module "private_subnet" {
 module "public_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  environment_name = var.environment_name
-  owner            = var.owner
+  client_info = var.client_info
 
   vpc_id             = aws_vpc.vpc.id
   availibility_zones = var.subnets.public.availibility_zones
@@ -54,8 +56,7 @@ module "eip" {
 
   subnet_count = length(var.subnets.public.cidr_block)
 
-  environment_name = var.environment_name
-  owner            = var.owner
+  client_info = var.client_info
 }
 
 // set up natgw
@@ -67,8 +68,10 @@ resource "aws_nat_gateway" "nat" {
 
   tags = {
     resource_name    = "AWS NAT Gateway for ${element(module.public_subnet.id_list, count.index)}"
-    owner            = var.owner
-    environment_name = var.environment_name
+    owner            = var.client_info.owner
+    environment_name = var.client_info.environment_name
+    service_name     = var.client_info.service_name
+    project_name     = var.client_info.project_name
   }
 }
 
@@ -79,8 +82,7 @@ module "public_route_table" {
   vpc_id         = aws_vpc.vpc.id
   subnet_id_list = module.public_subnet.id_list
 
-  environment_name = var.environment_name
-  owner            = var.owner
+  client_info = var.client_info
 }
 
 module "private_route_table" {
@@ -89,8 +91,7 @@ module "private_route_table" {
   vpc_id         = aws_vpc.vpc.id
   subnet_id_list = module.private_subnet.id_list
 
-  environment_name = var.environment_name
-  owner            = var.owner
+  client_info = var.client_info
 }
 
 // set up route
