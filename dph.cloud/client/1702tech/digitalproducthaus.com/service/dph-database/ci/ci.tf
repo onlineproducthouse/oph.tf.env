@@ -88,6 +88,16 @@ data "terraform_remote_state" "dph_ci_scripts" {
   }
 }
 
+data "terraform_remote_state" "git_repo_webhook" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "shared/ci/developer_tools/codestar/git_repo_webhook/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
   dph_dev_tools_arn = data.terraform_remote_state.dph_dev_tools_store.outputs.arn
   buildspec_key     = data.terraform_remote_state.dph_ci_scripts.outputs.buildspec_key
@@ -155,6 +165,13 @@ module "ci" {
       { key = "PROJECT_TYPE", value = "db" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = "" },
     ])
+  }
+
+  pipeline = {
+    git = {
+      connection_arn = data.terraform_remote_state.git_repo_webhook.outputs.arn
+      repo_name      = "digitalproducttome/dph.db.dph"
+    }
   }
 }
 
