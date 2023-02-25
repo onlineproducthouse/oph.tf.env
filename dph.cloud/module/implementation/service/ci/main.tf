@@ -29,17 +29,25 @@ variable "config_switch" {
   description = "Config switch allows the selection of which resources to provision"
 
   type = object({
-    registry           = bool
-    build_artefact     = bool
-    build              = bool
-    deployment_targets = list(string) // ["test", "prod"]
+    registry       = bool
+    build_artefact = bool
+    build          = bool
+    # deployment_targets = list(string) // ["test", "prod"]
+    deployment_targets = list(object({
+      name = string // "test", "prod"
+      vpc = object({
+        id                 = string
+        security_group_ids = list(string)
+        subnets            = list(string)
+      })
+    }))
   })
 
   default = {
-    registry           = false
-    build_artefact     = false
     build              = false
+    build_artefact     = false
     deployment_targets = []
+    registry           = false
   }
 }
 

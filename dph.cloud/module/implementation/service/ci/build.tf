@@ -44,6 +44,12 @@ module "build_job" {
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = module.registry[0].name },
     ])
+
+    vpc = {
+      id                 = ""
+      security_group_ids = []
+      subnets            = []
+    }
   }
 }
 

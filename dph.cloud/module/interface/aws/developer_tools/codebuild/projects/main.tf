@@ -36,6 +36,12 @@ variable "job" {
       key   = string
       value = string
     }))
+
+    vpc = object({
+      id                 = string
+      subnets            = list(string)
+      security_group_ids = list(string)
+    })
   })
 
   default = {
@@ -45,6 +51,11 @@ variable "job" {
     is_docker_build       = false
     name                  = "UnknownCodeBuild"
     service_role          = ""
+    vpc = {
+      id                 = ""
+      security_group_ids = []
+      subnets            = []
+    }
   }
 }
 
@@ -85,6 +96,16 @@ resource "aws_codebuild_project" "job" {
         name  = environment_variable.value.key
         value = environment_variable.value.value
       }
+    }
+  }
+
+  dynamic "vpc_config" {
+    for_each = var.job.vpc.id == "" ? [] : [var.job.vpc]
+
+    content {
+      vpc_id             = each.value.id
+      subnets            = each.value.subnets
+      security_group_ids = each.value.security_group_ids
     }
   }
 

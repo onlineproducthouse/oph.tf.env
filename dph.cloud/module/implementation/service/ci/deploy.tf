@@ -29,7 +29,7 @@ module "deploy_job" {
   source = "../../../interface/aws/developer_tools/codebuild/projects"
 
   for_each = {
-    for i, target in var.config_switch.deployment_targets : target => target
+    for i, target in var.config_switch.deployment_targets : target.name => target
   }
 
   client_info = var.client_info
@@ -41,10 +41,16 @@ module "deploy_job" {
     buildspec       = var.deploy_job.buildspec
 
     environment_variables = concat(var.deploy_job.environment_variables, [
-      { key = "ENVIRONMENT_NAME", value = each.value },
+      { key = "ENVIRONMENT_NAME", value = each.value.name },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = module.registry[0].name },
     ])
+
+    vpc = {
+      id                 = each.value.vpc.id
+      security_group_ids = each.value.vpc.security_group_ids
+      subnets            = each.value.vpc.subnets
+    }
   }
 }
 

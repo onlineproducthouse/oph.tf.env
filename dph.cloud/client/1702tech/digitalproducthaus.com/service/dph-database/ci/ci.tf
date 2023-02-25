@@ -138,10 +138,17 @@ module "ci" {
   client_info = var.client_info
 
   config_switch = {
-    registry           = true
-    build_artefact     = true
-    build              = true
-    deployment_targets = ["test"]
+    registry       = true
+    build_artefact = true
+    build          = true
+    deployment_targets = [{
+      name = "test"
+      vpc = {
+        id                 = ""
+        security_group_ids = [""]
+        subnets            = [""]
+      }
+    }]
   }
 
   db_certs = {
