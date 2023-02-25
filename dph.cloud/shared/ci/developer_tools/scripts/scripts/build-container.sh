@@ -12,7 +12,6 @@ set -euo pipefail
 # CODEBUILD_INITIATOR
 # CODEBUILD_SOURCE_REPO_URL
 # CODEBUILD_BUILD_NUMBER
-# CODEBUILD_RESOLVED_SOURCE_VERSION # git hash
 #
 # -----------------------------------------------------
 # AWS Codebuild Job Environment Variables
@@ -37,13 +36,14 @@ set -euo pipefail
 # DEV_TOOLS_STORE_SCRIPTS
 # LOAD_ENV_VARS_SCRIPT
 # CF_INVALDIATE_SCRIPT
+# IMAGE_REGISTRY_BASE_URL
+# IMAGE_REPOSITORY_NAME
 #
 # -----------------------------------------------------
 # AWS SSM Parameters - CI Environment
 # -----------------------------------------------------
 #
-# IMAGE_REGISTRY_BASE_URL
-# IMAGE_REPOSITORY_NAME
+# -
 #
 # -----------------------------------------------------
 # AWS SSM Parameters - Runtime Environment
@@ -58,18 +58,17 @@ aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$WORKI
 
 # Download db certs: test
 echo "Downloading $CERT_STORE$CERT_NAME"
-aws s3 cp $(echo "$CERT_STORE$CERT_NAME") ./dbcert.crt
+aws s3 cp $(echo "$CERT_STORE$CERT_NAME") $HOME/dbcert.crt
 
-source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS
-
-# Set image tage as environment variable
-IMAGE_TAG="$IMAGE_REPOSITORY_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION-$CODEBUILD_BUILD_NUMBER"
+source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
 echo "Build starting for container project: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"
 echo "Started by: $CODEBUILD_INITIATOR"
 echo "Build number: $CODEBUILD_BUILD_NUMBER"
-echo "Git hash: $CODEBUILD_RESOLVED_SOURCE_VERSION"
+
+# Set image tage as environment variable
+IMAGE_TAG="$IMAGE_REPOSITORY_NAME:latest"
 
 # Authenticate ECR
 echo "ECR: Authenticating"
@@ -93,12 +92,12 @@ echo 'Docker build hash image successfully pushed to ECR registry'
 
 # Tag docker image - latest
 echo 'Tagging docker image for ECR registry'
-docker tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG $IMAGE_REGISTRY_BASE_URL/$IMAGE_REPOSITORY_NAME:latest
-echo "Docker latest image successfully tagged as: $IMAGE_REGISTRY_BASE_URL/$IMAGE_REPOSITORY_NAME:latest"
+docker tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
+echo "Docker latest image successfully tagged as: $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG"
 
 # Push docker image - latest
 echo 'Pushing docker image to ECR registry'
-docker push $IMAGE_REGISTRY_BASE_URL/$IMAGE_REPOSITORY_NAME:latest
+docker push $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
 echo 'Docker latest image successfully pushed to ECR registry'
 
 echo 'Done.'

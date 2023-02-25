@@ -37,8 +37,8 @@ phases:
       - echo "Starting pre-build"
 
       - JOB_SCRIPT="$(echo $CI_ACTION-$PROJECT_TYPE).sh"
-      - echo "Downloading $DEV_TOOLS_STORE_SCRIPTS/1702tech/scripts/$JOB_SCRIPT"
-      - aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS/1702tech/scripts/$JOB_SCRIPT") $(echo "./$JOB_SCRIPT")
+      - echo "Downloading $DEV_TOOLS_STORE_SCRIPTS/dph/scripts/$JOB_SCRIPT"
+      - aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS/dph/scripts/$JOB_SCRIPT") $(echo "./$JOB_SCRIPT")
 
       - echo "Finished pre-build"
 

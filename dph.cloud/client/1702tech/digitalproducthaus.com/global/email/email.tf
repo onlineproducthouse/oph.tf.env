@@ -81,7 +81,7 @@ module "sender_auth" {
     for index, record in var.sg_sender_auth : record.host => record
   }
 
-  zone_id = data.terraform_remote_state.dns.outputs.hosted_zone_id
+  zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
   name    = each.value.host
   type    = each.value.type
 

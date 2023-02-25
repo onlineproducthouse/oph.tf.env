@@ -12,7 +12,6 @@ set -euo pipefail
 # CODEBUILD_INITIATOR
 # CODEBUILD_SOURCE_REPO_URL
 # CODEBUILD_BUILD_NUMBER
-# CODEBUILD_RESOLVED_SOURCE_VERSION # git hash
 #
 # -----------------------------------------------------
 # AWS Codebuild Job Environment Variables
@@ -133,14 +132,16 @@ SERVICE_FILE="$ECS_FOLDER/service.json"
 echo "Downloading $DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT"
 aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT")
 
-source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS
+source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
 echo "Deploying to environment: $ENVIRONMENT_NAME"
 echo "Deploying ECS container for: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"
 echo "Started by: $CODEBUILD_INITIATOR"
 echo "Build number: $CODEBUILD_BUILD_NUMBER"
-echo "Git hash: $CODEBUILD_RESOLVED_SOURCE_VERSION"
+
+# Set image tage as environment variable
+IMAGE_TAG="$IMAGE_REPOSITORY_NAME:latest"
 
 MAXIMUM_HEALTHY_PERCENT=100
 MINIMUM_HEALTHY_PERCENTAGE=0
@@ -162,7 +163,7 @@ echo '{
     {
       "name": "'${CONTAINER_NAME}'",
       "essential": true,
-      "image": '"$IMAGE_REGISTRY_BASE_URL/$IMAGE_REPOSITORY_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION-$CODEBUILD_BUILD_NUMBER"',
+      "image": '"$IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG"',
       "cpu": '${CONTAINER_CPU}',
       "memoryReservation": '${CONTAINER_MEMORY_RESERVATION}',
       "portMappings": [

@@ -42,6 +42,8 @@ module "deploy_job" {
 
     environment_variables = concat(var.deploy_job.environment_variables, [
       { key = "ENVIRONMENT_NAME", value = each.value },
+      { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
+      { key = "IMAGE_REPOSITORY_NAME", value = module.registry[0].name },
     ])
   }
 }

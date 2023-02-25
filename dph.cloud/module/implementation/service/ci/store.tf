@@ -37,7 +37,7 @@ module "db_cert_test" {
   count = var.db_certs.test.source_path == "" ? 0 : 1
 
   bucket_id   = module.store.id
-  key         = "/${var.client_info.owner}/${var.client_info.project_short_name}/${var.client_info.service_name}/db-cert.crt"
+  key         = "/${var.client_info.owner}/${var.client_info.project_short_name}/${var.client_info.service_name}/db-test-cert.crt"
   source_path = var.db_certs.test.source_path
 }
 

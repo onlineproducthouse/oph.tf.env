@@ -12,7 +12,6 @@ set -euo pipefail
 # CODEBUILD_INITIATOR
 # CODEBUILD_SOURCE_REPO_URL
 # CODEBUILD_BUILD_NUMBER
-# CODEBUILD_RESOLVED_SOURCE_VERSION # git hash
 #
 # -----------------------------------------------------
 # AWS Codebuild Job Environment Variables
@@ -60,13 +59,12 @@ set -euo pipefail
 echo "Downloading $DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT"
 aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT")
 
-source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS
+source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
 echo "Build starting for container project: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"
 echo "Started by: $CODEBUILD_INITIATOR"
 echo "Build number: $CODEBUILD_BUILD_NUMBER"
-echo "Git hash: $CODEBUILD_RESOLVED_SOURCE_VERSION"
 
 yarn
 
