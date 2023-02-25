@@ -58,7 +58,7 @@ aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$WORKI
 
 # Download db certs: test
 echo "Downloading $CERT_STORE$CERT_NAME"
-aws s3 cp $(echo "$CERT_STORE$CERT_NAME") $HOME/dbcert.crt
+aws s3 cp $(echo "$CERT_STORE$CERT_NAME") ./dbcert.crt
 
 source $(echo "$WORKING_DIR/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
