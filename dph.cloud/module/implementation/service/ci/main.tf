@@ -37,7 +37,6 @@ variable "config_switch" {
       name = string // "test", "prod"
       vpc = object({
         id                 = string
-        security_group_ids = list(string)
         subnets            = list(string)
       })
     }))

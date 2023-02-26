@@ -47,9 +47,8 @@ module "deploy_job" {
     ])
 
     vpc = {
-      id                 = each.value.vpc.id
-      security_group_ids = each.value.vpc.security_group_ids
-      subnets            = each.value.vpc.subnets
+      id      = each.value.vpc.id
+      subnets = each.value.vpc.subnets
     }
   }
 }

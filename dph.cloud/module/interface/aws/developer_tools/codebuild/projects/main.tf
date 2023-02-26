@@ -38,23 +38,21 @@ variable "job" {
     }))
 
     vpc = object({
-      id                 = string
-      subnets            = list(string)
-      security_group_ids = list(string)
+      id      = string
+      subnets = list(string)
     })
   })
 
   default = {
+    name                  = "UnknownCodeBuild"
+    is_docker_build       = false
+    service_role          = ""
     build_timeout         = "10"
     buildspec             = ""
     environment_variables = []
-    is_docker_build       = false
-    name                  = "UnknownCodeBuild"
-    service_role          = ""
     vpc = {
-      id                 = ""
-      security_group_ids = []
-      subnets            = []
+      id      = ""
+      subnets = []
     }
   }
 }
@@ -64,6 +62,36 @@ variable "job" {
 #                   CONFIGURATION                   #
 #                                                   #
 #####################################################
+
+resource "aws_security_group" "security_group" {
+  count = var.job.vpc.id == "" ? 0 : 1
+
+  name   = "${var.job.name}-sg"
+  vpc_id = var.job.vpc.id
+
+  lifecycle {
+    create_before_destroy = false
+  }
+
+  tags = {
+    owner            = var.client_info.owner
+    environment_name = var.client_info.environment_name
+    project_name     = var.client_info.project_name
+    service_name     = var.client_info.service_name
+  }
+}
+
+resource "aws_security_group_rule" "rule" {
+  count = var.job.vpc.id == "" ? 0 : 1
+
+  security_group_id = aws_security_group.security_group[0].id
+
+  type        = "egress"
+  protocol    = "-1"
+  cidr_blocks = ["0.0.0.0/0"]
+  from_port   = 0
+  to_port     = 0
+}
 
 resource "aws_codebuild_project" "job" {
   name           = var.job.name
@@ -99,14 +127,10 @@ resource "aws_codebuild_project" "job" {
     }
   }
 
-  dynamic "vpc_config" {
-    for_each = var.job.vpc.id == "" ? [] : [var.job.vpc]
-
-    content {
-      vpc_id             = each.value.id
-      subnets            = each.value.subnets
-      security_group_ids = each.value.security_group_ids
-    }
+  vpc_config {
+    vpc_id             = var.job.vpc.id
+    subnets            = var.job.vpc.subnets
+    security_group_ids = var.job.vpc.id == "" ? [] : [aws_security_group.security_group[0].id]
   }
 
   tags = {

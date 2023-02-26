@@ -46,9 +46,8 @@ module "build_job" {
     ])
 
     vpc = {
-      id                 = ""
-      security_group_ids = []
-      subnets            = []
+      id      = ""
+      subnets = []
     }
   }
 }

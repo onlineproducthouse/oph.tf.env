@@ -106,6 +106,6 @@ module "test" {
 #                                                   #
 #####################################################
 
-output "test" {
-  value = module.test
+output "network" {
+  value = module.test.network
 }
