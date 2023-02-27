@@ -10,7 +10,7 @@ module "deploy_env_vars" {
   client_info = var.client_info
 
   parameters = [
-    { path : local.paths.deploy, key : "DB_SUPER_USERNAME", value : local.secrets.test.db_username },
-    { path : local.paths.deploy, key : "DB_SUPER_PASSWORD", value : local.secrets.test.db_password },
+    { path : local.paths.deploy, key : "DB_SUPER_USERNAME", value : local.secrets.deploy.db_super_username },
+    { path : local.paths.deploy, key : "DB_SUPER_PASSWORD", value : local.secrets.deploy.db_super_password },
   ]
 }
