@@ -124,7 +124,6 @@ locals {
 
   shared_env_vars = [
     { key = "AWS_REGION", value = var.client_info.region },
-    { key = "WORKING_DIR", value = "." },
     { key = "CI_FOLDER", value = "./ci" },
     { key = "BUILD_ARTEFACT_PATH", value = "**" },
     { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dph_dev_tools_store.outputs.id}" },
@@ -180,6 +179,7 @@ module "ci" {
       { key = "PROJECT_TYPE", value = "container" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = "-1" },
+      { key = "WORKING_DIR", value = "./dph.db.dph" },
     ])
   }
 
@@ -189,14 +189,15 @@ module "ci" {
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "migrate" },
       { key = "PROJECT_TYPE", value = "db" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.paths.test },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = "${data.terraform_remote_state.config.outputs.paths.test};${data.terraform_remote_state.config.outputs.paths.deploy}" },
+      { key = "WORKING_DIR", value = "./dph.db.dph" },
     ])
   }
 
   pipeline = {
     git = {
       connection_arn = data.terraform_remote_state.git_repo_webhook.outputs.arn
-      repo_name      = "digitalproducttome/dph.db.dph"
+      repo_name      = "digitalproducttome/dph.db"
     }
   }
 }

@@ -56,4 +56,4 @@ phases:
 artifacts:
   type: zip
   files:
-    - ${WORKING_DIR}/${BUILD_ARTEFACT_PATH}/**/**/*
+    - ${BUILD_ARTEFACT_PATH}/**/**/*
