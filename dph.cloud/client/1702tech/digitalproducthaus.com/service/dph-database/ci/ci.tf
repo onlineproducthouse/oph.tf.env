@@ -153,12 +153,6 @@ module "ci" {
     deployment_targets = concat(local.deployment_targets.test)
   }
 
-  db_certs = {
-    test = {
-      source_path = "./content/db-cert-test.crt"
-    }
-  }
-
   ci_job = {
     is_docker_build = true
     build_timeout   = "10"
@@ -166,7 +160,9 @@ module "ci" {
   }
 
   build_job = {
-    buildspec = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+    buildspec     = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+    cert_store_id = data.terraform_remote_state.config.outputs.api_test_env.content.store.id
+    cert_key      = data.terraform_remote_state.config.outputs.api_test_env.content.db_cert.key
 
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "build" },

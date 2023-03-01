@@ -74,6 +74,10 @@ locals {
 }
 
 locals {
+  content = {
+    db_cert_source_path = "./content/db-cert-test.crt"
+  }
+
   env = {
     network = {
       vpc_cidr_block  = local.vpc_cidr_block
@@ -99,6 +103,7 @@ module "test" {
 
   client_info = var.client_info
   env         = local.env
+  content     = local.content
 }
 
 #####################################################
@@ -109,4 +114,8 @@ module "test" {
 
 output "network" {
   value = module.test.network
+}
+
+output "content" {
+  value = module.test.content
 }

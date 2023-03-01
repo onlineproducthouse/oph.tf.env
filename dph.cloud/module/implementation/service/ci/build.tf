@@ -6,7 +6,9 @@
 
 variable "build_job" {
   type = object({
-    buildspec = string
+    buildspec     = string
+    cert_store_id = string
+    cert_key      = string
     environment_variables = list(object({
       key   = string
       value = string
@@ -15,6 +17,8 @@ variable "build_job" {
 
   default = {
     buildspec             = ""
+    cert_store_id         = ""
+    cert_key              = ""
     environment_variables = []
   }
 }
@@ -39,8 +43,8 @@ module "build_job" {
     buildspec       = var.build_job.buildspec
 
     environment_variables = concat(var.build_job.environment_variables, [
-      { key = "CERT_STORE", value = "s3://${module.store.id}" },
-      { key = "CERT_NAME", value = module.db_cert_test[0].key },
+      { key = "CERT_STORE", value = "s3://${var.build_job.cert_store_id}" },
+      { key = "CERT_NAME", value = var.build_job.cert_key },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = module.registry[0].name },
     ])

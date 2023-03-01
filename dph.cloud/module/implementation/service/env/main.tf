@@ -64,6 +64,12 @@ variable "env" {
   }
 }
 
+variable "content" {
+  type = object({
+    db_cert_source_path = string
+  })
+}
+
 #####################################################
 #                                                   #
 #                   CONFIGURATION                   #
@@ -81,6 +87,12 @@ module "network" {
   subnets         = var.env.network.subnets
 }
 
+module "content" {
+  source      = "./content"
+  client_info = var.client_info
+  content     = var.content
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -96,4 +108,8 @@ output "network" {
       public  = []
     }
   }
+}
+
+output "content" {
+  value = module.content
 }
