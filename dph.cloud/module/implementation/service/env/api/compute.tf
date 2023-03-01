@@ -94,7 +94,7 @@ resource "aws_launch_configuration" "launch_config" {
   name                        = var.compute.launch_configuration.name
   associate_public_ip_address = true
   user_data                   = data.template_file.user_data.rendered
-  security_groups             = [aws_security_group.launch_config_sg.id]
+  security_groups             = [aws_security_group.launch_config_sg[0].id]
   image_id                    = var.compute.launch_configuration.image_id
   instance_type               = var.compute.launch_configuration.instance_type
   iam_instance_profile        = ""
@@ -111,10 +111,10 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
   name                 = "${var.compute.launch_configuration.name}-asg"
   health_check_type    = "ELB"
   launch_configuration = aws_launch_configuration.launch_config[0].id
-  vpc_zone_identifier  = var.auto_scaling_group.subnet_id_list
-  min_size             = var.auto_scaling_group.min_instances
-  max_size             = var.auto_scaling_group.max_instances
-  desired_capacity     = var.auto_scaling_group.desired_instances
+  vpc_zone_identifier  = var.compute.auto_scaling_group.subnet_id_list
+  min_size             = var.compute.auto_scaling_group.min_instances
+  max_size             = var.compute.auto_scaling_group.max_instances
+  desired_capacity     = var.compute.auto_scaling_group.desired_instances
 
   lifecycle {
     create_before_destroy = false
@@ -157,9 +157,9 @@ locals {
     security_group_rule_id = ""
     launch_config_id       = ""
     } : {
-    security_group_id      = aws_security_group.launch_config_sg.id
-    security_group_rule_id = aws_security_group_rule.launch_config_sg_rule.id
-    launch_config_id       = aws_launch_configuration.launch_config.id
+    security_group_id      = aws_security_group.launch_config_sg[0].id
+    security_group_rule_id = aws_security_group_rule.launch_config_sg_rule[0].id
+    launch_config_id       = aws_launch_configuration.launch_config[0].id
   }
 }
 

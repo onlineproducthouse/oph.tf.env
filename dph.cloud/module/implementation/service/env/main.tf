@@ -79,8 +79,8 @@ variable "compute" {
     })
 
     launch_configuration = object({
-      image_id             = string
-      instance_type        = string
+      image_id      = string
+      instance_type = string
     })
   })
 
@@ -92,8 +92,8 @@ variable "compute" {
     }
 
     launch_configuration = {
-      image_id             = ""
-      instance_type        = ""
+      image_id      = ""
+      instance_type = ""
     }
   }
 }
@@ -131,20 +131,20 @@ module "api" {
 
   compute = {
     vpc = {
-      id = module.network.vpc_id
+      id = var.env.network.vpc_cidr_block == "" ? "" : module.network.vpc_id
     }
 
     auto_scaling_group = {
       desired_instances = var.compute.auto_scaling_group.desired_instances
       max_instances     = var.compute.auto_scaling_group.max_instances
       min_instances     = var.compute.auto_scaling_group.min_instances
-      subnet_id_list    = module.network[0].subnet_id_list.private
+      subnet_id_list    = var.env.network.vpc_cidr_block == "" ? [] : module.network[0].subnet_id_list.private
     }
 
     launch_configuration = {
-      name                 = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-lc"
-      image_id             = var.compute.launch_configuration.image_id
-      instance_type        = var.compute.launch_configuration.instance_type
+      name          = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-lc"
+      image_id      = var.compute.launch_configuration.image_id
+      instance_type = var.compute.launch_configuration.instance_type
     }
   }
 }

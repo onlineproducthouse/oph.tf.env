@@ -112,7 +112,6 @@ module "test" {
       min_instances     = 1
     }
     launch_configuration = {
-      iam_instance_profile = ""
       image_id             = "ami-027078d981e5d4010"
       instance_type        = "t3a.micro"
     }
