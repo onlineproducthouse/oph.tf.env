@@ -128,6 +128,16 @@ locals {
   #   data.terraform_remote_state.ci_deploy_database_ssm.outputs.path,
   #   data.terraform_remote_state.runtime_test_database_ssm.outputs.path,
   # ]
+
+  deployment_targets = {
+    test = data.terraform_remote_state.config.outputs.api_test_env.network.vpc_id == "" ? [] : [{
+      name = "test"
+      vpc = {
+        id      = data.terraform_remote_state.config.outputs.api_test_env.network.vpc_id
+        subnets = data.terraform_remote_state.config.outputs.api_test_env.network.subnet_id_list.private
+      }
+    }]
+  }
 }
 
 
@@ -137,16 +147,10 @@ module "ci" {
   client_info = var.client_info
 
   config_switch = {
-    registry       = true
-    build_artefact = true
-    build          = true
-    deployment_targets = [{
-      name = "test"
-      vpc = {
-        id      = data.terraform_remote_state.config.outputs.test_env.network.vpc_id
-        subnets = data.terraform_remote_state.config.outputs.test_env.network.subnet_id_list.private
-      }
-    }]
+    registry           = true
+    build_artefact     = true
+    build              = true
+    deployment_targets = concat(local.deployment_targets.test)
   }
 
   db_certs = {

@@ -88,5 +88,12 @@ module "network" {
 #####################################################
 
 output "network" {
-  value = module.network[0].network
+  value = var.env.network.vpc_cidr_block != "" ? module.network[0].network : {
+    vpc_id = ""
+    eip    = []
+    subnet_id_list = {
+      private = []
+      public  = []
+    }
+  }
 }

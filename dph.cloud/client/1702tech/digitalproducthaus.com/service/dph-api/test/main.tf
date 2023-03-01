@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/dph-database/test/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/service/dph-api/test/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "dph-platform-terraform-remote-state-locks"
@@ -69,7 +69,7 @@ variable "client_info" {
 #####################################################
 
 locals {
-  vpc_cidr_block     = "10.0.0.0/16" // leave empty to disable else set to, e.g. 10.0.0.0/16
+  vpc_cidr_block     = "" // leave empty to disable else set to, e.g. 10.0.0.0/16
   availibility_zones = ["eu-west-1b", "eu-west-1c"]
 }
 
@@ -108,12 +108,5 @@ module "test" {
 #####################################################
 
 output "network" {
-  value = local.vpc_cidr_block != "" ? module.test.network : {
-    vpc_id = ""
-    eip    = []
-    subnet_id_list = {
-      private = []
-      public  = []
-    }
-  }
+  value = module.test.network
 }

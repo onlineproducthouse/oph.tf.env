@@ -4,12 +4,12 @@
 #                                                   #
 #####################################################
 
-data "terraform_remote_state" "test_env" {
+data "terraform_remote_state" "api_test_env" {
   backend = "s3"
 
   config = {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/dph-database/test/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/service/dph-api/test/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -33,6 +33,6 @@ locals {
 #                                                   #
 #####################################################
 
-output "test_env" {
-  value = data.terraform_remote_state.test_env.outputs
+output "api_test_env" {
+  value = data.terraform_remote_state.api_test_env.outputs
 }
