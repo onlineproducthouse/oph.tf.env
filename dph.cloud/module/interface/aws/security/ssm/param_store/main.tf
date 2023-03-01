@@ -26,6 +26,7 @@ variable "client_info" {
 
 variable "parameters" {
   type = list(object({
+    id   = string
     path  = string
     key   = string
     value = string
@@ -40,7 +41,7 @@ variable "parameters" {
 
 resource "aws_ssm_parameter" "variable" {
   for_each = {
-    for index, parameter in var.parameters : lower(parameter.key) => parameter
+    for index, parameter in var.parameters : parameter.id => parameter
   }
 
   name      = "${each.value.path}/${each.value.key}"

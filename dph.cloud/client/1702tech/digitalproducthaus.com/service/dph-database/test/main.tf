@@ -69,13 +69,14 @@ variable "client_info" {
 #####################################################
 
 locals {
+  vpc_cidr_block     = "10.0.0.0/16" // leave empty to disable else set to, e.g. 10.0.0.0/16
   availibility_zones = ["eu-west-1b", "eu-west-1c"]
 }
 
 locals {
   env = {
     network = {
-      vpc_cidr_block  = "10.0.0.0/16"
+      vpc_cidr_block  = local.vpc_cidr_block
       dest_cidr_block = "0.0.0.0/0"
 
       subnets = {
@@ -107,5 +108,12 @@ module "test" {
 #####################################################
 
 output "network" {
-  value = module.test.network
+  value = local.vpc_cidr_block != "" ? module.test.network : {
+    vpc_id = ""
+    eip    = []
+    subnet_id_list = {
+      private = []
+      public  = []
+    }
+  }
 }

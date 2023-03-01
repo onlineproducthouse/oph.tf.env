@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/dph-database/config/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/service/config/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "dph-platform-terraform-remote-state-locks"
@@ -72,7 +72,6 @@ data "aws_caller_identity" "current" {}
 
 locals {
   image_registry_base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
-  image_registry_name     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
 
   paths = {
     build  = "/dph/config/build"
@@ -80,6 +79,17 @@ locals {
     local  = "/dph/config/local"
     test   = "/dph/config/test"
   }
+}
+
+module "config" {
+  source      = "../../../../../module/interface/aws/security/ssm/param_store"
+  client_info = var.client_info
+  parameters = concat(
+    local.build,
+    local.deploy,
+    local.local,
+    local.test,
+  )
 }
 
 #####################################################

@@ -103,17 +103,7 @@ data "terraform_remote_state" "config" {
 
   config = {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/dph-database/config/terraform.tfstate"
-    region = "eu-west-1"
-  }
-}
-
-data "terraform_remote_state" "test_env" {
-  backend = "s3"
-
-  config = {
-    bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/dph-database/test/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/service/config/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -153,8 +143,8 @@ module "ci" {
     deployment_targets = [{
       name = "test"
       vpc = {
-        id      = data.terraform_remote_state.test_env.outputs.network.vpc_id
-        subnets = data.terraform_remote_state.test_env.outputs.network.subnet_id_list.private
+        id      = data.terraform_remote_state.config.outputs.test_env.network.vpc_id
+        subnets = data.terraform_remote_state.config.outputs.test_env.network.subnet_id_list.private
       }
     }]
   }
