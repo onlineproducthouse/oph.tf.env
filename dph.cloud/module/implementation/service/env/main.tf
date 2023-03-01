@@ -93,6 +93,15 @@ module "content" {
   content     = var.content
 }
 
+module "api" {
+  source      = "./api"
+  client_info = var.client_info
+  cluster = {
+    enable_container_insights = false
+    name                      = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-cluster"
+  }
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -112,4 +121,8 @@ output "network" {
 
 output "content" {
   value = module.content
+}
+
+output "api" {
+  value = module.api
 }

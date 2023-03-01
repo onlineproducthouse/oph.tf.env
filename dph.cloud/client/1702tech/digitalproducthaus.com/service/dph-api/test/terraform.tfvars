@@ -3,6 +3,6 @@ client_info = {
   owner              = "1702tech"
   project_name       = "digitalproducthaus"
   project_short_name = "dph"
-  service_name       = "database"
+  service_name       = "api"
   environment_name   = "test"
 }
