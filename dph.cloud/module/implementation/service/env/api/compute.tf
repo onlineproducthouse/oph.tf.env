@@ -18,9 +18,9 @@ variable "compute" {
     })
 
     launch_configuration = object({
-      name                 = string
-      image_id             = string
-      instance_type        = string
+      name          = string
+      image_id      = string
+      instance_type = string
     })
   })
 
@@ -37,9 +37,9 @@ variable "compute" {
     }
 
     launch_configuration = {
-      name                 = "UnknownLC"
-      image_id             = ""
-      instance_type        = ""
+      name          = "UnknownLC"
+      image_id      = ""
+      instance_type = ""
     }
   }
 }
@@ -97,7 +97,7 @@ resource "aws_launch_configuration" "launch_config" {
   security_groups             = [aws_security_group.launch_config_sg[0].id]
   image_id                    = var.compute.launch_configuration.image_id
   instance_type               = var.compute.launch_configuration.instance_type
-  iam_instance_profile        = ""
+  iam_instance_profile        = aws_iam_instance_profile.ecs_instance_role.id
 
 
   lifecycle {
