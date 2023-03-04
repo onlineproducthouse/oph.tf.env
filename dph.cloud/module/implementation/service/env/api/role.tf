@@ -105,3 +105,15 @@ resource "aws_iam_role_policy_attachment" "container_service_attach" {
   role       = aws_iam_role.launch_config_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
+
+#####################################################
+#                                                   #
+#                       OUTPUT                      #
+#                                                   #
+#####################################################
+
+output "ecs_instance_role" {
+  value = {
+    id = aws_iam_instance_profile.ecs_instance_role.id
+  }
+}
