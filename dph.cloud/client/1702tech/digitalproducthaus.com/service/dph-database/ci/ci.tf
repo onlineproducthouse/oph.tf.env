@@ -120,21 +120,12 @@ locals {
     { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.load_environment_variables_key },
   ]
 
-  # aws_ssm_build_paths = [
-  #   data.terraform_remote_state.ci_build_database_ssm.outputs.path,
-  # ]
-
-  # aws_ssm_deploy_paths = [
-  #   data.terraform_remote_state.ci_deploy_database_ssm.outputs.path,
-  #   data.terraform_remote_state.runtime_test_database_ssm.outputs.path,
-  # ]
-
   deployment_targets = {
-    test = data.terraform_remote_state.config.outputs.api_test_env.network.vpc_id == "" ? [] : [{
+    test = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_cidr_block == "" ? [] : [{
       name = "test"
       vpc = {
-        id      = data.terraform_remote_state.config.outputs.api_test_env.network.vpc_id
-        subnets = data.terraform_remote_state.config.outputs.api_test_env.network.subnet_id_list.private
+        id      = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_id
+        subnets = data.terraform_remote_state.config.outputs.test_env.api.network.subnet_id_list.private
       }
     }]
   }
@@ -161,8 +152,8 @@ module "ci" {
 
   build_job = {
     buildspec     = "${local.dph_dev_tools_arn}${local.buildspec_key}"
-    cert_store_id = data.terraform_remote_state.config.outputs.api_test_env.content.store.id
-    cert_key      = data.terraform_remote_state.config.outputs.api_test_env.content.db_cert.key
+    cert_store_id = data.terraform_remote_state.config.outputs.test_env.content.store.id
+    cert_key      = data.terraform_remote_state.config.outputs.test_env.content.db_cert.key
 
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "build" },

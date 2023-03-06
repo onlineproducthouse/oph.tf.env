@@ -33,6 +33,6 @@ locals {
 #                                                   #
 #####################################################
 
-output "api_test_env" {
+output "test_env" {
   value = data.terraform_remote_state.api_test_env.outputs
 }
