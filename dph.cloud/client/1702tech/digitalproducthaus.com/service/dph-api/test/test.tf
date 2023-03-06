@@ -165,3 +165,22 @@ output "content" {
 output "api" {
   value = module.test.api
 }
+
+output "ecs" {
+  value = {
+    cluster_name = module.test.api.cluster.name
+
+    task_family   = "${var.client_info.project_short_name}-${var.client_info.service_name}"
+    task_role_arn = module.test.api.ecs_instance_role.id
+
+    service_name     = "${var.client_info.project_short_name}-${var.client_info.service_name}-service"
+    desired_count    = 1
+    target_group_arn = module.test.api.load_balancer.target_group.arn
+    log_url          = local.secrets.log_url
+
+    container_name               = "${var.client_info.project_short_name}-${var.client_info.service_name}"
+    container_cpu                = 600
+    container_memory_reservation = 400
+    container_port               = module.test.api.port
+  }
+}

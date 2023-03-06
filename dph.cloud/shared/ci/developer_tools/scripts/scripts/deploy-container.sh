@@ -162,6 +162,10 @@ echo '{
   "family": "'${TASK_FAMILY}'",
   "taskRoleArn": "'${TASK_ROLE_ARN}'",
   "executionRoleArn": "'${TASK_ROLE_ARN}'",
+  "networkMode": "bridge",
+  "requiresCompatibilities": [
+    "EC2"
+  ],
   "containerDefinitions": [
     {
       "name": "'${CONTAINER_NAME}'",
@@ -179,18 +183,16 @@ echo '{
       "logConfiguration": {
         "logDriver": "syslog",
         "options": {
-          "syslog-address": "'${PAPERTRAIL_URL}'"
+          "syslog-address": "'${LOG_URL}'"
         }
       },
-      "environment": [
-        { "name": "ENVIRONMENT_NAME", "value": "'${ENVIRONMENT_NAME}'" },
-        { "name": "AWS_REGION", "value": "'${AWS_REGION}'" }
+      "environmentFiles": [
+        {
+          "value": "arn:aws:s3:::'${ENV_FILE_STORE_LOCATION}'/'${ENV_FILE_NAME}'",
+          "type": "s3"
+        }
       ]
     }
-  ],
-  "networkMode": "bridge",
-  "requiresCompatibilities": [
-    "EC2"
   ]
 }' >${ECS_TASK_DEFINITION_TEMPLATE}
 

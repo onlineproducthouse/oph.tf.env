@@ -48,5 +48,9 @@ else
     echo "Total parameters retrieved from AWS SSM: $AWS_SSM_PARAMS_COUNT"
 
     echo "Done loading environment variables at path: $i"
+
+    echo "Uploading to S3"
+    aws s3 put-object --bucket $ENV_FILE_STORE_LOCATION --key $ENV_FILE_NAME --body "file://$ENV_FILE"
+    echo "Done uploading to S3"
   done
 fi
