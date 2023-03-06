@@ -82,7 +82,7 @@ resource "aws_iam_role" "launch_config_role" {
           Service : "ec2.amazonaws.com"
         },
         Effect : "Allow",
-        Sid : ""
+        Sid : "DPHEC2AssumedRole"
       }
     ]
   })

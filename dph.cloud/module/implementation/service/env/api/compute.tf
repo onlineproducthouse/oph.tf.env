@@ -6,12 +6,7 @@
 
 variable "compute" {
   type = object({
-    vpc = object({
-      id = string
-    })
-
     auto_scaling_group = object({
-      subnet_id_list    = list(string)
       min_instances     = number
       max_instances     = number
       desired_instances = number
@@ -25,15 +20,10 @@ variable "compute" {
   })
 
   default = {
-    vpc = {
-      id = ""
-    }
-
     auto_scaling_group = {
       desired_instances = 0
       max_instances     = 0
       min_instances     = 0
-      subnet_id_list    = []
     }
 
     launch_configuration = {
@@ -51,10 +41,10 @@ variable "compute" {
 #####################################################
 
 resource "aws_security_group" "launch_config_sg" {
-  count = var.compute.vpc.id == "" ? 0 : 1
+  count = length(aws_vpc.vpc) > 0 ? 1 : 0
 
   name   = "${var.compute.launch_configuration.name}-sg"
-  vpc_id = var.compute.vpc.id
+  vpc_id = aws_vpc.vpc[0].id
 
   lifecycle {
     create_before_destroy = false
@@ -69,7 +59,7 @@ resource "aws_security_group" "launch_config_sg" {
 }
 
 resource "aws_security_group_rule" "launch_config_sg_rule" {
-  count = var.compute.vpc.id == "" ? 0 : 1
+  count = length(aws_security_group.launch_config_sg) > 0 ? 1 : 0
 
   security_group_id = aws_security_group.launch_config_sg[0].id
   type              = "egress"
@@ -80,14 +70,14 @@ resource "aws_security_group_rule" "launch_config_sg_rule" {
 }
 
 resource "aws_security_group_rule" "launch_config_sg_ingress_rule" {
-  count = var.compute.vpc.id == "" ? 0 : 1
+  count = length(aws_security_group.launch_config_sg) > 0 ? 1 : 0
 
   security_group_id = aws_security_group.launch_config_sg[0].id
   type              = "ingress"
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"] # for this environment, investigate using VPN
-  from_port         = local.api.port
-  to_port           = local.api.port
+  from_port         = var.port
+  to_port           = var.port
 }
 
 data "template_file" "user_data" {
@@ -100,12 +90,12 @@ data "template_file" "user_data" {
 }
 
 resource "aws_launch_configuration" "launch_config" {
-  count = var.compute.vpc.id == "" ? 0 : 1
+  count = length(aws_security_group.launch_config_sg) > 0 ? 1 : 0
 
   name                        = var.compute.launch_configuration.name
   associate_public_ip_address = true
   user_data                   = data.template_file.user_data.rendered
-  security_groups             = aws_security_group.launch_config_sg
+  security_groups             = [aws_security_group.launch_config_sg[0].id]
   image_id                    = var.compute.launch_configuration.image_id
   instance_type               = var.compute.launch_configuration.instance_type
   iam_instance_profile        = aws_iam_instance_profile.ecs_instance_role.id
@@ -116,13 +106,13 @@ resource "aws_launch_configuration" "launch_config" {
   }
 }
 
-resource "aws_autoscaling_group" "auto_scaling_group" {
-  count = var.compute.vpc.id == "" ? 0 : 1
+resource "aws_autoscaling_group" "launch_config_auto_scaling_group" {
+  count = length(aws_launch_configuration.launch_config) > 0 ? 1 : 0
 
   name                 = "${var.compute.launch_configuration.name}-asg"
   health_check_type    = "ELB"
   launch_configuration = aws_launch_configuration.launch_config[0].id
-  vpc_zone_identifier  = var.compute.auto_scaling_group.subnet_id_list
+  vpc_zone_identifier  = module.private_subnet[0].id_list
   min_size             = var.compute.auto_scaling_group.min_instances
   max_size             = var.compute.auto_scaling_group.max_instances
   desired_capacity     = var.compute.auto_scaling_group.desired_instances
@@ -163,14 +153,16 @@ resource "aws_autoscaling_group" "auto_scaling_group" {
 #####################################################
 
 locals {
-  compute = var.compute.vpc.id == "" ? {
-    security_group_id      = ""
-    security_group_rule_id = ""
-    launch_config_id       = ""
+  compute = var.network.vpc_cidr_block == "" ? {
+    security_group_id              = ""
+    security_group_rule_id         = ""
+    security_group_ingress_rule_id = ""
+    launch_config_id               = ""
     } : {
-    security_group_id      = aws_security_group.launch_config_sg[0].id
-    security_group_rule_id = aws_security_group_rule.launch_config_sg_rule[0].id
-    launch_config_id       = aws_launch_configuration.launch_config[0].id
+    security_group_id              = aws_security_group.launch_config_sg[0].id
+    security_group_rule_id         = aws_security_group_rule.launch_config_sg_rule[0].id
+    security_group_ingress_rule_id = aws_security_group_rule.launch_config_sg_ingress_rule[0].id
+    launch_config_id               = aws_launch_configuration.launch_config[0].id
   }
 }
 

@@ -24,8 +24,16 @@ variable "client_info" {
   }
 }
 
-variable "env" {
+variable "content" {
   type = object({
+    db_cert_source_path = string
+  })
+}
+
+variable "api" {
+  type = object({
+    port = number
+
     network = object({
       vpc_cidr_block  = string
       dest_cidr_block = string
@@ -42,71 +50,27 @@ variable "env" {
         })
       })
     })
-  })
 
-  default = {
-    network = {
-      vpc_cidr_block  = ""
-      dest_cidr_block = "0.0.0.0/0"
+    compute = object({
+      auto_scaling_group = object({
+        min_instances     = number
+        max_instances     = number
+        desired_instances = number
+      })
 
-      subnets = {
-        private = {
-          availibility_zones = []
-          cidr_block         = []
-        }
-
-        public = {
-          availibility_zones = []
-          cidr_block         = []
-        }
-      }
-    }
-  }
-}
-
-variable "content" {
-  type = object({
-    db_cert_source_path = string
-  })
-}
-
-variable "compute" {
-  type = object({
-    auto_scaling_group = object({
-      min_instances     = number
-      max_instances     = number
-      desired_instances = number
-    })
-
-    launch_configuration = object({
-      image_id      = string
-      instance_type = string
-    })
-  })
-
-  default = {
-    auto_scaling_group = {
-      desired_instances = 0
-      max_instances     = 0
-      min_instances     = 0
-    }
-
-    launch_configuration = {
-      image_id      = ""
-      instance_type = ""
-    }
-  }
-}
-
-variable "networking" {
-  type = object({
-    domain_name_prefix = string
-
-    hosted_zone = object({
-      id = string
+      launch_configuration = object({
+        image_id      = string
+        instance_type = string
+      })
     })
 
     load_balancer = object({
+      domain_name_prefix = string
+
+      hosted_zone = object({
+        id = string
+      })
+
       listener = object({
         certificate = object({
           arn         = string
@@ -123,17 +87,6 @@ variable "networking" {
 #                                                   #
 #####################################################
 
-module "network" {
-  source = "./network"
-
-  count = var.env.network.vpc_cidr_block == "" ? 0 : 1
-
-  client_info     = var.client_info
-  vpc_cidr_block  = var.env.network.vpc_cidr_block
-  dest_cidr_block = var.env.network.dest_cidr_block
-  subnets         = var.env.network.subnets
-}
-
 module "content" {
   source      = "./content"
   client_info = var.client_info
@@ -141,40 +94,25 @@ module "content" {
 }
 
 module "api" {
-  source      = "./api"
+  source = "./api"
+
   client_info = var.client_info
+
+  port          = var.api.port
+  network       = var.api.network
+  load_balancer = var.api.load_balancer
+
   cluster = {
     enable_container_insights = false
     name                      = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-cluster"
   }
 
   compute = {
-    vpc = {
-      id = var.env.network.vpc_cidr_block == "" ? "" : module.network.vpc_id
-    }
-
-    auto_scaling_group = {
-      desired_instances = var.compute.auto_scaling_group.desired_instances
-      max_instances     = var.compute.auto_scaling_group.max_instances
-      min_instances     = var.compute.auto_scaling_group.min_instances
-      subnet_id_list    = var.env.network.vpc_cidr_block == "" ? [] : module.network[0].subnet_id_list.private
-    }
-
+    auto_scaling_group = var.api.compute.auto_scaling_group
     launch_configuration = {
       name          = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-lc"
-      image_id      = var.compute.launch_configuration.image_id
-      instance_type = var.compute.launch_configuration.instance_type
-    }
-  }
-
-  networking = {
-    domain_name_prefix = var.networking.domain_name_prefix
-    hosted_zone = {
-      id = var.networking.hosted_zone.id
-    }
-    load_balancer = {
-      subnet_id_list = var.env.network.vpc_cidr_block == "" ? [] : module.network[0].subnet_id_list.public
-      listener       = var.networking.load_balancer.listener
+      image_id      = var.api.compute.launch_configuration.image_id
+      instance_type = var.api.compute.launch_configuration.instance_type
     }
   }
 }
@@ -184,17 +122,6 @@ module "api" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
-
-output "network" {
-  value = var.env.network.vpc_cidr_block != "" ? module.network[0].network : {
-    vpc_id = ""
-    eip    = []
-    subnet_id_list = {
-      private = []
-      public  = []
-    }
-  }
-}
 
 output "content" {
   value = module.content

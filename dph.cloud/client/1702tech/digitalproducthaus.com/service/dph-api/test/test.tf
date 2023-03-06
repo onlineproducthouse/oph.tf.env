@@ -89,7 +89,7 @@ data "terraform_remote_state" "acm_certs" {
 }
 
 locals {
-  vpc_cidr_block     = "" // leave empty to disable else set to, e.g. 10.0.0.0/16
+  vpc_cidr_block     = "10.0.0.0/16" // leave empty to disable else set to, e.g. 10.0.0.0/16
   availibility_zones = ["eu-west-1b", "eu-west-1c"]
 }
 
@@ -98,7 +98,33 @@ locals {
     db_cert_source_path = "./content/db-cert-test.crt"
   }
 
-  env = {
+  api = {
+    port = 10000
+    compute = {
+      auto_scaling_group = {
+        desired_instances = 1
+        max_instances     = 1
+        min_instances     = 1
+      }
+      launch_configuration = {
+        image_id      = "ami-027078d981e5d4010"
+        instance_type = "t3a.micro"
+      }
+    }
+
+    load_balancer = {
+      domain_name_prefix = "${var.client_info.project_short_name}api"
+      hosted_zone = {
+        id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
+      }
+      listener = {
+        certificate = {
+          arn         = data.terraform_remote_state.acm_certs.outputs.test.cert_arn
+          domain_name = data.terraform_remote_state.acm_certs.outputs.test.cert_domain_name
+        }
+      }
+    }
+
     network = {
       vpc_cidr_block  = local.vpc_cidr_block
       dest_cidr_block = "0.0.0.0/0"
@@ -122,35 +148,8 @@ module "test" {
   source = "../../../../../../module/implementation/service/env"
 
   client_info = var.client_info
-  env         = local.env
   content     = local.content
-
-  compute = {
-    auto_scaling_group = {
-      desired_instances = 1
-      max_instances     = 1
-      min_instances     = 1
-    }
-    launch_configuration = {
-      image_id      = "ami-027078d981e5d4010"
-      instance_type = "t3a.micro"
-    }
-  }
-
-  networking = {
-    domain_name_prefix = "${var.client_info.project_short_name}api"
-    hosted_zone = {
-      id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
-    }
-    load_balancer = {
-      listener = {
-        certificate = {
-          arn         = data.terraform_remote_state.acm_certs.outputs.test.cert_arn
-          domain_name = data.terraform_remote_state.acm_certs.outputs.test.cert_domain_name
-        }
-      }
-    }
-  }
+  api         = local.api
 }
 
 #####################################################
@@ -158,10 +157,6 @@ module "test" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
-
-output "network" {
-  value = module.test.network
-}
 
 output "content" {
   value = module.test.content
