@@ -118,6 +118,8 @@ locals {
     { key = "BUILD_ARTEFACT_PATH", value = "**" },
     { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dph_dev_tools_store.outputs.id}" },
     { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.load_environment_variables_key },
+    { key = "ENV_FILE_STORE_LOCATION", value = data.terraform_remote_state.config.outputs.test_env.content.store.id },
+    { key = "ENV_FILE_NAME", value = "${var.client_info.project_short_name}-${var.client_info.service_name}.env" },
   ]
 
   deployment_targets = {
