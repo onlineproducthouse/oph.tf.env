@@ -68,6 +68,26 @@ variable "client_info" {
 #                                                   #
 #####################################################
 
+data "terraform_remote_state" "networking" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "client/1702tech/digitalproducthaus.com/global/networking/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "acm_certs" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "client/1702tech/digitalproducthaus.com/global/ssl/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
   vpc_cidr_block     = "" // leave empty to disable else set to, e.g. 10.0.0.0/16
   availibility_zones = ["eu-west-1b", "eu-west-1c"]
@@ -112,8 +132,23 @@ module "test" {
       min_instances     = 1
     }
     launch_configuration = {
-      image_id             = "ami-027078d981e5d4010"
-      instance_type        = "t3a.micro"
+      image_id      = "ami-027078d981e5d4010"
+      instance_type = "t3a.micro"
+    }
+  }
+
+  networking = {
+    domain_name_prefix = "${var.client_info.project_short_name}api"
+    hosted_zone = {
+      id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
+    }
+    load_balancer = {
+      listener = {
+        certificate = {
+          arn         = data.terraform_remote_state.acm_certs.outputs.test.cert_arn
+          domain_name = data.terraform_remote_state.acm_certs.outputs.test.cert_domain_name
+        }
+      }
     }
   }
 }

@@ -98,6 +98,25 @@ variable "compute" {
   }
 }
 
+variable "networking" {
+  type = object({
+    domain_name_prefix = string
+
+    hosted_zone = object({
+      id = string
+    })
+
+    load_balancer = object({
+      listener = object({
+        certificate = object({
+          arn         = string
+          domain_name = string
+        })
+      })
+    })
+  })
+}
+
 #####################################################
 #                                                   #
 #                   CONFIGURATION                   #
@@ -145,6 +164,17 @@ module "api" {
       name          = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-lc"
       image_id      = var.compute.launch_configuration.image_id
       instance_type = var.compute.launch_configuration.instance_type
+    }
+  }
+
+  networking = {
+    domain_name_prefix = var.networking.domain_name_prefix
+    hosted_zone = {
+      id = var.networking.hosted_zone.id
+    }
+    load_balancer = {
+      subnet_id_list = var.env.network.vpc_cidr_block == "" ? [] : module.network[0].subnet_id_list.public
+      listener       = var.networking.load_balancer.listener
     }
   }
 }

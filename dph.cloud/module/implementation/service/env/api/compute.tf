@@ -79,6 +79,17 @@ resource "aws_security_group_rule" "launch_config_sg_rule" {
   to_port           = 0
 }
 
+resource "aws_security_group_rule" "launch_config_sg_ingress_rule" {
+  count = var.compute.vpc.id == "" ? 0 : 1
+
+  security_group_id = aws_security_group.launch_config_sg[0].id
+  type              = "ingress"
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"] # for this environment, investigate using VPN
+  from_port         = local.api.port
+  to_port           = local.api.port
+}
+
 data "template_file" "user_data" {
   template = file("${path.module}/content/user_data.sh")
 
@@ -94,7 +105,7 @@ resource "aws_launch_configuration" "launch_config" {
   name                        = var.compute.launch_configuration.name
   associate_public_ip_address = true
   user_data                   = data.template_file.user_data.rendered
-  security_groups             = [aws_security_group.launch_config_sg[0].id]
+  security_groups             = aws_security_group.launch_config_sg
   image_id                    = var.compute.launch_configuration.image_id
   instance_type               = var.compute.launch_configuration.instance_type
   iam_instance_profile        = aws_iam_instance_profile.ecs_instance_role.id
