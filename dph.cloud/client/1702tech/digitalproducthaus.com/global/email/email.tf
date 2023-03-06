@@ -99,3 +99,7 @@ module "sender_auth" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
+
+output "do_not_reply" {
+  value = "do-not-reply@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
+}
