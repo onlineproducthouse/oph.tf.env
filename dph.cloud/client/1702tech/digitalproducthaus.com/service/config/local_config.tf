@@ -12,6 +12,8 @@ locals {
   local = [
     { id = "local_env_name", path = local.paths.local, key = "ENVIRONMENT_NAME", value = "local" },
     { id = "local_db_protocol", path = local.paths.local, key = "DB_PROTOCOL", value = local.secrets.local.db_protocol },
+    { id = "local_db_super_username", path = local.paths.local, key = "DB_SUPER_USERNAME", value = local.secrets.local.db_super_username },
+    { id = "local_db_super_pwd", path = local.paths.local, key = "DB_SUPER_PASSWORD", value = local.secrets.local.db_super_password },
     { id = "local_db_username", path = local.paths.local, key = "DB_USERNAME", value = local.secrets.local.db_username },
     { id = "local_db_pwd", path = local.paths.local, key = "DB_PASSWORD", value = local.secrets.local.db_password },
     { id = "local_db_host", path = local.paths.local, key = "DB_HOST", value = local.secrets.local.db_host },
