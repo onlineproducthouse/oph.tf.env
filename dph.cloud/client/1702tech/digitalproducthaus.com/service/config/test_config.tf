@@ -33,6 +33,7 @@ locals {
     { id = "test_redis_port", path = local.paths.test, key = "REDIS_PORT", value = "6379" },
 
     { id = "test_api_host", path = local.paths.test, key = "API_HOST", value = "127.0.0.1" },
+    { id = "test_api_port", path = local.paths.test, key = "API_PORT", value = "7890" },
     { id = "test_api_keys", path = local.paths.test, key = "API_KEYS", value = join(",", [
       random_uuid.test_www_api_key_v1.result,
       random_uuid.test_portal_api_key_v1.result,

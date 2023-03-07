@@ -94,6 +94,7 @@ locals {
 
 locals {
   global = [
+    { id = "global_project_name", path = local.paths.global, key = "PROJECT_NAME", value = var.client_info.project_name },
     { id = "global_do_not_reply", path = local.paths.global, key = "NO_REPLY_EMAIL_ADDRESS", value = data.terraform_remote_state.email.outputs.do_not_reply },
     { id = "global_dkr_repo", path = local.paths.global, key = "IMAGE_REGISTRY_BASE_URL", value = local.image_registry_base_url },
 

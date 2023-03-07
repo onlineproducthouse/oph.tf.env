@@ -25,6 +25,7 @@ locals {
     { id = "local_redis_port", path = local.paths.local, key = "REDIS_PORT", value = "6379" },
 
     { id = "local_api_host", path = local.paths.local, key = "API_HOST", value = "127.0.0.1" },
+    { id = "local_api_port", path = local.paths.local, key = "API_PORT", value = "7890" },
     { id = "local_api_keys", path = local.paths.local, key = "API_KEYS", value = join(",", [
       random_uuid.local_www_api_key_v1.result,
       random_uuid.local_portal_api_key_v1.result,
