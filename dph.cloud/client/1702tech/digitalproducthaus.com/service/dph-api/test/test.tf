@@ -113,14 +113,14 @@ locals {
     }
 
     load_balancer = {
-      domain_name_prefix = "${var.client_info.project_short_name}api"
+      domain_name_prefix = var.client_info.project_short_name
       hosted_zone = {
         id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
       }
       listener = {
         certificate = {
-          arn         = data.terraform_remote_state.acm_certs.outputs.test.cert_arn
-          domain_name = data.terraform_remote_state.acm_certs.outputs.test.cert_domain_name
+          arn         = data.terraform_remote_state.acm_certs.outputs.test.api.cert_arn
+          domain_name = data.terraform_remote_state.acm_certs.outputs.test.api.cert_domain_name
         }
       }
     }
@@ -142,6 +142,68 @@ locals {
       }
     }
   }
+
+  web = [{
+    name = "sb"
+
+    host = {
+      error_page = "index.html"
+      index_page = "index.html"
+    }
+
+    cdn = {
+      hosted_zone_id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
+      certificate = {
+        arn         = data.terraform_remote_state.acm_certs.outputs.test.web.cert_arn
+        domain_name = "sb.${data.terraform_remote_state.acm_certs.outputs.test.web.cert_domain_name}"
+      }
+    }
+    }, {
+    name = "www"
+
+    host = {
+      error_page = "index.html"
+      index_page = "index.html"
+    }
+
+    cdn = {
+      hosted_zone_id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
+      certificate = {
+        arn         = data.terraform_remote_state.acm_certs.outputs.test.web.cert_arn
+        domain_name = "www.${data.terraform_remote_state.acm_certs.outputs.test.web.cert_domain_name}"
+      }
+    }
+    }, {
+    name = "portal"
+
+    host = {
+      error_page = "index.html"
+      index_page = "index.html"
+    }
+
+    cdn = {
+      hosted_zone_id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
+      certificate = {
+        arn         = data.terraform_remote_state.acm_certs.outputs.test.web.cert_arn
+        domain_name = "portal.${data.terraform_remote_state.acm_certs.outputs.test.web.cert_domain_name}"
+      }
+    }
+    }, {
+    name = "console"
+
+    host = {
+      error_page = "index.html"
+      index_page = "index.html"
+    }
+
+    cdn = {
+      hosted_zone_id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
+      certificate = {
+        arn         = data.terraform_remote_state.acm_certs.outputs.test.web.cert_arn
+        domain_name = "console.${data.terraform_remote_state.acm_certs.outputs.test.web.cert_domain_name}"
+      }
+    }
+  }]
 }
 
 module "test" {
@@ -150,6 +212,7 @@ module "test" {
   client_info = var.client_info
   content     = local.content
   api         = local.api
+  web         = local.web
 }
 
 #####################################################
@@ -164,6 +227,10 @@ output "content" {
 
 output "api" {
   value = module.test.api
+}
+
+output "web" {
+  value = module.test.web
 }
 
 output "ecs" {

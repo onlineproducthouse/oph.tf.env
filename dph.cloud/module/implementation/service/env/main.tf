@@ -81,6 +81,27 @@ variable "api" {
   })
 }
 
+variable "web" {
+  type = list(object({
+    name = string
+
+    host = object({
+      index_page = string
+      error_page = string
+    })
+
+    cdn = object({
+      hosted_zone_id = string
+      certificate = object({
+        domain_name = string
+        arn         = string
+      })
+    })
+  }))
+
+  default = []
+}
+
 #####################################################
 #                                                   #
 #                   CONFIGURATION                   #
@@ -117,6 +138,18 @@ module "api" {
   }
 }
 
+module "web" {
+  source = "./web"
+
+  for_each = {
+    for index, app in var.web : app.name => app
+  }
+
+  client_info = var.client_info
+  host        = each.value.host
+  cdn         = each.value.cdn
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -129,4 +162,8 @@ output "content" {
 
 output "api" {
   value = module.api
+}
+
+output "web" {
+  value = module.web
 }
