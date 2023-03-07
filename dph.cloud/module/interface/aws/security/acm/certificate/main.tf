@@ -37,6 +37,10 @@ variable "certificate" {
 #                                                   #
 #####################################################
 
+provider "aws" {
+  region = var.client_info.region
+}
+
 resource "aws_acm_certificate" "domain_certificate" {
   domain_name               = var.certificate.domain_name
   subject_alternative_names = ["*.${var.certificate.domain_name}"]
