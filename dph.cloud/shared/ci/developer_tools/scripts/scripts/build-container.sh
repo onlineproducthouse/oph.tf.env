@@ -80,27 +80,18 @@ echo "ECR: Authenticated"
 
 # Build docker image
 echo "Build docker image"
-docker build --force-rm --tag $IMAGE_TAG .
+docker buildx create --use --name multiarch
+docker buildx build --push --platform=linux/arm64,linux/amd64 --force-rm --tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG .
 echo "Docker image successfully built: $IMAGE_TAG"
 
-# Tag docker image - for build hash
-echo 'Tagging docker image for ECR registry'
-docker tag $IMAGE_TAG $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
-echo "Docker build hash image successfully tagged as: $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG"
+# # Tag docker image
+# echo 'Tagging docker image for ECR registry'
+# docker tag $IMAGE_TAG $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
+# echo "Docker build hash image successfully tagged as: $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG"
 
-# Push docker image - for build hash
-echo 'Pushing docker image to ECR registry'
-docker push $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
-echo 'Docker build hash image successfully pushed to ECR registry'
-
-# Tag docker image - latest
-echo 'Tagging docker image for ECR registry'
-docker tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
-echo "Docker latest image successfully tagged as: $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG"
-
-# Push docker image - latest
-echo 'Pushing docker image to ECR registry'
-docker push $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
-echo 'Docker latest image successfully pushed to ECR registry'
+# # Push docker image
+# echo 'Pushing docker image to ECR registry'
+# docker push $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
+# echo 'Docker build hash image successfully pushed to ECR registry'
 
 echo 'Done.'
