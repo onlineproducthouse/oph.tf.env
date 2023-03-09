@@ -172,7 +172,10 @@ module "ci" {
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "migrate" },
       { key = "PROJECT_TYPE", value = "db" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = "${data.terraform_remote_state.config.outputs.paths.test};${data.terraform_remote_state.config.outputs.paths.deploy}" },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
+        data.terraform_remote_state.config.outputs.paths.test,
+        data.terraform_remote_state.config.outputs.paths.deploy
+      ]) },
       { key = "WORKING_DIR", value = "./dph.db.dph" },
     ])
   }
