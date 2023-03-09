@@ -68,6 +68,6 @@ source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_
 
 yarn
 
-yarn build
+source $ENV_FILE && yarn build
 
 echo "Done."

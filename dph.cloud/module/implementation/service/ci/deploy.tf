@@ -34,7 +34,7 @@ module "deploy_job" {
 
   client_info = var.client_info
   job = {
-    name            = "deploy-${var.client_info.project_short_name}-${var.client_info.service_name}"
+    name            = "deploy-${var.client_info.project_short_name}-${var.client_info.service_name}-${each.value.name}"
     service_role    = aws_iam_role.ci_role.arn
     is_docker_build = var.ci_job.is_docker_build
     build_timeout   = var.ci_job.build_timeout
@@ -43,7 +43,7 @@ module "deploy_job" {
     environment_variables = concat(var.deploy_job.environment_variables, [
       { key = "ENVIRONMENT_NAME", value = each.value.name },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
-      { key = "IMAGE_REPOSITORY_NAME", value = module.registry[0].name },
+      { key = "IMAGE_REPOSITORY_NAME", value = length(module.registry) <= 0 ? "" : module.registry[0].name },
     ])
 
     vpc = {

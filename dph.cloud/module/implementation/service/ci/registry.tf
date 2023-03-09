@@ -31,6 +31,6 @@ module "registry" {
 #                                                   #
 #####################################################
 
-output "registry" {
-  value = module.registry[0]
-}
+# output "registry" {
+#   value = module.registry[0]
+# }

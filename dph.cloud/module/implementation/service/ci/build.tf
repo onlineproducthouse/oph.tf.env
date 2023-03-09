@@ -46,7 +46,7 @@ module "build_job" {
       { key = "CERT_STORE", value = "s3://${var.build_job.cert_store_id}" },
       { key = "CERT_NAME", value = var.build_job.cert_key },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
-      { key = "IMAGE_REPOSITORY_NAME", value = module.registry[0].name },
+      { key = "IMAGE_REPOSITORY_NAME", value = length(module.registry) <= 0 ? "" : module.registry[0].name },
     ])
 
     vpc = {
