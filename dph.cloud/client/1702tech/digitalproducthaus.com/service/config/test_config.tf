@@ -14,9 +14,7 @@ data "terraform_remote_state" "api_test_env" {
   }
 }
 
-resource "random_uuid" "test_www_api_key_v1" {}
-resource "random_uuid" "test_portal_api_key_v1" {}
-resource "random_uuid" "test_console_api_key_v1" {}
+resource "random_uuid" "test_api_key_v1" {}
 
 locals {
   test = [
@@ -32,12 +30,10 @@ locals {
     { id = "test_redis_host", path = local.paths.test, key = "REDIS_HOST", value = "127.0.0.1" },
     { id = "test_redis_port", path = local.paths.test, key = "REDIS_PORT", value = "6379" },
 
-    { id = "test_api_host", path = local.paths.test, key = "API_HOST", value = "127.0.0.1" },
-    { id = "test_api_port", path = local.paths.test, key = "API_PORT", value = "7890" },
+    { id = "test_api_host", path = local.paths.test, key = "API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.load_balancer.domain_name },
+    { id = "test_api_port", path = local.paths.test, key = "API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.port },
     { id = "test_api_keys", path = local.paths.test, key = "API_KEYS", value = join(",", [
-      random_uuid.test_www_api_key_v1.result,
-      random_uuid.test_portal_api_key_v1.result,
-      random_uuid.test_console_api_key_v1.result,
+      random_uuid.test_api_key_v1.result,
     ]) },
 
     { id = "test_sendgrid_api_key", path = local.paths.test, key = "SENDGRID_API_KEY", value = local.secrets.test.sendgrid_api_key },
@@ -52,9 +48,16 @@ locals {
 
     { id = "test_run_swagger", path = local.paths.test, key = "RUN_SWAGGER", value = "true" },
 
-    { id = "test_www_app_url", path = local.paths.test, key = "WWW_APP_URL", value = "http://127.0.0.1:3000" },
-    { id = "test_portal_app_url", path = local.paths.test, key = "PORTAL_APP_URL", value = "http://127.0.0.1:3001" },
-    { id = "test_console_app_url", path = local.paths.test, key = "CONSOLE_APP_URL", value = "http://127.0.0.1:3002" },
+    { id = "test_www_app_url", path = local.paths.test, key = "WWW_APP_URL", value = data.terraform_remote_state.api_test_env.outputs.web.www.host.id },
+    { id = "test_portal_app_url", path = local.paths.test, key = "PORTAL_APP_URL", value = data.terraform_remote_state.api_test_env.outputs.web.portal.host.id },
+    { id = "test_console_app_url", path = local.paths.test, key = "CONSOLE_APP_URL", value = data.terraform_remote_state.api_test_env.outputs.web.console.host.id },
+
+    { id = "test_client_api_key", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_KEY", value = random_uuid.test_api_key_v1.result },
+    { id = "test_client_api_protocol", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PROTOCOL", value = "https" },
+    { id = "test_client_ws_api_protocol", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_WS_API_PROTOCOL", value = "ws" },
+    { id = "test_client_api_host", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.load_balancer.domain_name },
+    { id = "test_client_api_port", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.port },
+    { id = "test_client_api_base_path", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_BASE_PATH", value = "/api/v1" },
   ]
 }
 

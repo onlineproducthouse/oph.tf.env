@@ -4,9 +4,14 @@
 #                                                   #
 #####################################################
 
-resource "random_uuid" "local_www_api_key_v1" {}
-resource "random_uuid" "local_portal_api_key_v1" {}
-resource "random_uuid" "local_console_api_key_v1" {}
+resource "random_uuid" "local_api_key_v1" {}
+
+locals {
+  local_api = {
+    host = "127.0.0.1"
+    port = "7890"
+  }
+}
 
 locals {
   local = [
@@ -24,12 +29,10 @@ locals {
     { id = "local_redis_host", path = local.paths.local, key = "REDIS_HOST", value = "127.0.0.1" },
     { id = "local_redis_port", path = local.paths.local, key = "REDIS_PORT", value = "6379" },
 
-    { id = "local_api_host", path = local.paths.local, key = "API_HOST", value = "127.0.0.1" },
-    { id = "local_api_port", path = local.paths.local, key = "API_PORT", value = "7890" },
+    { id = "local_api_host", path = local.paths.local, key = "API_HOST", value = local.local_api.host },
+    { id = "local_api_port", path = local.paths.local, key = "API_PORT", value = local.local_api.port },
     { id = "local_api_keys", path = local.paths.local, key = "API_KEYS", value = join(",", [
-      random_uuid.local_www_api_key_v1.result,
-      random_uuid.local_portal_api_key_v1.result,
-      random_uuid.local_console_api_key_v1.result,
+      random_uuid.local_api_key_v1.result,
     ]) },
 
     { id = "local_sendgrid_api_key", path = local.paths.local, key = "SENDGRID_API_KEY", value = local.secrets.local.sendgrid_api_key },
@@ -47,5 +50,12 @@ locals {
     { id = "local_www_app_url", path = local.paths.local, key = "WWW_APP_URL", value = "http://127.0.0.1:3000" },
     { id = "local_portal_app_url", path = local.paths.local, key = "PORTAL_APP_URL", value = "http://127.0.0.1:3001" },
     { id = "local_console_app_url", path = local.paths.local, key = "CONSOLE_APP_URL", value = "http://127.0.0.1:3002" },
+
+    { id = "local_client_api_key", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_API_KEY", value = random_uuid.local_api_key_v1.result },
+    { id = "local_client_api_protocol", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_API_PROTOCOL", value = "http" },
+    { id = "local_client_ws_api_protocol", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_WS_API_PROTOCOL", value = "ws" },
+    { id = "local_client_api_host", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_API_HOST", value = local.local_api.host },
+    { id = "local_client_api_port", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_API_PORT", value = local.local_api.port },
+    { id = "local_client_api_base_path", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_API_BASE_PATH", value = "/api/v1" },
   ]
 }
