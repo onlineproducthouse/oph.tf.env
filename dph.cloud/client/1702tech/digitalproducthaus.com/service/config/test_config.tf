@@ -26,9 +26,9 @@ locals {
     { id = "test_db_port", path = local.paths.test, key = "DB_PORT", value = local.secrets.test.db_port },
     { id = "test_db_name", path = local.paths.test, key = "DB_NAME", value = local.secrets.test.db_name },
 
-    { id = "test_redis_connection_string", path = local.paths.test, key = "REDIS_CONNECTION_STRING", value = "redis://127.0.0.1:6379" },
-    { id = "test_redis_host", path = local.paths.test, key = "REDIS_HOST", value = "127.0.0.1" },
-    { id = "test_redis_port", path = local.paths.test, key = "REDIS_PORT", value = "6379" },
+    { id = "test_redis_connection_string", path = local.paths.test, key = "REDIS_CONNECTION_STRING", value = local.secrets.test.redis_connection_string },
+    { id = "test_redis_host", path = local.paths.test, key = "REDIS_HOST", value = local.secrets.test.redis_host },
+    { id = "test_redis_port", path = local.paths.test, key = "REDIS_PORT", value = local.secrets.test.redis_port },
 
     { id = "test_api_host", path = local.paths.test, key = "API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.load_balancer.domain_name },
     { id = "test_api_port", path = local.paths.test, key = "API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.port },
