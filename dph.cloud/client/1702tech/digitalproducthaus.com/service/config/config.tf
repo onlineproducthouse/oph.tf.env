@@ -80,8 +80,19 @@ data "terraform_remote_state" "email" {
   }
 }
 
+data "terraform_remote_state" "networking" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "client/1702tech/digitalproducthaus.com/global/networking/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
-  image_registry_base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
+  image_registry_base_url    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
+  test_user_email_addr_templ = "test-user@${data.terraform_remote_state.networking.outputs.dns.domain_name}"
 
   paths = {
     build  = "/dph/config/build"
@@ -112,6 +123,12 @@ locals {
 
     { id = "global_otp_length", path = local.paths.global, key = "OTP_LENGTH", value = "6" },
     { id = "global_otp_time_to_live_in_minutes", path = local.paths.global, key = "OTP_TIME_TO_LIVE_IN_MINUTES", value = "5" },
+
+    { id = "global_test_user_email_addr_first", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_FIRST", value = "first.${local.test_user_email_addr_templ}" },
+    { id = "global_test_user_email_addr_second", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_SECOND", value = "second.${local.test_user_email_addr_templ}" },
+    { id = "global_test_user_email_addr_third", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_THIRD", value = "third.${local.test_user_email_addr_templ}" },
+    { id = "global_test_user_email_addr_fourth", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_FOURTH", value = "fourth.${local.test_user_email_addr_templ}" },
+    { id = "global_test_user_pwd", path = local.paths.global, key = "TEST_USER_PWD", value = local.secrets.global.test_user_password },
   ]
 }
 
