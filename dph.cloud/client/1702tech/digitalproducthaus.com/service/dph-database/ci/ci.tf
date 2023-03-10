@@ -173,6 +173,7 @@ module "ci" {
       { key = "CI_ACTION", value = "migrate" },
       { key = "PROJECT_TYPE", value = "db" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
+        data.terraform_remote_state.config.outputs.paths.global,
         data.terraform_remote_state.config.outputs.paths.test,
         data.terraform_remote_state.config.outputs.paths.deploy
       ]) },
