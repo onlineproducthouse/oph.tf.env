@@ -15,7 +15,7 @@ set -euo pipefail
 AWS_REGION=$1
 AWS_SSM_PARAMETER_PATHS=$2 # e.g. "path1;path2;..."
 WORKING_DIR=$3
-ENV_FILE="$WORKING_DIR/.env"
+ENV_FILE="$(pwd)/.env"
 
 if [[ "$AWS_SSM_PARAMETER_PATHS" == "-1" ]]; then
   echo "AWS_SSM_PARAMETER_PATHS variable not set"
@@ -48,9 +48,9 @@ else
     echo "Total parameters retrieved from AWS SSM: $AWS_SSM_PARAMS_COUNT"
 
     echo "Done loading environment variables at path: $i"
-
-    echo "Uploading to S3"
-    aws s3 put-object --bucket $ENV_FILE_STORE_LOCATION --key $ENV_FILE_NAME --body "file://$ENV_FILE"
-    echo "Done uploading to S3"
   done
+
+  echo "Uploading to S3"
+  aws s3 cp $ENV_FILE "s3://$ENV_FILE_STORE_LOCATION/$ENV_FILE_NAME"
+  echo "Done uploading to S3"
 fi
