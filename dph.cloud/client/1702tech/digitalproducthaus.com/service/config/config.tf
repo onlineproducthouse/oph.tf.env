@@ -129,6 +129,7 @@ locals {
     { id = "global_test_user_email_addr_third", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_THIRD", value = "third.${local.test_user_email_addr_templ}" },
     { id = "global_test_user_email_addr_fourth", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_FOURTH", value = "fourth.${local.test_user_email_addr_templ}" },
     { id = "global_test_user_pwd", path = local.paths.global, key = "TEST_USER_PWD", value = local.secrets.global.test_user_password },
+    { id = "global_test_user_pwd_hash", path = local.paths.global, key = "TEST_USER_PWD_HASH", value = local.secrets.global.test_user_password_hash },
   ]
 }
 
