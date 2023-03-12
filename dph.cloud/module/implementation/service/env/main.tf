@@ -35,6 +35,7 @@ variable "api" {
     port = number
 
     network = object({
+      vpc_in_use      = bool
       vpc_cidr_block  = string
       dest_cidr_block = string
 

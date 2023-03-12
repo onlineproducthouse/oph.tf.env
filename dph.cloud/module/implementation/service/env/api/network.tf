@@ -6,6 +6,7 @@
 
 variable "network" {
   type = object({
+    vpc_in_use      = bool
     vpc_cidr_block  = string
     dest_cidr_block = string
 
@@ -23,6 +24,7 @@ variable "network" {
   })
 
   default = {
+    vpc_in_use      = false
     vpc_cidr_block  = ""
     dest_cidr_block = "0.0.0.0/0"
     subnets = {
@@ -59,7 +61,7 @@ resource "aws_vpc" "vpc" {
 }
 
 resource "aws_internet_gateway" "igw" {
-  count = length(aws_vpc.vpc) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   vpc_id = aws_vpc.vpc[0].id
 
@@ -74,7 +76,7 @@ resource "aws_internet_gateway" "igw" {
 module "private_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  count = var.network.vpc_cidr_block == "" ? 0 : 1
+  count = var.network.vpc_in_use == false ? 0 : 1
 
   client_info = var.client_info
 
@@ -86,7 +88,7 @@ module "private_subnet" {
 module "public_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  count = var.network.vpc_cidr_block == "" ? 0 : 1
+  count = var.network.vpc_in_use == false ? 0 : 1
 
   client_info = var.client_info
 
@@ -173,9 +175,9 @@ module "private_route" {
 #                                                   #
 #####################################################
 
-output "network" {
-  value = var.network.vpc_cidr_block == "" ? {
-    vpc_cidr_block = var.network.vpc_cidr_block
+locals {
+  network = var.network.vpc_in_use == false ? {
+    vpc_cidr_block = ""
     vpc_id         = ""
     eip            = []
     subnet_id_list = {
@@ -191,4 +193,8 @@ output "network" {
       public  = module.public_subnet[0].id_list
     }
   }
+}
+
+output "network" {
+  value = local.network
 }

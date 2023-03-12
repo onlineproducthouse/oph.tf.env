@@ -103,7 +103,7 @@ data "terraform_remote_state" "config" {
 
   config = {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/config/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/global/config/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -178,7 +178,7 @@ module "ci" {
       { key = "WORKING_DIR", value = "./dph.client.tests/dph.client.tests.ui.storybook" },
       { key = "CF_INVALDIATE_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.cloudfront_invalidate_key },
       { key = "BUILD_ARTEFACT_PATH", value = "storybook-static" },
-      { key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.config.outputs.test_env.web.sb.host.id },
+      { key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.config.outputs.test_env.web.storybook.host.id },
     ])
   }
 
@@ -195,7 +195,3 @@ module "ci" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
-
-output "ci" {
-  value = module.ci
-}

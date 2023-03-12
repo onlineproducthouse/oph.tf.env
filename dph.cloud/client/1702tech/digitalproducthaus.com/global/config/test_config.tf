@@ -18,7 +18,7 @@ resource "random_uuid" "test_api_key_v1" {}
 
 locals {
   test = [
-    { id = "test_env_name", path = local.paths.test, key = "ENVIRONMENT_NAME", value = "local" },
+    { id = "test_env_name", path = local.paths.test, key = "ENVIRONMENT_NAME", value = "test" },
     { id = "test_db_protocol", path = local.paths.test, key = "DB_PROTOCOL", value = local.secrets.test.db_protocol },
     { id = "test_db_username", path = local.paths.test, key = "DB_USERNAME", value = local.secrets.test.db_username },
     { id = "test_db_pwd", path = local.paths.test, key = "DB_PASSWORD", value = local.secrets.test.db_password },

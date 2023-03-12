@@ -124,6 +124,14 @@ module "migrate_db" {
   source_path = "./scripts/migrate-db.sh"
 }
 
+module "product_platform_state" {
+  source = "../../../../module/interface/aws/storage/s3/bucket/object"
+
+  bucket_id   = data.terraform_remote_state.developer_tools.outputs.id
+  key         = "/dph/scripts/product.platform.state.sh"
+  source_path = "./scripts/product.platform.state.sh"
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #

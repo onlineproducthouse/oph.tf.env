@@ -34,10 +34,10 @@ locals {
 #####################################################
 
 resource "aws_security_group" "load_balancer_sg" {
-  count = length(aws_vpc.vpc) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == false ? 0 : 1
 
   name   = "${var.compute.launch_configuration.name}-lb-sg"
-  vpc_id = aws_vpc.vpc[0].id
+  vpc_id = local.network.vpc_id
 
   lifecycle {
     create_before_destroy = false
@@ -91,11 +91,11 @@ resource "aws_lb" "load_balancer" {
 }
 
 resource "aws_lb_target_group" "load_balancer_target_group" {
-  count = length(aws_vpc.vpc) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == false ? 0 : 1
 
   name        = "${var.compute.launch_configuration.name}-lb-tg"
   target_type = "instance"
-  vpc_id      = aws_vpc.vpc[0].id
+  vpc_id      = local.network.vpc_id
 
   protocol = "HTTP"
   port     = var.port
@@ -162,7 +162,7 @@ resource "aws_route53_record" "record_with_alias" {
 output "load_balancer" {
   value = {
     domain_name = local.load_balancer.full_domain_name
-    target_group = length(aws_vpc.vpc) > 0 ? {
+    target_group = var.network.vpc_in_use == true ? {
       arn = aws_lb_target_group.load_balancer_target_group[0].arn
       } : {
       arn = ""

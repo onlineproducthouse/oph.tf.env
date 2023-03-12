@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/config/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/global/config/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "dph-platform-terraform-remote-state-locks"
@@ -57,8 +57,8 @@ variable "client_info" {
     owner              = ""
     project_name       = ""
     project_short_name = ""
-    service_name       = ""
-    environment_name   = ""
+    service_name       = "platform"
+    environment_name   = "global"
   }
 }
 
@@ -133,8 +133,10 @@ locals {
 }
 
 module "config" {
-  source      = "../../../../../module/interface/aws/security/ssm/param_store"
+  source = "../../../../../module/interface/aws/security/ssm/param_store"
+
   client_info = var.client_info
+
   parameters = concat(
     local.build,
     local.deploy,

@@ -42,6 +42,16 @@ provider "aws" {
 #                                                   #
 #####################################################
 
+variable "vpc_in_use" {
+  type    = bool
+  default = false
+}
+
+variable "vpc_cidr_block" {
+  type    = string
+  default = "" // leave empty to disable else set to, e.g. 10.0.0.0/16
+}
+
 variable "client_info" {
   type = object({
     region             = string
@@ -89,7 +99,8 @@ data "terraform_remote_state" "acm_certs" {
 }
 
 locals {
-  vpc_cidr_block     = "10.0.0.0/16" // leave empty to disable else set to, e.g. 10.0.0.0/16
+  vpc_in_use         = var.vpc_in_use
+  vpc_cidr_block     = var.vpc_cidr_block
   availibility_zones = ["eu-west-1b", "eu-west-1c"]
 }
 
@@ -126,6 +137,7 @@ locals {
     }
 
     network = {
+      vpc_in_use      = local.vpc_in_use
       vpc_cidr_block  = local.vpc_cidr_block
       dest_cidr_block = "0.0.0.0/0"
 
@@ -144,7 +156,7 @@ locals {
   }
 
   web = [{
-    name = "sb"
+    name = "storybook"
 
     host = {
       error_page = "index.html"
@@ -155,7 +167,7 @@ locals {
       hosted_zone_id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
       certificate = {
         arn         = data.terraform_remote_state.acm_certs.outputs.test.web.cert_arn
-        domain_name = "sb.${data.terraform_remote_state.acm_certs.outputs.test.web.cert_domain_name}"
+        domain_name = "storybook.${data.terraform_remote_state.acm_certs.outputs.test.web.cert_domain_name}"
       }
     }
     }, {

@@ -41,10 +41,10 @@ variable "compute" {
 #####################################################
 
 resource "aws_security_group" "launch_config_sg" {
-  count = length(aws_vpc.vpc) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == false ? 0 : 1
 
   name   = "${var.compute.launch_configuration.name}-sg"
-  vpc_id = aws_vpc.vpc[0].id
+  vpc_id = local.network.vpc_id
 
   lifecycle {
     create_before_destroy = false
@@ -153,7 +153,7 @@ resource "aws_autoscaling_group" "launch_config_auto_scaling_group" {
 #####################################################
 
 locals {
-  compute = var.network.vpc_cidr_block == "" ? {
+  compute = var.network.vpc_in_use == false ? {
     security_group_id              = ""
     security_group_rule_id         = ""
     security_group_ingress_rule_id = ""

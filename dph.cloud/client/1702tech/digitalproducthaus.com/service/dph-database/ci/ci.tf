@@ -103,7 +103,7 @@ data "terraform_remote_state" "config" {
 
   config = {
     bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/config/terraform.tfstate"
+    key    = "client/1702tech/digitalproducthaus.com/global/config/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -194,7 +194,3 @@ module "ci" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
-
-output "ci" {
-  value = module.ci
-}
