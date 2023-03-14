@@ -108,14 +108,6 @@ module "deploy_client" {
   source_path = "./scripts/deploy-client.sh"
 }
 
-module "cloudfront_invalidate" {
-  source = "../../../../module/interface/aws/storage/s3/bucket/object"
-
-  bucket_id   = data.terraform_remote_state.developer_tools.outputs.id
-  key         = "/dph/scripts/cf-invalidate.js"
-  source_path = "./scripts/cf-invalidate.js"
-}
-
 module "migrate_db" {
   source = "../../../../module/interface/aws/storage/s3/bucket/object"
 
@@ -156,10 +148,6 @@ output "build_client_key" {
 
 output "buildspec_key" {
   value = module.buildspec.key
-}
-
-output "cloudfront_invalidate_key" {
-  value = module.cloudfront_invalidate.key
 }
 
 output "migrate_db_key" {

@@ -60,14 +60,20 @@ echo "Build number: $CODEBUILD_BUILD_NUMBER"
 echo "Downloading $DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT"
 aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT")
 
-# Download script: cf-invalidate
-echo "Downloading $DEV_TOOLS_STORE_SCRIPTS$CF_INVALDIATE_SCRIPT"
-aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$CF_INVALDIATE_SCRIPT") $(echo "$CI_FOLDER$CF_INVALDIATE_SCRIPT")
+source $(echo "$(pwd)/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
 source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
-aws s3 sync $(echo "$WORKING_DIR/$BUILD_ARTEFACT_PATH") $S3_HOST_BUCKET_URL
+echo '{
+  "Paths": {
+    "Quantity": 1,
+    "Items": ["/index.html"]
+  },
+  "CallerReference": "'$CODEBUILD_START_TIME'"
+}' >"$(pwd)/$CI_FOLDER/inv-batch.json"
 
-node $(echo "$CI_FOLDER$CF_INVALDIATE_SCRIPT")
+echo $(aws cloudfront create-invalidation \
+  --distribution-id $CDN_ID \
+  --invalidation-batch "file://$CI_FOLDER/inv-batch.json")
 
 echo "Done."
