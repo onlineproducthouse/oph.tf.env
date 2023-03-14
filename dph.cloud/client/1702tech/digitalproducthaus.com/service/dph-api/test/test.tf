@@ -159,6 +159,7 @@ locals {
     name = "storybook"
 
     host = {
+      vpc_in_use = local.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
@@ -174,6 +175,7 @@ locals {
     name = "www"
 
     host = {
+      vpc_in_use = local.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
@@ -189,6 +191,7 @@ locals {
     name = "portal"
 
     host = {
+      vpc_in_use = local.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
@@ -204,6 +207,7 @@ locals {
     name = "console"
 
     host = {
+      vpc_in_use = local.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }

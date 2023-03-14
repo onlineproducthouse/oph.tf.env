@@ -175,10 +175,10 @@ module "ci" {
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "deploy" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = "-1" },
-      { key = "WORKING_DIR", value = "./dph.client.tests/dph.client.tests.ui.storybook" },
-      { key = "CF_INVALDIATE_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.cloudfront_invalidate_key },
-      { key = "BUILD_ARTEFACT_PATH", value = "storybook-static" },
+      { key = "WORKING_DIR", value = "./" },
+      { key = "BUILD_ARTEFACT_PATH", value = "dph.client.tests/dph.client.tests.ui.storybook/storybook-static" },
       { key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.config.outputs.test_env.web.storybook.host.id },
+      { key = "CDN_ID", value = data.terraform_remote_state.config.outputs.test_env.web.storybook.cdn.id },
     ])
   }
 

@@ -6,11 +6,13 @@
 
 variable "host" {
   type = object({
+    vpc_in_use = bool
     index_page = string
     error_page = string
   })
 
   default = {
+    vpc_in_use = false
     index_page = "index.html"
     error_page = "index.html"
   }
@@ -56,6 +58,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "host_encryption_c
 }
 
 resource "aws_s3_bucket_policy" "host_public_policy" {
+  count = var.host.vpc_in_use == true ? 1 : 0
+
   bucket = aws_s3_bucket.host.id
 
   policy = jsonencode({
@@ -75,7 +79,7 @@ resource "aws_s3_bucket_policy" "host_public_policy" {
 
 resource "aws_s3_bucket_acl" "host_acl" {
   bucket = aws_s3_bucket.host.id
-  acl    = "public-read"
+  acl    = var.host.vpc_in_use == true ? "public-read" : "private"
 }
 
 #####################################################

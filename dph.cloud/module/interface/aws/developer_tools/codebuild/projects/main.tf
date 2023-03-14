@@ -127,10 +127,18 @@ resource "aws_codebuild_project" "job" {
     }
   }
 
-  vpc_config {
-    vpc_id             = var.job.vpc.id
-    subnets            = var.job.vpc.subnets
-    security_group_ids = var.job.vpc.id == "" ? [] : [aws_security_group.security_group[0].id]
+  dynamic "vpc_config" {
+    for_each = var.job.vpc.id == "" ? [] : [{
+      vpc_id             = var.job.vpc.id
+      subnets            = var.job.vpc.subnets
+      security_group_ids = var.job.vpc.id == "" ? [] : [aws_security_group.security_group[0].id]
+    }]
+
+    content {
+      vpc_id             = vpc_config.value.vpc_id
+      subnets            = vpc_config.value.subnets
+      security_group_ids = vpc_config.value.security_group_ids
+    }
   }
 
   tags = {

@@ -107,6 +107,7 @@ resource "aws_route53_record" "cdn_dns_record" {
 
 output "cdn" {
   value = {
+    id             = aws_cloudfront_distribution.cdn.id
     domain_name    = aws_cloudfront_distribution.cdn.domain_name
     hosted_zone_id = aws_cloudfront_distribution.cdn.hosted_zone_id
   }

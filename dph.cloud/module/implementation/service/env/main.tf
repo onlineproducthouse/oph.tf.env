@@ -87,6 +87,7 @@ variable "web" {
     name = string
 
     host = object({
+      vpc_in_use = bool
       index_page = string
       error_page = string
     })
