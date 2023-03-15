@@ -34,7 +34,7 @@ locals {
 #####################################################
 
 resource "aws_security_group" "load_balancer_sg" {
-  count = var.network.vpc_in_use == false ? 0 : 1
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   name   = "${var.compute.launch_configuration.name}-lb-sg"
   vpc_id = local.network.vpc_id
@@ -52,7 +52,7 @@ resource "aws_security_group" "load_balancer_sg" {
 }
 
 resource "aws_security_group_rule" "load_balancer_sg_rule" {
-  count = length(aws_security_group.load_balancer_sg) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   security_group_id = aws_security_group.load_balancer_sg[0].id
   type              = "egress"
@@ -63,7 +63,7 @@ resource "aws_security_group_rule" "load_balancer_sg_rule" {
 }
 
 resource "aws_security_group_rule" "load_balancer_sg_ingress_rule" {
-  count = length(aws_security_group.load_balancer_sg) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   security_group_id = aws_security_group.load_balancer_sg[0].id
   type              = "ingress"
@@ -74,7 +74,7 @@ resource "aws_security_group_rule" "load_balancer_sg_ingress_rule" {
 }
 
 resource "aws_lb" "load_balancer" {
-  count = length(aws_security_group.load_balancer_sg) > 0 && length(module.public_subnet) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   name               = "${var.compute.launch_configuration.name}-lb"
   internal           = false
@@ -91,7 +91,7 @@ resource "aws_lb" "load_balancer" {
 }
 
 resource "aws_lb_target_group" "load_balancer_target_group" {
-  count = var.network.vpc_in_use == false ? 0 : 1
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   name        = "${var.compute.launch_configuration.name}-lb-tg"
   target_type = "instance"
@@ -123,7 +123,7 @@ resource "aws_lb_target_group" "load_balancer_target_group" {
 }
 
 resource "aws_lb_listener" "listener" {
-  count = length(aws_lb.load_balancer) > 0 ? 1 : 0
+  count = var.network.vpc_in_use == true ? 1 : 0
 
   load_balancer_arn = aws_lb.load_balancer[0].arn
 
