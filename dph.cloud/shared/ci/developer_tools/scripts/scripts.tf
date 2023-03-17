@@ -124,6 +124,14 @@ module "product_platform_state" {
   source_path = "./scripts/product.platform.state.sh"
 }
 
+module "post_build_script" {
+  source = "../../../../module/interface/aws/storage/s3/bucket/object"
+
+  bucket_id   = data.terraform_remote_state.developer_tools.outputs.id
+  key         = "/dph/scripts/post-build.sh"
+  source_path = "./scripts/post-build.sh"
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -152,4 +160,8 @@ output "buildspec_key" {
 
 output "migrate_db_key" {
   value = module.migrate_db.key
+}
+
+output "post_build_script_key" {
+  value = module.post_build_script.key
 }

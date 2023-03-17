@@ -32,21 +32,12 @@ variable "config_switch" {
     registry       = bool
     build_artefact = bool
     build          = bool
-    # deployment_targets = list(string) // ["test", "prod"]
-    deployment_targets = list(object({
-      name = string // "test", "prod"
-      vpc = object({
-        id                 = string
-        subnets            = list(string)
-      })
-    }))
   })
 
   default = {
-    build              = false
-    build_artefact     = false
-    deployment_targets = []
-    registry           = false
+    build          = false
+    build_artefact = false
+    registry       = false
   }
 }
 
@@ -62,6 +53,10 @@ variable "ci_job" {
     build_timeout   = "10"
     is_docker_build = false
   }
+}
+
+locals {
+  release_manifest = "ReleaseManifest.sh"
 }
 
 #####################################################

@@ -6,9 +6,10 @@
 
 variable "build_job" {
   type = object({
-    buildspec     = string
-    cert_store_id = string
-    cert_key      = string
+    buildspec             = string
+    post_build_script_key = string
+    cert_store_id         = string
+    cert_key              = string
     environment_variables = list(object({
       key   = string
       value = string
@@ -17,6 +18,7 @@ variable "build_job" {
 
   default = {
     buildspec             = ""
+    post_build_script_key = ""
     cert_store_id         = ""
     cert_key              = ""
     environment_variables = []
@@ -29,14 +31,25 @@ variable "build_job" {
 #                                                   #
 #####################################################
 
+locals {
+  release_artefacts = {
+    for index, branch in var.pipeline.git.branch_names : branch => {
+      s3_object_key = "${branch}_release_artefact"
+    }
+  }
+}
+
 module "build_job" {
   source = "../../../interface/aws/developer_tools/codebuild/projects"
 
-  count = var.config_switch.build == true ? 1 : 0
+  for_each = var.config_switch.build == false ? {} : {
+    for index, branch in var.pipeline.git.branch_names : branch => branch
+  }
 
   client_info = var.client_info
+
   job = {
-    name            = "build-${var.client_info.project_short_name}-${var.client_info.service_name}"
+    name            = "${each.value}-${var.client_info.project_short_name}-${var.client_info.service_name}-build"
     service_role    = aws_iam_role.ci_role.arn
     is_docker_build = var.ci_job.is_docker_build
     build_timeout   = var.ci_job.build_timeout
@@ -47,6 +60,11 @@ module "build_job" {
       { key = "CERT_NAME", value = var.build_job.cert_key },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = length(module.registry) <= 0 ? "" : module.registry[0].name },
+      { key = "RELEASE_ARTEFACT_STORE", value = module.release_artefact.id },
+      { key = "TEST_BRANCH_RELEASE_ARTEFACT_KEY", value = local.release_artefacts[each.value].s3_object_key },
+      { key = "RELEASE_MANIFEST", value = local.release_manifest },
+      { key = "POST_BUILD_SCRIPT_KEY", value = var.build_job.post_build_script_key },
+      { key = "GIT_BRANCH", value = each.value },
     ])
 
     vpc = {

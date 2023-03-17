@@ -219,6 +219,7 @@ locals {
           "iam:ListRolePolicies",
           "iam:ListRoles",
           "iam:PutRolePolicy",
+          "iam:PassRole",
         ],
         Effect   = "Allow",
         Resource = "*"
@@ -236,6 +237,9 @@ locals {
         Action = [
           "s3:GetObject",
           "s3:PutObject",
+          "s3:ListBucket",
+          "s3:ListObjectsV2",
+          "s3:ListObjectVersions",
         ],
         Effect   = "Allow",
         Resource = "*"

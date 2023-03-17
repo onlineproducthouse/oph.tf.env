@@ -35,22 +35,22 @@ phases:
   pre_build:
     commands:
       - echo "Starting pre-build"
-
-      - JOB_SCRIPT="$(echo $CI_ACTION-$PROJECT_TYPE).sh"
-      - echo "Downloading $DEV_TOOLS_STORE_SCRIPTS/dph/scripts/$JOB_SCRIPT"
-      - aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS/dph/scripts/$JOB_SCRIPT") $(echo "./$JOB_SCRIPT")
-
+      - JOB_SCRIPT="$CI_ACTION-$PROJECT_TYPE.sh"
       - echo "Finished pre-build"
 
   build:
     commands:
       # Run: build script
       - echo "Starting build - executing "./$JOB_SCRIPT" script"
-      - bash $(echo "./$JOB_SCRIPT")
+      - aws s3 cp "$DEV_TOOLS_STORE_SCRIPTS/dph/scripts/$JOB_SCRIPT" "./$JOB_SCRIPT"
+      - bash "./$JOB_SCRIPT"
       - echo "Finished build - script "./$JOB_SCRIPT" executed successfully"
 
   post_build:
     commands:
+      - echo "Downloading $DEV_TOOLS_STORE_SCRIPTS/dph/scripts/post-build.sh"
+      - aws s3 cp "$DEV_TOOLS_STORE_SCRIPTS/dph/scripts/post-build.sh" "./post-build.sh"
+      - bash "./post-build.sh"
       - echo "Done."
 
 artifacts:

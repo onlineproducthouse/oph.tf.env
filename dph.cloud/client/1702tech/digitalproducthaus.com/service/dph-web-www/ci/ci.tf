@@ -109,13 +109,16 @@ data "terraform_remote_state" "config" {
 }
 
 locals {
-  dph_dev_tools_arn = data.terraform_remote_state.dph_dev_tools_store.outputs.arn
-  buildspec_key     = data.terraform_remote_state.dph_ci_scripts.outputs.buildspec_key
+  dph_dev_tools_arn     = data.terraform_remote_state.dph_dev_tools_store.outputs.arn
+  buildspec_key         = data.terraform_remote_state.dph_ci_scripts.outputs.buildspec_key
+  post_build_script_key = data.terraform_remote_state.dph_ci_scripts.outputs.post_build_script_key
 
   shared_env_vars = [
     { key = "AWS_REGION", value = var.client_info.region },
     { key = "CI_FOLDER", value = "./ci" },
+    { key = "WORKING_DIR", value = "./" },
     { key = "PROJECT_TYPE", value = "client" },
+    { key = "BUILD_ARTEFACT_PATH", value = "**" },
     { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dph_dev_tools_store.outputs.id}" },
     { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.load_environment_variables_key },
     { key = "ENV_FILE_STORE_LOCATION", value = data.terraform_remote_state.config.outputs.test_env.content.store.id },
@@ -123,7 +126,7 @@ locals {
   ]
 
   deployment_targets = {
-    test = [{
+    test = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_cidr_block == "" ? [] : [{
       name = "test"
       vpc = {
         id      = ""
@@ -140,10 +143,9 @@ module "ci" {
   client_info = var.client_info
 
   config_switch = {
-    registry           = false
-    build_artefact     = true
-    build              = true
-    deployment_targets = concat(local.deployment_targets.test)
+    registry       = false
+    build_artefact = true
+    build          = true
   }
 
   ci_job = {
@@ -153,15 +155,15 @@ module "ci" {
   }
 
   build_job = {
-    buildspec     = "${local.dph_dev_tools_arn}${local.buildspec_key}"
-    cert_store_id = data.terraform_remote_state.config.outputs.test_env.content.store.id
-    cert_key      = data.terraform_remote_state.config.outputs.test_env.content.db_cert.key
+    buildspec             = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+    post_build_script_key = local.post_build_script_key
+    cert_store_id         = data.terraform_remote_state.config.outputs.test_env.content.store.id
+    cert_key              = data.terraform_remote_state.config.outputs.test_env.content.db_cert.key
 
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "build" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
-      { key = "WORKING_DIR", value = "./" },
-      { key = "BUILD_ARTEFACT_PATH", value = "**" },
+      { key = "RELEASE_ARTEFACT_PATH", value = "dph.client.web/dph.client.web.www/build" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
         data.terraform_remote_state.config.outputs.paths.local,
         data.terraform_remote_state.config.outputs.paths.test
@@ -170,20 +172,26 @@ module "ci" {
   }
 
   deploy_job = {
-    buildspec = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+    buildspec          = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+    deployment_targets = concat(local.deployment_targets.test)
 
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "deploy" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = "-1" },
-      { key = "WORKING_DIR", value = "./" },
-      { key = "BUILD_ARTEFACT_PATH", value = "dph.client.web/dph.client.web.www/build" },
       { key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.config.outputs.test_env.web.www.host.id },
       { key = "CDN_ID", value = data.terraform_remote_state.config.outputs.test_env.web.www.cdn.id },
     ])
   }
 
   pipeline = {
+    artifacts = {
+      source  = "${var.client_info.project_short_name}-${var.client_info.service_name}-source-output"
+      build   = "${var.client_info.project_short_name}-${var.client_info.service_name}-build-output"
+      release = "${var.client_info.project_short_name}-${var.client_info.service_name}-release-output"
+    }
+
     git = {
+      branch_names   = ["test"]
       connection_arn = data.terraform_remote_state.git_repo_webhook.outputs.arn
       repo_name      = "digitalproducttome/dph.client"
     }
