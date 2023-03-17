@@ -7,7 +7,6 @@ curl -JLO "https://github.com/docker/buildx/releases/download/$BUILDX_VERSION/bu
 mkdir -p ~/.docker/cli-plugins
 mv "buildx-$BUILDX_VERSION.linux-amd64" ~/.docker/cli-plugins/docker-buildx
 chmod +x ~/.docker/cli-plugins/docker-buildx
-docker run --privileged --rm tonistiigi/binfmt --install arm64
 
 echo "Changing to working directory: $WORKING_DIR"
 cd $(echo $WORKING_DIR)
@@ -21,6 +20,8 @@ echo "Downloading $CERT_STORE$CERT_NAME"
 aws s3 cp $(echo "$CERT_STORE$CERT_NAME") ./dbcert.crt
 
 source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
+
+docker run --privileged --rm "$IMAGE_REGISTRY_BASE_URL/tonistiigibinfmt:latest" --install arm64
 
 echo "Build starting for container project: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"
@@ -43,7 +44,13 @@ echo "ECR: Authenticated"
 # Build docker image
 echo "Build docker image"
 docker buildx create --use --name multiarch
-docker buildx build --push --platform=linux/arm64,linux/amd64 --force-rm --tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG .
+docker buildx build --push \
+  --force-rm \
+  --platform=linux/arm64,linux/amd64 \
+  --tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG \
+  --build-arg IMAGE_REGISTRY_BASE_URL=$IMAGE_REGISTRY_BASE_URL \
+  .
+
 echo "Docker image successfully built: $IMAGE_TAG"
 
 echo 'Done.'

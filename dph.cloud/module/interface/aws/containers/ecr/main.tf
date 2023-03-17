@@ -24,6 +24,11 @@ variable "client_info" {
   }
 }
 
+variable "name" {
+  type    = string
+  default = ""
+}
+
 #####################################################
 #                                                   #
 #                   CONFIGURATION                   #
@@ -31,7 +36,7 @@ variable "client_info" {
 #####################################################
 
 resource "aws_ecr_repository" "repository" {
-  name                 = "${var.client_info.project_short_name}/${var.client_info.service_name}"
+  name                 = var.name == "" ? "${var.client_info.project_short_name}/${var.client_info.service_name}" : var.name
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {

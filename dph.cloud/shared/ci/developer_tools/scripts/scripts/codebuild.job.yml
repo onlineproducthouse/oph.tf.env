@@ -1,31 +1,5 @@
 version: 0.2
 
-#
-# -----------------------------------------------------
-# AWS Codebuild Job Environment Variables
-# -----------------------------------------------------
-#
-# CI_ACTION e.g. build, deploy, migrate
-# PROJECT_TYPE e.g. container, client, db
-# ENVIRONMENT_NAME e.g. test, prod, ci
-# WORKING_DIR e.g. .
-# CI_FOLDER e.g. ./ci
-# BUILD_ARTEFACT_PATH e.g. .
-#
-# AWS_REGION
-# AWS_SSM_PARAMETER_PATHS e.g. "path1;path2;path3;..."
-# CLUSTER_NAME
-# DESIRED_COUNT
-# CONTAINER_CPU
-# CONTAINER_MEMORY_RESERVATION
-#
-# CERT_STORE
-# CERT_NAME
-# DEV_TOOLS_STORE_SCRIPTS
-# LOAD_ENV_VARS_SCRIPT
-# CF_INVALDIATE_SCRIPT
-#
-
 phases:
   install:
     commands:

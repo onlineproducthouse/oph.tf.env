@@ -40,7 +40,7 @@ else
       KEY=$(sed -e 's/^"//' -e 's/"$//' -e 's|'"$i"'/["]*||' <<<$(echo $PARAM_NAME))
       VALUE=$(sed -e 's/^"//' -e 's/"$//' <<<$(echo $PARAM_VALUE))
 
-      PARAM=$(echo "$KEY"="$VALUE")
+      export PARAM=$(echo "$KEY"="$VALUE")
 
       echo $PARAM >>$ENV_FILE
     done
