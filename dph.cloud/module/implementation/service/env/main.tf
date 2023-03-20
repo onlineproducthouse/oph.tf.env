@@ -32,22 +32,20 @@ variable "content" {
 
 variable "api" {
   type = object({
+    name = string
     port = number
 
     network = object({
-      vpc_in_use      = bool
-      vpc_cidr_block  = string
-      dest_cidr_block = string
+      in_use             = bool
+      availibility_zones = list(string)
 
-      subnets = object({
-        private = object({
-          cidr_block         = list(string)
-          availibility_zones = list(string)
-        })
+      cidr_blocks = object({
+        vpc    = string
+        public = string
 
-        public = object({
-          cidr_block         = list(string)
-          availibility_zones = list(string)
+        subnets = object({
+          private = list(string)
+          public  = list(string)
         })
       })
     })
@@ -68,22 +66,21 @@ variable "api" {
       })
     })
 
-    cluster = object({
+    compute = object({})
+
+    container = object({
+      launch_type               = string
       enable_container_insights = bool
+      network_mode              = string
+      log_group                 = string
 
-      ecs_service = object({
-        launch_type                        = string
-        desired_tasks_count                = number
-        target_capacity                    = number
-        deployment_minimum_healthy_percent = number
-        deployment_maximum_healthy_percent = number
+      cpu    = number
+      memory = number
 
-        container = object({
-          name               = string
-          cpu                = number
-          memory_reservation = number
-        })
-      })
+      desired_tasks_count                = number
+      target_capacity                    = number
+      deployment_minimum_healthy_percent = number
+      deployment_maximum_healthy_percent = number
     })
   })
 }
@@ -123,19 +120,9 @@ module "content" {
 }
 
 module "api" {
-  source = "./api"
-
+  source      = "./api"
   client_info = var.client_info
-
-  port          = var.api.port
-  network       = var.api.network
-  load_balancer = var.api.load_balancer
-
-  cluster = {
-    enable_container_insights = var.api.cluster.enable_container_insights
-    name                      = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-cluster"
-    service                   = var.api.cluster.ecs_service
-  }
+  api         = var.api
 }
 
 module "web" {
