@@ -4,41 +4,6 @@
 #                                                   #
 #####################################################
 
-variable "network" {
-  type = object({
-    vpc_in_use      = bool
-    vpc_cidr_block  = string
-    dest_cidr_block = string
-
-    subnets = object({
-      private = object({
-        cidr_block         = list(string)
-        availibility_zones = list(string)
-      })
-
-      public = object({
-        cidr_block         = list(string)
-        availibility_zones = list(string)
-      })
-    })
-  })
-
-  default = {
-    vpc_in_use      = false
-    vpc_cidr_block  = ""
-    dest_cidr_block = "0.0.0.0/0"
-    subnets = {
-      private = {
-        availibility_zones = []
-        cidr_block         = []
-      }
-      public = {
-        availibility_zones = []
-        cidr_block         = []
-      }
-    }
-  }
-}
 
 #####################################################
 #                                                   #
@@ -46,10 +11,10 @@ variable "network" {
 #                                                   #
 #####################################################
 
-resource "aws_vpc" "vpc" {
-  count = var.network.vpc_cidr_block == "" ? 0 : 1
+resource "aws_vpc" "api" {
+  count = var.api.network.cidr_blocks.vpc == "" ? 0 : 1
 
-  cidr_block           = var.network.vpc_cidr_block
+  cidr_block           = var.api.network.cidr_blocks.vpc
   enable_dns_hostnames = true
 
   tags = {
@@ -60,10 +25,10 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-resource "aws_internet_gateway" "igw" {
-  count = var.network.vpc_in_use == true && length(aws_vpc.vpc) > 0 ? 1 : 0
+resource "aws_internet_gateway" "api" {
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
-  vpc_id = aws_vpc.vpc[0].id
+  vpc_id = aws_vpc.api[0].id
 
   tags = {
     environment_name = var.client_info.environment_name
@@ -76,25 +41,25 @@ resource "aws_internet_gateway" "igw" {
 module "private_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  count = var.network.vpc_in_use == true && length(aws_vpc.vpc) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
   client_info = var.client_info
 
-  vpc_id             = aws_vpc.vpc[0].id
-  availibility_zones = var.network.subnets.private.availibility_zones
-  cidr_block         = var.network.subnets.private.cidr_block
+  vpc_id             = aws_vpc.api[0].id
+  availibility_zones = var.api.network.availibility_zones
+  cidr_block         = var.api.network.cidr_blocks.subnets.private
 }
 
 module "public_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  count = var.network.vpc_in_use == true && length(aws_vpc.vpc) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
   client_info = var.client_info
 
-  vpc_id             = aws_vpc.vpc[0].id
-  availibility_zones = var.network.subnets.public.availibility_zones
-  cidr_block         = var.network.subnets.public.cidr_block
+  vpc_id             = aws_vpc.api[0].id
+  availibility_zones = var.api.network.availibility_zones
+  cidr_block         = var.api.network.cidr_blocks.subnets.public
 }
 
 module "eip" {
@@ -127,7 +92,7 @@ module "public_route_table" {
   count = length(module.public_subnet) > 0 ? 1 : 0
 
   client_info    = var.client_info
-  vpc_id         = aws_vpc.vpc[0].id
+  vpc_id         = aws_vpc.api[0].id
   subnet_id_list = module.public_subnet[0].id_list
 }
 
@@ -137,7 +102,7 @@ module "private_route_table" {
   count = length(module.private_subnet) > 0 ? 1 : 0
 
   client_info    = var.client_info
-  vpc_id         = aws_vpc.vpc[0].id
+  vpc_id         = aws_vpc.api[0].id
   subnet_id_list = module.private_subnet[0].id_list
 }
 
@@ -149,10 +114,10 @@ module "public_route" {
   is_private = false
 
   route_table_id = element(module.public_route_table[0].route_table_id_list, count.index)
-  igw_id         = aws_internet_gateway.igw[0].id
+  igw_id         = aws_internet_gateway.api[0].id
   nat_gateway_id = null
 
-  destination_cidr_block = var.network.dest_cidr_block
+  destination_cidr_block = var.api.network.cidr_blocks.public
 }
 
 module "private_route" {
@@ -166,7 +131,7 @@ module "private_route" {
   igw_id         = null
   nat_gateway_id = element(aws_nat_gateway.nat[0].*.id, count.index)
 
-  destination_cidr_block = var.network.dest_cidr_block
+  destination_cidr_block = var.api.network.cidr_blocks.public
 }
 
 #####################################################
@@ -175,26 +140,3 @@ module "private_route" {
 #                                                   #
 #####################################################
 
-locals {
-  network = var.network.vpc_in_use == false ? {
-    vpc_cidr_block = ""
-    vpc_id         = ""
-    eip            = []
-    subnet_id_list = {
-      private = []
-      public  = []
-    }
-    } : {
-    vpc_cidr_block = var.network.vpc_cidr_block
-    vpc_id         = aws_vpc.vpc[0].id
-    eip            = module.eip[0].eip_public_ip_list
-    subnet_id_list = {
-      private = module.private_subnet[0].id_list
-      public  = module.public_subnet[0].id_list
-    }
-  }
-}
-
-output "network" {
-  value = local.network
-}
