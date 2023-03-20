@@ -62,7 +62,20 @@ variable "api" {
 
     compute = object({})
 
-    container = object({})
+    container = object({
+      launch_type               = string
+      enable_container_insights = bool
+      network_mode              = string
+      log_group                 = string
+
+      cpu    = number
+      memory = number
+
+      desired_tasks_count                = number
+      target_capacity                    = number
+      deployment_minimum_healthy_percent = number
+      deployment_maximum_healthy_percent = number
+    })
   })
 }
 
@@ -84,5 +97,6 @@ output "api" {
     role          = local.role_output
     network       = local.network_output
     load_balancer = local.lb_output
+    container     = local.container_output
   }
 }
