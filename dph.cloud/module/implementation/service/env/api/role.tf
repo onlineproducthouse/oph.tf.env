@@ -177,3 +177,16 @@ resource "aws_iam_role_policy_attachment" "container_service_attach" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
+
+locals {
+  role_output = {
+    name = aws_iam_role.api.name
+    id   = aws_iam_role.api.id
+    arn  = aws_iam_role.api.arn
+
+    instance = {
+      id  = aws_iam_instance_profile.api.id
+      arn = aws_iam_instance_profile.api.arn
+    }
+  }
+}

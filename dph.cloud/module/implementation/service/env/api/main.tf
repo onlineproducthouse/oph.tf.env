@@ -60,7 +60,8 @@ variable "api" {
       })
     })
 
-    compute   = object({})
+    compute = object({})
+
     container = object({})
   })
 }
@@ -80,37 +81,8 @@ variable "api" {
 
 output "api" {
   value = {
-    role = {
-      name = aws_iam_role.api.name
-      id   = aws_iam_role.api.id
-      arn  = aws_iam_role.api.arn
-
-      instance = {
-        id  = aws_iam_instance_profile.api.id
-        arn = aws_iam_instance_profile.api.arn
-      }
-    }
-
-    network = {
-      vpc = {
-        id         = aws_vpc.api[0].id
-        cidr_block = var.api.network.cidr_blocks.vpc
-      }
-
-      eip = module.eip[0].eip_public_ip_list
-
-      subnet_id_list = {
-        private = module.private_subnet[0].id_list
-        public  = module.public_subnet[0].id_list
-      }
-    }
-
-    load_balancer = {
-      domain_name = local.load_balancer.full_domain_name
-
-      target_group = {
-        arn = aws_lb_target_group.lb[0].arn
-      }
-    }
+    role          = local.role_output
+    network       = local.network_output
+    load_balancer = local.lb_output
   }
 }

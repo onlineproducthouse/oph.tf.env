@@ -140,3 +140,30 @@ module "private_route" {
 #                                                   #
 #####################################################
 
+locals {
+  network_output = var.api.network.in_use == true ? {
+    vpc = {
+      id         = aws_vpc.api[0].id
+      cidr_block = var.api.network.cidr_blocks.vpc
+    }
+
+    eip = module.eip[0].eip_public_ip_list
+
+    subnet_id_list = {
+      private = module.private_subnet[0].id_list
+      public  = module.public_subnet[0].id_list
+    }
+    } : {
+    vpc = {
+      id         = ""
+      cidr_block = ""
+    }
+
+    eip = []
+
+    subnet_id_list = {
+      private = []
+      public  = []
+    }
+  }
+}

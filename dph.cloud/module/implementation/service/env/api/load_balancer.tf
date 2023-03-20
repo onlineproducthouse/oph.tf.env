@@ -142,3 +142,18 @@ resource "aws_route53_record" "record_with_alias" {
 #                                                   #
 #####################################################
 
+locals {
+  lb_output = var.api.network.in_use == true ? {
+    domain_name = local.load_balancer.full_domain_name
+
+    target_group = {
+      arn = aws_lb_target_group.lb[0].arn
+    }
+    } : {
+    domain_name = ""
+
+    target_group = {
+      arn = ""
+    }
+  }
+}
