@@ -4,29 +4,6 @@
 #                                                   #
 #####################################################
 
-variable "load_balancer" {
-  type = object({
-    domain_name_prefix = string
-    health_check_path  = string
-
-    hosted_zone = object({
-      id = string
-    })
-
-    listener = object({
-      certificate = object({
-        arn         = string
-        domain_name = string
-      })
-    })
-  })
-}
-
-locals {
-  load_balancer = {
-    full_domain_name = "${var.load_balancer.domain_name_prefix}.${var.load_balancer.listener.certificate.domain_name}"
-  }
-}
 
 #####################################################
 #                                                   #
@@ -34,11 +11,17 @@ locals {
 #                                                   #
 #####################################################
 
-resource "aws_security_group" "load_balancer_sg" {
+locals {
+  load_balancer = {
+    full_domain_name = "${var.api.load_balancer.domain_name_prefix}.${var.api.load_balancer.listener.certificate.domain_name}"
+  }
+}
+
+resource "aws_security_group" "lb" {
   count = length(module.public_subnet) > 0 ? 1 : 0
 
-  name   = "${var.cluster.name}-lb-sg"
-  vpc_id = local.network.vpc_id
+  name   = "${var.api.name}-lb-sg"
+  vpc_id = aws_vpc.api[0].id
 
   lifecycle {
     create_before_destroy = false
@@ -52,35 +35,34 @@ resource "aws_security_group" "load_balancer_sg" {
   }
 }
 
-resource "aws_security_group_rule" "load_balancer_sg_rule" {
-  count = length(aws_security_group.load_balancer_sg) > 0 ? 1 : 0
-
-  security_group_id = aws_security_group.load_balancer_sg[0].id
-  type              = "egress"
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = 0
-  to_port           = 0
+locals {
+  lb_sg_rules = [
+    { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
+    { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = var.api.port },
+  ]
 }
 
-resource "aws_security_group_rule" "load_balancer_sg_ingress_rule" {
-  count = var.network.vpc_in_use == true ? 1 : 0
+resource "aws_security_group_rule" "lb" {
+  for_each = {
+    for index, rule in local.lb_sg_rules : rule.name => rule
+  }
 
-  security_group_id = aws_security_group.load_balancer_sg[0].id
-  type              = "ingress"
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"] # for this environment, investigate using VPN
-  from_port         = var.port
-  to_port           = var.port
+  security_group_id = aws_security_group.lb[0].id
+
+  type        = each.value.type
+  protocol    = each.value.protocol
+  cidr_blocks = each.value.cidr_blocks
+  from_port   = each.value.port
+  to_port     = each.value.port
 }
 
-resource "aws_lb" "load_balancer" {
-  count = length(aws_security_group.load_balancer_sg) > 0 ? 1 : 0
+resource "aws_lb" "lb" {
+  count = length(aws_security_group.lb) > 0 ? 1 : 0
 
-  name               = "${var.cluster.name}-lb"
+  name               = "${var.api.name}-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.load_balancer_sg[0].id]
+  security_groups    = [aws_security_group.lb[0].id]
   subnets            = module.public_subnet[0].id_list
 
   tags = {
@@ -91,15 +73,15 @@ resource "aws_lb" "load_balancer" {
   }
 }
 
-resource "aws_lb_target_group" "load_balancer_target_group" {
-  count = length(aws_lb.load_balancer) > 0 ? 1 : 0
+resource "aws_lb_target_group" "lb" {
+  count = length(aws_lb.lb) > 0 ? 1 : 0
 
-  name        = "${var.cluster.name}-lb-tg"
+  name        = "${var.api.name}-lb-tg"
   target_type = "ip"
-  vpc_id      = local.network.vpc_id
+  vpc_id      = aws_vpc.api[0].id
 
   protocol = "HTTP"
-  port     = var.port
+  port     = var.api.port
 
   health_check {
     enabled = true
@@ -111,8 +93,8 @@ resource "aws_lb_target_group" "load_balancer_target_group" {
     unhealthy_threshold = 3
 
     protocol = "HTTP"
-    port     = var.port
-    path     = var.load_balancer.health_check_path
+    port     = var.api.port
+    path     = var.api.load_balancer.health_check_path
   }
 
   tags = {
@@ -123,33 +105,33 @@ resource "aws_lb_target_group" "load_balancer_target_group" {
   }
 }
 
-resource "aws_lb_listener" "listener" {
-  count = length(aws_lb.load_balancer) > 0 ? 1 : 0
+resource "aws_lb_listener" "api" {
+  count = length(aws_lb.lb) > 0 ? 1 : 0
 
-  load_balancer_arn = aws_lb.load_balancer[0].arn
+  load_balancer_arn = aws_lb.lb[0].arn
 
   protocol = "HTTPS"
-  port     = var.port
+  port     = var.api.port
 
   ssl_policy      = "ELBSecurityPolicy-2016-08"
-  certificate_arn = var.load_balancer.listener.certificate.arn
+  certificate_arn = var.api.load_balancer.listener.certificate.arn
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.load_balancer_target_group[0].arn
+    target_group_arn = aws_lb_target_group.lb[0].arn
   }
 }
 
 resource "aws_route53_record" "record_with_alias" {
-  count = length(aws_lb.load_balancer) > 0 ? 1 : 0
+  count = length(aws_lb.lb) > 0 ? 1 : 0
 
-  zone_id = var.load_balancer.hosted_zone.id
+  zone_id = var.api.load_balancer.hosted_zone.id
   name    = local.load_balancer.full_domain_name
   type    = "A"
 
   alias {
-    name                   = aws_lb.load_balancer[0].dns_name
-    zone_id                = aws_lb.load_balancer[0].zone_id
+    name                   = aws_lb.lb[0].dns_name
+    zone_id                = aws_lb.lb[0].zone_id
     evaluate_target_health = true
   }
 }
@@ -160,13 +142,3 @@ resource "aws_route53_record" "record_with_alias" {
 #                                                   #
 #####################################################
 
-output "load_balancer" {
-  value = {
-    domain_name = local.load_balancer.full_domain_name
-    target_group = var.network.vpc_in_use == true ? {
-      arn = aws_lb_target_group.load_balancer_target_group[0].arn
-      } : {
-      arn = ""
-    }
-  }
-}
