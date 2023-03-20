@@ -47,11 +47,6 @@ variable "vpc_in_use" {
   default = false
 }
 
-variable "vpc_cidr_block" {
-  type    = string
-  default = "" // leave empty to disable else set to, e.g. 10.0.0.0/16
-}
-
 variable "client_info" {
   type = object({
     region             = string
@@ -99,9 +94,21 @@ data "terraform_remote_state" "acm_certs" {
 }
 
 locals {
-  vpc_in_use         = var.vpc_in_use
-  vpc_cidr_block     = var.vpc_cidr_block
-  availibility_zones = ["eu-west-1b", "eu-west-1c"]
+  shared_resource_name = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}"
+
+  network_in_use = var.network_in_use
+
+  availibility_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+
+  cidr_blocks = {
+    vpc    = "10.0.0.0/16"
+    public = "0.0.0.0/0"
+
+    subnet = {
+      private = ["10.0.50.0/24", "10.0.51.0/24", "10.0.52.0/24"]
+      public  = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
+    }
+  }
 }
 
 locals {
@@ -110,10 +117,29 @@ locals {
   }
 
   api = {
-    port = 10000
+    name = local.shared_resource_name
+    port = 7890
+
+    compute = {}
+
+    container = {
+      launch_type               = "FARGATE"
+      enable_container_insights = false
+      network_mode              = "awsvpc"
+      log_group                 = local.shared_resource_name
+
+      cpu    = 256
+      memory = 512
+
+      desired_tasks_count                = 2
+      target_capacity                    = 100
+      deployment_minimum_healthy_percent = 100
+      deployment_maximum_healthy_percent = 200
+    }
+
     load_balancer = {
       domain_name_prefix = var.client_info.project_short_name
-      health_check_path  = "/api/v1/HealthCheck/Ping" # /api/v1/HealthCheck/Ping OR /index.html
+      health_check_path  = "/" # /api/v1/HealthCheck/Ping OR /index.html
       hosted_zone = {
         id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
       }
@@ -126,37 +152,15 @@ locals {
     }
 
     network = {
-      vpc_in_use      = local.vpc_in_use
-      vpc_cidr_block  = local.vpc_cidr_block
-      dest_cidr_block = "0.0.0.0/0"
+      in_use             = local.network_in_use
+      availibility_zones = local.availibility_zones
+      cidr_blocks = {
+        vpc    = local.cidr_blocks.vpc
+        public = local.cidr_blocks.public
 
-      subnets = {
-        private = {
-          availibility_zones = local.availibility_zones
-          cidr_block         = ["10.0.50.0/24", "10.0.51.0/24"]
-        }
-
-        public = {
-          availibility_zones = local.availibility_zones
-          cidr_block         = ["10.0.0.0/24", "10.0.1.0/24"]
-        }
-      }
-    }
-
-    cluster = {
-      enable_container_insights = local.vpc_in_use
-
-      ecs_service = {
-        launch_type                        = "FARGATE"
-        desired_tasks_count                = 2
-        target_capacity                    = 100
-        deployment_minimum_healthy_percent = 100
-        deployment_maximum_healthy_percent = 200
-
-        container = {
-          name               = "${var.client_info.project_short_name}-${var.client_info.service_name}"
-          cpu                = 512
-          memory_reservation = 1024
+        subnets = {
+          private = local.cidr_blocks.subnets.private
+          public  = local.cidr_blocks.subnets.public
         }
       }
     }
