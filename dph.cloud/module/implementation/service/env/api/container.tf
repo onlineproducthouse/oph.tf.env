@@ -87,7 +87,7 @@ module "cluster" {
   client_info = var.client_info
   cluster = {
     name                      = local.common.cluster_name
-    enable_container_insights = var.container.enable_container_insights
+    enable_container_insights = var.api.container.enable_container_insights
   }
 }
 
@@ -165,9 +165,9 @@ resource "aws_ecs_service" "container" {
   # iam_role                = aws_iam_role.api.arn
 
   task_definition                    = aws_ecs_task_definition.container[0].arn
-  desired_count                      = var.api.container.service.desired_tasks_count
-  deployment_minimum_healthy_percent = var.api.container.service.deployment_minimum_healthy_percent
-  deployment_maximum_percent         = var.api.container.service.deployment_maximum_healthy_percent
+  desired_count                      = var.api.container.desired_tasks_count
+  deployment_minimum_healthy_percent = var.api.container.deployment_minimum_healthy_percent
+  deployment_maximum_percent         = var.api.container.deployment_maximum_healthy_percent
 
   lifecycle {
     ignore_changes = [desired_count, task_definition]

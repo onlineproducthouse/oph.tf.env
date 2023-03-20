@@ -45,7 +45,7 @@ locals {
 }
 
 resource "aws_security_group_rule" "lb" {
-  for_each = {
+  for_each = length(aws_security_group.lb) <= 0 ? {} : {
     for index, rule in local.lb_sg_rules : rule.name => rule
   }
 

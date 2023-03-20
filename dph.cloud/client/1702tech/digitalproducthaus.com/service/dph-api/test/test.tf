@@ -102,7 +102,7 @@ locals {
     vpc    = "10.0.0.0/16"
     public = "0.0.0.0/0"
 
-    subnet = {
+    subnets = {
       private = ["10.0.50.0/24", "10.0.51.0/24", "10.0.52.0/24"]
       public  = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
     }
@@ -164,7 +164,7 @@ locals {
     name = "storybook"
 
     host = {
-      vpc_in_use = local.vpc_in_use
+      vpc_in_use = var.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
@@ -180,7 +180,7 @@ locals {
     name = "www"
 
     host = {
-      vpc_in_use = local.vpc_in_use
+      vpc_in_use = var.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
@@ -196,7 +196,7 @@ locals {
     name = "portal"
 
     host = {
-      vpc_in_use = local.vpc_in_use
+      vpc_in_use = var.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
@@ -212,7 +212,7 @@ locals {
     name = "console"
 
     host = {
-      vpc_in_use = local.vpc_in_use
+      vpc_in_use = var.vpc_in_use
       error_page = "index.html"
       index_page = "index.html"
     }
