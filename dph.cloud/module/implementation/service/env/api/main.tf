@@ -24,9 +24,16 @@ variable "client_info" {
   }
 }
 
-variable "port" {
-  type    = number
-  default = -1
+variable "api" {
+  type = object({
+    name = string
+    port = number
+
+    network       = object({})
+    load_balancer = object({})
+    compute       = object({})
+    container     = object({})
+  })
 }
 
 #####################################################
@@ -42,6 +49,17 @@ variable "port" {
 #                                                   #
 #####################################################
 
-output "port" {
-  value = var.port
+output "api" {
+  value = {
+    role = {
+      name = aws_iam_role.api.name
+      id   = aws_iam_role.api.id
+      arn  = aws_iam_role.api.arn
+
+      instance = {
+        id  = aws_iam_instance_profile.api.id
+        arn = aws_iam_instance_profile.api.arn
+      }
+    }
+  }
 }

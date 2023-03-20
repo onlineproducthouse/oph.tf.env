@@ -4,8 +4,8 @@
 #                                                   #
 #####################################################
 
-resource "aws_iam_policy" "container_role_policy" {
-  name        = "${var.cluster.name}-role-policy"
+resource "aws_iam_policy" "api" {
+  name        = "${var.api.name}-policy"
   path        = "/system/"
   description = "${var.client_info.project_name} policy for launch configuration"
 
@@ -111,12 +111,12 @@ resource "aws_iam_policy" "container_role_policy" {
   })
 }
 
-resource "aws_iam_role" "container_role" {
-  name = "${var.cluster.name}-role"
+resource "aws_iam_role" "api" {
+  name = "${var.api.name}-role"
   path = "/system/"
 
   force_detach_policies = true
-  managed_policy_arns   = [aws_iam_policy.container_role_policy.arn]
+  managed_policy_arns   = [aws_iam_policy.api.arn]
   permissions_boundary  = ""
 
   assume_role_policy = jsonencode({
@@ -161,14 +161,14 @@ resource "aws_iam_role" "container_role" {
   }
 }
 
-resource "aws_iam_instance_profile" "ecs_instance_role" {
+resource "aws_iam_instance_profile" "api" {
   name = "ecsInstanceRole"
   path = "/system/"
-  role = aws_iam_role.container_role.name
+  role = aws_iam_role.api.name
 }
 
 resource "aws_iam_role_policy_attachment" "container_service_attach" {
-  role       = aws_iam_role.container_role.name
+  role       = aws_iam_role.api.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
@@ -177,9 +177,3 @@ resource "aws_iam_role_policy_attachment" "container_service_attach" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
-
-output "ecs_instance_role" {
-  value = {
-    id = aws_iam_instance_profile.ecs_instance_role.id
-  }
-}
