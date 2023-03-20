@@ -58,6 +58,12 @@ locals {
     { id = "test_client_api_host", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.load_balancer.domain_name },
     { id = "test_client_api_port", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.port },
     { id = "test_client_api_base_path", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_BASE_PATH", value = "/api/v1" },
+
+    { id = "test_log_driver", path = local.paths.test, key = "LOG_DRIVER", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.logging.driver },
+    { id = "test_log_group", path = local.paths.test, key = "LOG_GROUP", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.logging.group },
+    { id = "test_log_prefix", path = local.paths.test, key = "LOG_PREFIX", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.logging.prefix },
+
+    { id = "test_port_mapping_name", path = local.paths.test, key = "PORT_MAPPING_NAME", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.port_mapping_name },
   ]
 }
 

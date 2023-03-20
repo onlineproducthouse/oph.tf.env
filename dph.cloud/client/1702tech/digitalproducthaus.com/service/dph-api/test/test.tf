@@ -111,20 +111,9 @@ locals {
 
   api = {
     port = 10000
-    compute = {
-      auto_scaling_group = {
-        desired_instances = 1
-        max_instances     = 1
-        min_instances     = 1
-      }
-      launch_configuration = {
-        image_id      = "ami-027078d981e5d4010"
-        instance_type = "t3a.micro"
-      }
-    }
-
     load_balancer = {
       domain_name_prefix = var.client_info.project_short_name
+      health_check_path  = "/api/v1/HealthCheck/Ping" # /api/v1/HealthCheck/Ping OR /index.html
       hosted_zone = {
         id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
       }
@@ -150,6 +139,24 @@ locals {
         public = {
           availibility_zones = local.availibility_zones
           cidr_block         = ["10.0.0.0/24", "10.0.1.0/24"]
+        }
+      }
+    }
+
+    cluster = {
+      enable_container_insights = local.vpc_in_use
+
+      ecs_service = {
+        launch_type                        = "FARGATE"
+        desired_tasks_count                = 2
+        target_capacity                    = 100
+        deployment_minimum_healthy_percent = 100
+        deployment_maximum_healthy_percent = 200
+
+        container = {
+          name               = "${var.client_info.project_short_name}-${var.client_info.service_name}"
+          cpu                = 512
+          memory_reservation = 1024
         }
       }
     }
@@ -247,23 +254,4 @@ output "api" {
 
 output "web" {
   value = module.test.web
-}
-
-output "ecs" {
-  value = {
-    cluster_name = module.test.api.cluster.name
-
-    task_family   = "${var.client_info.project_short_name}-${var.client_info.service_name}"
-    task_role_arn = module.test.api.ecs_instance_role.id
-
-    service_name     = "${var.client_info.project_short_name}-${var.client_info.service_name}-service"
-    desired_count    = 1
-    target_group_arn = module.test.api.load_balancer.target_group.arn
-    log_url          = local.secrets.log_url
-
-    container_name               = "${var.client_info.project_short_name}-${var.client_info.service_name}"
-    container_cpu                = 600
-    container_memory_reservation = 400
-    container_port               = module.test.api.port
-  }
 }

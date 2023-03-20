@@ -61,7 +61,7 @@ resource "aws_vpc" "vpc" {
 }
 
 resource "aws_internet_gateway" "igw" {
-  count = var.network.vpc_in_use == true ? 1 : 0
+  count = var.network.vpc_in_use == true && length(aws_vpc.vpc) > 0 ? 1 : 0
 
   vpc_id = aws_vpc.vpc[0].id
 
@@ -76,7 +76,7 @@ resource "aws_internet_gateway" "igw" {
 module "private_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  count = var.network.vpc_in_use == true ? 1 : 0
+  count = var.network.vpc_in_use == true && length(aws_vpc.vpc) > 0 ? 1 : 0
 
   client_info = var.client_info
 
@@ -88,7 +88,7 @@ module "private_subnet" {
 module "public_subnet" {
   source = "../../../../interface/aws/networking/vpc/subnets"
 
-  count = var.network.vpc_in_use == true ? 1 : 0
+  count = var.network.vpc_in_use == true && length(aws_vpc.vpc) > 0 ? 1 : 0
 
   client_info = var.client_info
 
@@ -100,14 +100,14 @@ module "public_subnet" {
 module "eip" {
   source = "../../../../interface/aws/networking/vpc/elastic_ip"
 
-  count = var.network.vpc_in_use == true ? 1 : 0
+  count = length(module.public_subnet) > 0 ? 1 : 0
 
-  subnet_count = length(var.network.subnets.public.cidr_block)
+  subnet_count = length(module.public_subnet[0].id_list)
   client_info  = var.client_info
 }
 
 resource "aws_nat_gateway" "nat" {
-  count = var.network.vpc_in_use == true ? length(module.public_subnet[0].id_list) : 0
+  count = length(module.public_subnet) > 0 ? length(module.public_subnet[0].id_list) : 0
 
   allocation_id = element(module.eip[0].eip_nat_id_list, count.index)
   subnet_id     = element(module.public_subnet[0].id_list, count.index)
@@ -124,7 +124,7 @@ resource "aws_nat_gateway" "nat" {
 module "public_route_table" {
   source = "../../../../interface/aws/networking/vpc/route_table"
 
-  count = var.network.vpc_in_use == true ? 1 : 0
+  count = length(module.public_subnet) > 0 ? 1 : 0
 
   client_info    = var.client_info
   vpc_id         = aws_vpc.vpc[0].id
@@ -134,7 +134,7 @@ module "public_route_table" {
 module "private_route_table" {
   source = "../../../../interface/aws/networking/vpc/route_table"
 
-  count = var.network.vpc_in_use == true ? 1 : 0
+  count = length(module.private_subnet) > 0 ? 1 : 0
 
   client_info    = var.client_info
   vpc_id         = aws_vpc.vpc[0].id
@@ -144,7 +144,7 @@ module "private_route_table" {
 module "public_route" {
   source = "../../../../interface/aws/networking/vpc/route_table/route"
 
-  count = var.network.vpc_in_use == true ? length(module.public_route_table[0].route_table_id_list) : 0
+  count = length(module.public_route_table) > 0 ? length(module.public_route_table[0].route_table_id_list) : 0
 
   is_private = false
 
@@ -158,7 +158,7 @@ module "public_route" {
 module "private_route" {
   source = "../../../../interface/aws/networking/vpc/route_table/route"
 
-  count = var.network.vpc_in_use == true ? length(module.private_route_table[0].route_table_id_list) : 0
+  count = length(module.private_route_table) > 0 ? length(module.private_route_table[0].route_table_id_list) : 0
 
   is_private = true
 

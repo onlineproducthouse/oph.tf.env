@@ -52,21 +52,9 @@ variable "api" {
       })
     })
 
-    compute = object({
-      auto_scaling_group = object({
-        min_instances     = number
-        max_instances     = number
-        desired_instances = number
-      })
-
-      launch_configuration = object({
-        image_id      = string
-        instance_type = string
-      })
-    })
-
     load_balancer = object({
       domain_name_prefix = string
+      health_check_path  = string
 
       hosted_zone = object({
         id = string
@@ -76,6 +64,24 @@ variable "api" {
         certificate = object({
           arn         = string
           domain_name = string
+        })
+      })
+    })
+
+    cluster = object({
+      enable_container_insights = bool
+
+      ecs_service = object({
+        launch_type                        = string
+        desired_tasks_count                = number
+        target_capacity                    = number
+        deployment_minimum_healthy_percent = number
+        deployment_maximum_healthy_percent = number
+
+        container = object({
+          name               = string
+          cpu                = number
+          memory_reservation = number
         })
       })
     })
@@ -126,17 +132,9 @@ module "api" {
   load_balancer = var.api.load_balancer
 
   cluster = {
-    enable_container_insights = false
+    enable_container_insights = var.api.cluster.enable_container_insights
     name                      = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-cluster"
-  }
-
-  compute = {
-    auto_scaling_group = var.api.compute.auto_scaling_group
-    launch_configuration = {
-      name          = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-lc"
-      image_id      = var.api.compute.launch_configuration.image_id
-      instance_type = var.api.compute.launch_configuration.instance_type
-    }
+    service                   = var.api.cluster.ecs_service
   }
 }
 

@@ -4,14 +4,46 @@
 #                                                   #
 #####################################################
 
-resource "aws_iam_policy" "launch_config_role_policy" {
-  name        = "${var.compute.launch_configuration.name}-role-policy"
+resource "aws_iam_policy" "container_role_policy" {
+  name        = "${var.cluster.name}-role-policy"
   path        = "/system/"
   description = "${var.client_info.project_name} policy for launch configuration"
 
   policy = jsonencode({
     Version : "2012-10-17",
     Statement : [
+      {
+        Sid = "Stmt1664390969881",
+        Action = [
+          "elasticloadbalancing:AddListenerCertificates",
+          "elasticloadbalancing:AddTags",
+          "elasticloadbalancing:CreateListener",
+          "elasticloadbalancing:CreateLoadBalancer",
+          "elasticloadbalancing:CreateRule",
+          "elasticloadbalancing:CreateTargetGroup",
+          "elasticloadbalancing:DeleteListener",
+          "elasticloadbalancing:DeleteLoadBalancer",
+          "elasticloadbalancing:DeleteRule",
+          "elasticloadbalancing:DeleteTargetGroup",
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:Describe*",
+          "elasticloadbalancing:ModifyListener",
+          "elasticloadbalancing:ModifyLoadBalancerAttributes",
+          "elasticloadbalancing:ModifyRule",
+          "elasticloadbalancing:ModifyTargetGroup",
+          "elasticloadbalancing:ModifyTargetGroupAttributes",
+          "elasticloadbalancing:RegisterTargets",
+          "elasticloadbalancing:RemoveListenerCertificates",
+          "elasticloadbalancing:RemoveTags",
+          "elasticloadbalancing:SetIpAddressType",
+          "elasticloadbalancing:SetRulePriorities",
+          "elasticloadbalancing:SetSecurityGroups",
+          "elasticloadbalancing:SetSubnets",
+          "elasticloadbalancing:SetWebAcl"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      },
       {
         Effect : "Allow",
         Action : [
@@ -23,6 +55,13 @@ resource "aws_iam_policy" "launch_config_role_policy" {
         Effect : "Allow",
         Action : [
           "ecr:*"
+        ],
+        Resource : "*"
+      },
+      {
+        Effect : "Allow",
+        Action : [
+          "ec2:*"
         ],
         Resource : "*"
       },
@@ -50,6 +89,13 @@ resource "aws_iam_policy" "launch_config_role_policy" {
       {
         Effect : "Allow",
         Action : [
+          "autoscaling:CreateOrUpdateTags"
+        ],
+        Resource : "*"
+      },
+      {
+        Effect : "Allow",
+        Action : [
           "ses:*"
         ],
         Resource : "*"
@@ -65,12 +111,12 @@ resource "aws_iam_policy" "launch_config_role_policy" {
   })
 }
 
-resource "aws_iam_role" "launch_config_role" {
-  name = "${var.compute.launch_configuration.name}-role"
+resource "aws_iam_role" "container_role" {
+  name = "${var.cluster.name}-role"
   path = "/system/"
 
   force_detach_policies = true
-  managed_policy_arns   = [aws_iam_policy.launch_config_role_policy.arn]
+  managed_policy_arns   = [aws_iam_policy.container_role_policy.arn]
   permissions_boundary  = ""
 
   assume_role_policy = jsonencode({
@@ -83,9 +129,29 @@ resource "aws_iam_role" "launch_config_role" {
         },
         Effect : "Allow",
         Sid : "DPHEC2AssumedRole"
+      },
+      {
+        Action : "sts:AssumeRole",
+        Principal : {
+          Service : "ecs-tasks.amazonaws.com"
+        },
+        Effect : "Allow",
+        Sid : "DPHECSTASKAssumedRole"
+      },
+      {
+        Action : "sts:AssumeRole",
+        Principal : {
+          Service : "ecs.amazonaws.com"
+        },
+        Effect : "Allow",
+        Sid : "DPHECSAssumedRole"
       }
     ]
   })
+
+  lifecycle {
+    ignore_changes = [managed_policy_arns]
+  }
 
   tags = {
     owner            = var.client_info.owner
@@ -98,11 +164,11 @@ resource "aws_iam_role" "launch_config_role" {
 resource "aws_iam_instance_profile" "ecs_instance_role" {
   name = "ecsInstanceRole"
   path = "/system/"
-  role = aws_iam_role.launch_config_role.name
+  role = aws_iam_role.container_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "container_service_attach" {
-  role       = aws_iam_role.launch_config_role.name
+  role       = aws_iam_role.container_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
