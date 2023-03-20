@@ -96,8 +96,6 @@ data "terraform_remote_state" "acm_certs" {
 locals {
   shared_resource_name = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}"
 
-  network_in_use = var.network_in_use
-
   availibility_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
 
   cidr_blocks = {
@@ -112,10 +110,6 @@ locals {
 }
 
 locals {
-  content = {
-    db_cert_source_path = "./content/db-cert-test.crt"
-  }
-
   api = {
     name = local.shared_resource_name
     port = 7890
@@ -152,7 +146,7 @@ locals {
     }
 
     network = {
-      in_use             = local.network_in_use
+      in_use             = var.vpc_in_use
       availibility_zones = local.availibility_zones
       cidr_blocks = {
         vpc    = local.cidr_blocks.vpc
@@ -237,9 +231,13 @@ module "test" {
   source = "../../../../../../module/implementation/service/env"
 
   client_info = var.client_info
-  content     = local.content
-  api         = local.api
-  web         = local.web
+
+  content = {
+    db_cert_source_path = "./content/db-cert-test.crt"
+  }
+
+  api = local.api
+  web = local.web
 }
 
 #####################################################
