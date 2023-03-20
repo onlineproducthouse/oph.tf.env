@@ -136,29 +136,29 @@ resource "aws_codepipeline" "release" {
 
       configuration = {
         S3Bucket    = module.release_artefact.id
-        S3ObjectKey = local.release_artefacts[each.value.name].s3_object_key
+        S3ObjectKey = "${local.release_artefacts[each.value.name].s3_object_key}.zip"
       }
     }
   }
+
+  # dynamic "stage" {
+  #   for_each = each.value.name == "test" || each.value.name == "prod" ? local.approval : {}
+
+  #   content {
+  #     name = "ApproveDeployToTest"
+
+  #     action {
+  #       name     = stage.value.name
+  #       category = stage.value.category
+  #       owner    = stage.value.owner
+  #       provider = stage.value.provider
+  #       version  = stage.value.version
+  #     }
+  #   }
+  # }
 
   dynamic "stage" {
     for_each = each.value.name == "test" || each.value.name == "prod" ? local.approval : {}
-
-    content {
-      name = "ApproveDeployToTest"
-
-      action {
-        name     = stage.value.name
-        category = stage.value.category
-        owner    = stage.value.owner
-        provider = stage.value.provider
-        version  = stage.value.version
-      }
-    }
-  }
-
-  dynamic "stage" {
-    for_each = each.value.name == "test" || each.value.name == "prod" ? each.value : {}
 
     content {
       name = "DeployToTest"
@@ -195,7 +195,7 @@ resource "aws_codepipeline" "release" {
   }
 
   dynamic "stage" {
-    for_each = each.value.name == "prod" ? each.value : {}
+    for_each = each.value.name == "prod" ? local.approval : {}
 
     content {
       name = "DeployToProd"

@@ -162,7 +162,7 @@ module "ci" {
       { key = "CI_ACTION", value = "build" },
       { key = "PROJECT_TYPE", value = "container" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = "-1" },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.paths.global },
       { key = "WORKING_DIR", value = "./dph.db.dph" },
       { key = "RELEASE_ARTEFACT_PATH", value = "./" },
     ])

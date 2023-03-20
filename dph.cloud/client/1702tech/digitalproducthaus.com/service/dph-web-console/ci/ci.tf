@@ -165,6 +165,7 @@ module "ci" {
       { key = "ENVIRONMENT_NAME", value = "ci" },
       { key = "RELEASE_ARTEFACT_PATH", value = "dph.client.web/dph.client.web.console/build" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
+        data.terraform_remote_state.config.outputs.paths.global,
         data.terraform_remote_state.config.outputs.paths.local,
         data.terraform_remote_state.config.outputs.paths.test
       ]) },
@@ -177,7 +178,7 @@ module "ci" {
 
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "deploy" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = "-1" },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.paths.global },
       { key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.config.outputs.test_env.web.console.host.id },
       { key = "CDN_ID", value = data.terraform_remote_state.config.outputs.test_env.web.console.cdn.id },
     ])

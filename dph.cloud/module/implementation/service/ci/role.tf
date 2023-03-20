@@ -81,6 +81,13 @@ locals {
         Resource = "*"
       },
       {
+        Effect : "Allow",
+        Action : [
+          "autoscaling:CreateOrUpdateTags"
+        ],
+        Resource : "*"
+      },
+      {
         Effect = "Allow",
         Action = [
           "codepipeline:*"
@@ -235,14 +242,22 @@ locals {
       {
         Sid = "Stmt1664391913340",
         Action = [
-          "s3:GetObject",
+          "s3:Get*",
           "s3:PutObject",
-          "s3:ListBucket",
-          "s3:ListObjectsV2",
-          "s3:ListObjectVersions",
+          "s3:List*",
         ],
         Effect   = "Allow",
         Resource = "*"
+      },
+      {
+        Sid = "Stmt1664391913341",
+        Action = [
+          "s3:GetBucketLocation",
+        ],
+        Effect = "Allow",
+        Resource = [
+          "arn:aws:s3:::${var.build_job.cert_store_id}"
+        ]
       },
       {
         Effect = "Allow",

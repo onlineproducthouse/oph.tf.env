@@ -163,7 +163,7 @@ module "ci" {
       { key = "CI_ACTION", value = "build" },
       { key = "PROJECT_TYPE", value = "container" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = "-1" },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.paths.global },
       { key = "RELEASE_ARTEFACT_PATH", value = "./" },
     ])
   }
@@ -175,19 +175,18 @@ module "ci" {
     environment_variables = concat(local.shared_env_vars, [
       { key = "CI_ACTION", value = "deploy" },
       { key = "PROJECT_TYPE", value = "container" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.paths.test },
-      { key = "WORKING_DIR", value = "./" },
-      { key = "TASK_FAMILY", value = data.terraform_remote_state.config.outputs.test_env.ecs.task_family },
-      { key = "TASK_ROLE_ARN", value = data.terraform_remote_state.config.outputs.test_env.ecs.task_role_arn },
-      { key = "CONTAINER_NAME", value = data.terraform_remote_state.config.outputs.test_env.ecs.container_name },
-      { key = "CONTAINER_CPU", value = data.terraform_remote_state.config.outputs.test_env.ecs.container_cpu },
-      { key = "CONTAINER_MEMORY_RESERVATION", value = data.terraform_remote_state.config.outputs.test_env.ecs.container_memory_reservation },
-      { key = "CONTAINER_PORT", value = data.terraform_remote_state.config.outputs.test_env.ecs.container_port },
-      { key = "LOG_URL", value = data.terraform_remote_state.config.outputs.test_env.ecs.log_url },
-      { key = "CLUSTER_NAME", value = data.terraform_remote_state.config.outputs.test_env.ecs.cluster_name },
-      { key = "SERVICE_NAME", value = data.terraform_remote_state.config.outputs.test_env.ecs.service_name },
-      { key = "DESIRED_COUNT", value = data.terraform_remote_state.config.outputs.test_env.ecs.desired_count },
-      { key = "TARGET_GROUP_ARN", value = data.terraform_remote_state.config.outputs.test_env.ecs.target_group_arn },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
+        data.terraform_remote_state.config.outputs.paths.global,
+        data.terraform_remote_state.config.outputs.paths.test,
+      ]) },
+      { key = "TASK_FAMILY", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.task_definition_family },
+      { key = "TASK_ROLE_ARN", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.task_role_arn },
+      { key = "CONTAINER_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_name },
+      { key = "CONTAINER_CPU", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_cpu },
+      { key = "CONTAINER_MEMORY_RESERVATION", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_memory_reservation },
+      { key = "CONTAINER_PORT", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_port },
+      { key = "CLUSTER_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.cluster_name },
+      { key = "SERVICE_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.service_name },
     ])
   }
 

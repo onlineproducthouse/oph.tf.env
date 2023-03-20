@@ -26,7 +26,7 @@ variable "client_info" {
 
 variable "parameters" {
   type = list(object({
-    id   = string
+    id    = string
     path  = string
     key   = string
     value = string
@@ -62,3 +62,7 @@ resource "aws_ssm_parameter" "variable" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
+
+output "ssm_params" {
+  value = aws_ssm_parameter.variable
+}
