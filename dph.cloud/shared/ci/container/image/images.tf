@@ -70,11 +70,11 @@ variable "client_info" {
 
 locals {
   images = [
-    { name = "redis" },
-    { name = "postgis" },
-    { name = "tonistiigibinfmt" },
-    { name = "golang" },
-    { name = "nodejs" },
+    { name = "redis", version = "latest" },
+    { name = "postgis/postgis", version = "14-3.2" },
+    { name = "tonistiigi/binfmt", version = "latest" },
+    { name = "golang", version = "1.19-alpine" },
+    { name = "node", version = "18.14-alpine" },
   ]
 }
 
@@ -96,5 +96,9 @@ module "images" {
 #####################################################
 
 output "images" {
-  value = module.images
+  value = {
+    for index, image in local.images : image.name => {
+      tag_url = "${module.images[image.name].url}:${image.version}"
+    }
+  }
 }
