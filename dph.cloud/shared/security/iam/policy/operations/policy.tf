@@ -262,7 +262,10 @@ locals {
             "autoscaling:StartInstanceRefresh",
             "autoscaling:SuspendProcesses",
             "autoscaling:TerminateInstanceInAutoScalingGroup",
-            "autoscaling:UpdateAutoScalingGroup"
+            "autoscaling:UpdateAutoScalingGroup",
+            "application-autoscaling:DescribeScalingActivities",
+            "application-autoscaling:DescribeScalingPolicies",
+            "application-autoscaling:DescribeScalableTargets"
           ],
           Effect   = "Allow",
           Resource = "*"
@@ -357,11 +360,13 @@ locals {
           Action = [
             "ecs:CreateCapacityProvider",
             "ecs:CreateCluster",
+            "ecs:CreateService",
             "ecs:DeleteAttributes",
             "ecs:DeleteCapacityProvider",
             "ecs:DeleteCluster",
             "ecs:DeleteService",
             "ecs:DeleteTaskSet",
+            "ecs:DeleteTaskDefinitions",
             "ecs:DeregisterContainerInstance",
             "ecs:DeregisterTaskDefinition",
             "ecs:DescribeCapacityProviders",
@@ -383,15 +388,19 @@ locals {
             "ecs:PutAttributes",
             "ecs:PutClusterCapacityProviders",
             "ecs:RegisterContainerInstance",
+            "ecs:RegisterTaskDefinition",
             "ecs:StopTask",
             "ecs:SubmitAttachmentStateChanges",
             "ecs:SubmitContainerStateChange",
             "ecs:TagResource",
             "ecs:UntagResource",
+            "ecs:UpdateCapacityProvider",
             "ecs:UpdateCluster",
             "ecs:UpdateClusterSettings",
             "ecs:UpdateContainerAgent",
-            "ecs:UpdateContainerInstancesState"
+            "ecs:UpdateContainerInstancesState",
+            "ecs:UpdateService",
+            "servicediscovery:ListNamespaces"
           ],
           Effect   = "Allow",
           Resource = "*"
