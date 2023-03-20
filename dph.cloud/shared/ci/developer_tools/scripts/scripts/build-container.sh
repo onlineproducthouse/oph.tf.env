@@ -21,7 +21,7 @@ aws s3 cp $(echo "$CERT_STORE$CERT_NAME") ./dbcert.crt
 
 source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
-docker run --privileged --rm "$IMAGE_REGISTRY_BASE_URL/tonistiigibinfmt:latest" --install arm64
+docker run --privileged --rm "$IMAGE_REGISTRY_BASE_URL/tonistiigi/binfmt:latest" --install arm64
 
 echo "Build starting for container project: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"

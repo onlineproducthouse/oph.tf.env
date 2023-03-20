@@ -2,55 +2,6 @@
 
 set -euo pipefail
 
-#
-# -----------------------------------------------------
-# AWS Codebuild Default Environment Variables
-# -----------------------------------------------------
-#
-# CODEBUILD_BUILD_ID
-# CODEBUILD_START_TIME
-# CODEBUILD_INITIATOR
-# CODEBUILD_SOURCE_REPO_URL
-# CODEBUILD_BUILD_NUMBER
-#
-# -----------------------------------------------------
-# AWS Codebuild Job Environment Variables
-# -----------------------------------------------------
-#
-# CI_ACTION e.g. build, deploy, migrate
-# PROJECT_TYPE e.g. container, client, db
-# ENVIRONMENT_NAME e.g. test, prod, ci
-# WORKING_DIR e.g. .
-# CI_FOLDER e.g. ./ci
-# BUILD_ARTEFACT_PATH e.g. .
-#
-# AWS_REGION
-# AWS_SSM_PARAMETER_PATHS e.g. "path1;path2;path3;..."
-# CLUSTER_NAME
-# DESIRED_COUNT
-# CONTAINER_CPU
-# CONTAINER_MEMORY_RESERVATION
-#
-# CERT_STORE
-# CERT_NAME
-# DEV_TOOLS_STORE_SCRIPTS
-# LOAD_ENV_VARS_SCRIPT
-# CF_INVALDIATE_SCRIPT
-#
-# -----------------------------------------------------
-# AWS SSM Parameters - CI Environment
-# -----------------------------------------------------
-#
-# S3_HOST_BUCKET_URL
-# S3_WEBSITE_ENDPOINT
-#
-# -----------------------------------------------------
-# AWS SSM Parameters - Runtime Environment
-# -----------------------------------------------------
-#
-# -
-#
-
 echo "Build starting for container project: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"
 echo "Started by: $CODEBUILD_INITIATOR"
@@ -62,7 +13,7 @@ aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") "$(pwd)/$CI_FO
 
 source $(echo "$(pwd)/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
-aws s3 sync "$BUILD_ARTEFACT_PATH" "s3://$S3_HOST_BUCKET_URL"
+aws s3 sync ./ "s3://$S3_HOST_BUCKET_URL"
 
 echo '{
   "Paths": {

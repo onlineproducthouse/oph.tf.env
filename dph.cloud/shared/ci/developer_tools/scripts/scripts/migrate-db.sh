@@ -2,61 +2,6 @@
 
 set -euo pipefail
 
-#
-# -----------------------------------------------------
-# AWS Codebuild Default Environment Variables
-# -----------------------------------------------------
-#
-# CODEBUILD_BUILD_ID
-# CODEBUILD_START_TIME
-# CODEBUILD_INITIATOR
-# CODEBUILD_SOURCE_REPO_URL
-# CODEBUILD_BUILD_NUMBER
-#
-# -----------------------------------------------------
-# AWS Codebuild Job Environment Variables
-# -----------------------------------------------------
-#
-# CI_ACTION e.g. build, deploy, migrate
-# PROJECT_TYPE e.g. container, client, db
-# ENVIRONMENT_NAME e.g. test, prod, ci
-# WORKING_DIR e.g. .
-# CI_FOLDER e.g. ./ci
-# BUILD_ARTEFACT_PATH e.g. .
-#
-# AWS_REGION
-# AWS_SSM_PARAMETER_PATHS e.g. "path1;path2;path3;..."
-# CLUSTER_NAME
-# DESIRED_COUNT
-# CONTAINER_CPU
-# CONTAINER_MEMORY_RESERVATION
-#
-# CERT_STORE
-# CERT_NAME
-# DEV_TOOLS_STORE_SCRIPTS
-# LOAD_ENV_VARS_SCRIPT
-# CF_INVALDIATE_SCRIPT
-# IMAGE_REGISTRY_BASE_URL
-# IMAGE_REPOSITORY_NAME
-#
-# -----------------------------------------------------
-# AWS SSM Parameters - CI Environment
-# -----------------------------------------------------
-#
-# -
-#
-# -----------------------------------------------------
-# AWS SSM Parameters - Runtime Environment
-# -----------------------------------------------------
-#
-# DB_PROTOCOL
-# DB_USERNAME
-# DB_PASSWORD
-# DB_HOST
-# DB_PORT
-# DB_NAME
-#
-
 echo "Changing to working directory: $WORKING_DIR"
 cd $(echo $WORKING_DIR)
 
@@ -71,16 +16,13 @@ echo "Start time: $CODEBUILD_START_TIME"
 echo "Started by: $CODEBUILD_INITIATOR"
 echo "Build number: $CODEBUILD_BUILD_NUMBER"
 
-# Set image tage as environment variable
-IMAGE_TAG="$IMAGE_REPOSITORY_NAME:latest"
-
 # Authenticate ECR
 echo "ECR: Authenticating"
 echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
 echo "ECR: Authenticated"
 
-docker pull $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
+source $RELEASE_MANIFEST && docker pull $DKR_IMAGE
 
-docker run --env-file .env $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG
+source $RELEASE_MANIFEST && docker run --env-file .env $DKR_IMAGE
 
 echo "Done."
