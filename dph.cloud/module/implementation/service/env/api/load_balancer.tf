@@ -67,6 +67,12 @@ resource "aws_lb" "lb" {
   security_groups    = [aws_security_group.lb[0].id]
   subnets            = module.public_subnet[0].id_list
 
+  access_logs {
+    enabled = true
+    bucket  = var.api.content_store_id
+    prefix  = "${var.api.name}-lb"
+  }
+
   tags = {
     owner            = var.client_info.owner
     environment_name = var.client_info.environment_name
@@ -88,11 +94,11 @@ resource "aws_lb_target_group" "lb" {
   health_check {
     enabled = true
 
-    interval            = 30
-    timeout             = 15
+    interval            = 120
+    timeout             = 60
     matcher             = 200
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
+    healthy_threshold   = 10
+    unhealthy_threshold = 10
 
     protocol = "HTTP"
     port     = var.api.port

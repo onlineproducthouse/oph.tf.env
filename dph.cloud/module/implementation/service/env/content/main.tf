@@ -36,11 +36,35 @@ variable "content" {
 #                                                   #
 #####################################################
 
+locals {
+  shared_resource_name = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}"
+}
+
 module "store" {
   source = "../../../../../module/implementation/shared/storage/private_s3_bucket"
 
-  bucket_name = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}-store"
+  bucket_name = "${local.shared_resource_name}-store"
   client_info = var.client_info
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_s3_bucket_policy" "access_logs" {
+  bucket = module.store.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::156460612806:root"
+        },
+        "Action" : "s3:PutObject",
+        "Resource" : "arn:aws:s3:::${module.store.id}/${local.shared_resource_name}-lb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+      }
+    ]
+  })
 }
 
 module "db_cert" {

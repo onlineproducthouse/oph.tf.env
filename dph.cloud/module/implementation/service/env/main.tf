@@ -122,7 +122,15 @@ module "content" {
 module "api" {
   source      = "./api"
   client_info = var.client_info
-  api         = var.api
+  api = {
+    name             = var.api.name
+    port             = var.api.port
+    content_store_id = module.content.store.id
+    compute          = var.api.compute
+    container        = var.api.container
+    load_balancer    = var.api.load_balancer
+    network          = var.api.network
+  }
 }
 
 module "web" {

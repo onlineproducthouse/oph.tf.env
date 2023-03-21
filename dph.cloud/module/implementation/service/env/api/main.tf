@@ -26,8 +26,9 @@ variable "client_info" {
 
 variable "api" {
   type = object({
-    name = string
-    port = number
+    name             = string
+    port             = number
+    content_store_id = string
 
     network = object({
       in_use             = bool
