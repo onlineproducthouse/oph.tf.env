@@ -75,6 +75,7 @@ locals {
     { name = "tonistiigi/binfmt", version = "latest" },
     { name = "golang", version = "1.19-alpine" },
     { name = "node", version = "18.14-alpine" },
+    { name = "httpd", version = "2.4" },
   ]
 }
 
