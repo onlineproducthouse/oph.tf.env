@@ -125,11 +125,11 @@ locals {
   ]
 
   deployment_targets = {
-    test = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_cidr_block == "" ? [] : [{
+    test = data.terraform_remote_state.config.outputs.test_env.api.api.network.vpc.cidr_block == "" ? [] : [{
       name = "test"
       vpc = {
-        id      = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_id
-        subnets = data.terraform_remote_state.config.outputs.test_env.api.network.subnet_id_list.private
+        id      = data.terraform_remote_state.config.outputs.test_env.api.api.network.vpc.id
+        subnets = data.terraform_remote_state.config.outputs.test_env.api.api.network.subnet_id_list.private
       }
     }]
   }
@@ -179,14 +179,14 @@ module "ci" {
         data.terraform_remote_state.config.outputs.paths.global,
         data.terraform_remote_state.config.outputs.paths.test,
       ]) },
-      { key = "TASK_FAMILY", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.task_definition_family },
-      { key = "TASK_ROLE_ARN", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.task_role_arn },
-      { key = "CONTAINER_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_name },
-      { key = "CONTAINER_CPU", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_cpu },
-      { key = "CONTAINER_MEMORY_RESERVATION", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_memory_reservation },
-      { key = "CONTAINER_PORT", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.container_port },
-      { key = "CLUSTER_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.cluster_name },
-      { key = "SERVICE_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.ecs.container.service_name },
+      { key = "TASK_FAMILY", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.task_definition_family },
+      { key = "TASK_ROLE_ARN", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.task_role_arn },
+      { key = "CONTAINER_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.container_name },
+      { key = "CONTAINER_CPU", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.cpu },
+      { key = "CONTAINER_MEMORY_RESERVATION", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.memory },
+      { key = "CONTAINER_PORT", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.port },
+      { key = "CLUSTER_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.cluster_name },
+      { key = "SERVICE_NAME", value = data.terraform_remote_state.config.outputs.test_env.api.api.container.service_name },
     ])
   }
 

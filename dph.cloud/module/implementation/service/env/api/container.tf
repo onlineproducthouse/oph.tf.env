@@ -213,6 +213,7 @@ locals {
     container_name = local.common.container_name
     cpu            = var.api.container.cpu
     memory         = var.api.container.memory
+    network_mode   = var.api.container.network_mode
 
     port_mapping_name = local.common.port_mapping_name
     port              = var.api.port

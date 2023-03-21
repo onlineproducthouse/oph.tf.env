@@ -124,11 +124,11 @@ locals {
   ]
 
   deployment_targets = {
-    test = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_cidr_block == "" ? [] : [{
+    test = data.terraform_remote_state.config.outputs.test_env.api.api.network.vpc.cidr_block == "" ? [] : [{
       name = "test"
       vpc = {
-        id      = data.terraform_remote_state.config.outputs.test_env.api.network.vpc_id
-        subnets = data.terraform_remote_state.config.outputs.test_env.api.network.subnet_id_list.private
+        id      = data.terraform_remote_state.config.outputs.test_env.api.api.network.vpc.id
+        subnets = data.terraform_remote_state.config.outputs.test_env.api.api.network.subnet_id_list.private
       }
     }]
   }

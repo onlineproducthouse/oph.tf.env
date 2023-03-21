@@ -29,9 +29,10 @@ locals {
     { id = "test_redis_connection_string", path = local.paths.test, key = "REDIS_CONNECTION_STRING", value = local.secrets.test.redis_connection_string },
     { id = "test_redis_host", path = local.paths.test, key = "REDIS_HOST", value = local.secrets.test.redis_host },
     { id = "test_redis_port", path = local.paths.test, key = "REDIS_PORT", value = local.secrets.test.redis_port },
+    { id = "test_redis_pwd", path = local.paths.test, key = "REDIS_PWD", value = local.secrets.test.redis_pwd },
 
-    { id = "test_api_host", path = local.paths.test, key = "API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.load_balancer.domain_name },
-    { id = "test_api_port", path = local.paths.test, key = "API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.port },
+    { id = "test_api_host", path = local.paths.test, key = "API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.api.load_balancer.domain_name },
+    { id = "test_api_port", path = local.paths.test, key = "API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.port },
     { id = "test_api_keys", path = local.paths.test, key = "API_KEYS", value = join(",", [
       random_uuid.test_api_key_v1.result,
     ]) },
@@ -55,15 +56,16 @@ locals {
     { id = "test_client_api_key", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_KEY", value = random_uuid.test_api_key_v1.result },
     { id = "test_client_api_protocol", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PROTOCOL", value = "https" },
     { id = "test_client_ws_api_protocol", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_WS_API_PROTOCOL", value = "ws" },
-    { id = "test_client_api_host", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.load_balancer.domain_name },
-    { id = "test_client_api_port", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.port },
+    { id = "test_client_api_host", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.api.load_balancer.domain_name },
+    { id = "test_client_api_port", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.port },
     { id = "test_client_api_base_path", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_BASE_PATH", value = "/api/v1" },
 
-    { id = "test_log_driver", path = local.paths.test, key = "LOG_DRIVER", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.logging.driver },
-    { id = "test_log_group", path = local.paths.test, key = "LOG_GROUP", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.logging.group },
-    { id = "test_log_prefix", path = local.paths.test, key = "LOG_PREFIX", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.logging.prefix },
+    { id = "test_log_driver", path = local.paths.test, key = "LOG_DRIVER", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.logging.driver },
+    { id = "test_log_group", path = local.paths.test, key = "LOG_GROUP", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.logging.group },
+    { id = "test_log_prefix", path = local.paths.test, key = "LOG_PREFIX", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.logging.prefix },
 
-    { id = "test_port_mapping_name", path = local.paths.test, key = "PORT_MAPPING_NAME", value = data.terraform_remote_state.api_test_env.outputs.api.ecs.container.port_mapping_name },
+    { id = "test_port_mapping_name", path = local.paths.test, key = "PORT_MAPPING_NAME", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.port_mapping_name },
+    { id = "test_network_mode", path = local.paths.test, key = "NETWORK_MODE", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.network_mode },
   ]
 }
 

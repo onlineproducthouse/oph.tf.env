@@ -36,21 +36,23 @@ source '.env' && source $RELEASE_MANIFEST && echo '{
   "family": "'${TASK_FAMILY}'",
   "taskRoleArn": "'${TASK_ROLE_ARN}'",
   "executionRoleArn": "'${TASK_ROLE_ARN}'",
-  "networkMode": "awsvpc",
+  "networkMode": "'${NETWORK_MODE}'",
   "requiresCompatibilities": [
     "FARGATE"
   ],
   "cpu": "'${CONTAINER_CPU}'",
   "memory": "'${CONTAINER_MEMORY_RESERVATION}'",
-  "operatingSystemFamily": "LINUX",
-  "cpuArchitecture": "X86_64",
+  "runtimePlatform": {
+    "operatingSystemFamily": "LINUX",
+    "cpuArchitecture": "X86_64"
+  },
   "containerDefinitions": [
     {
       "name": "'${CONTAINER_NAME}'",
       "essential": true,
       "image": "'$DKR_IMAGE'",
-      "cpu": "'${CONTAINER_CPU}'",
-      "memory": "'${CONTAINER_MEMORY_RESERVATION}'",
+      "cpu": '${CONTAINER_CPU}',
+      "memory": '${CONTAINER_MEMORY_RESERVATION}',
       "portMappings": [
         {
           "name": "'${PORT_MAPPING_NAME}'",

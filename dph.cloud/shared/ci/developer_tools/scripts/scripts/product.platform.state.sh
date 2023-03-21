@@ -46,81 +46,80 @@ DPH_PRODUCT_WEB_PORTAL_CI_PATH="$DPH_PRODUCT_SERVICE_FOLDER/$DPH_PRODUCT_WEB_POR
 DPH_PRODUCT_WEB_CONSOLE_CI_PATH="$DPH_PRODUCT_SERVICE_FOLDER/$DPH_PRODUCT_WEB_CONSOLE_NAME/ci"
 
 DPH_VPC_IN_USE=false
-DPH_VPC_CIDR_BLOCK="10.0.0.0/16"
 if [[ "$DESIRED_STATE" == "up" ]]; then
   DPH_VPC_IN_USE=true
 fi
 
 # init modules
-echo "Initialising path - $DPH_PRODUCT_API_TEST_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_API_TEST_PATH"
 terraform -chdir=$DPH_PRODUCT_API_TEST_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_PLATFROM_CONFIG_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_PLATFROM_CONFIG_PATH"
 terraform -chdir=$DPH_PRODUCT_PLATFROM_CONFIG_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_API_CI_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_API_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_API_CI_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_DATABASE_CI_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_DATABASE_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_DATABASE_CI_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_WEB_STORYBOOK_CI_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_WEB_STORYBOOK_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_STORYBOOK_CI_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_WEB_WWW_CI_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_WEB_WWW_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_WWW_CI_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_WEB_PORTAL_CI_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_WEB_PORTAL_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_PORTAL_CI_PATH init
-echo "Done.\n"
+echo "Done."
 
-echo "Initialising path - $DPH_PRODUCT_WEB_CONSOLE_CI_PATH\n"
+echo "Initialising path - $DPH_PRODUCT_WEB_CONSOLE_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_CONSOLE_CI_PATH init
-echo "Done.\n"
+echo "Done."
 
 # apply modules
-echo "Applying path - $DPH_PRODUCT_API_TEST_PATH\n"
-terraform -chdir=$DPH_PRODUCT_API_TEST_PATH apply --auto-approve -var vpc_cidr_block=$DPH_VPC_CIDR_BLOCK -var vpc_in_use=$DPH_VPC_IN_USE
-echo "Done.\n"
+echo "Applying path - $DPH_PRODUCT_API_TEST_PATH"
+terraform -chdir=$DPH_PRODUCT_API_TEST_PATH apply --auto-approve -var vpc_in_use=$DPH_VPC_IN_USE
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_PLATFROM_CONFIG_PATH\n"
+echo "Applying path - $DPH_PRODUCT_PLATFROM_CONFIG_PATH"
 terraform -chdir=$DPH_PRODUCT_PLATFROM_CONFIG_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_API_CI_PATH\n"
+echo "Applying path - $DPH_PRODUCT_API_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_API_CI_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_DATABASE_CI_PATH\n"
+echo "Applying path - $DPH_PRODUCT_DATABASE_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_DATABASE_CI_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_WEB_STORYBOOK_CI_PATH\n"
+echo "Applying path - $DPH_PRODUCT_WEB_STORYBOOK_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_STORYBOOK_CI_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_WEB_WWW_CI_PATH\n"
+echo "Applying path - $DPH_PRODUCT_WEB_WWW_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_WWW_CI_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_WEB_PORTAL_CI_PATH\n"
+echo "Applying path - $DPH_PRODUCT_WEB_PORTAL_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_PORTAL_CI_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
-echo "Applying path - $DPH_PRODUCT_WEB_CONSOLE_CI_PATH\n"
+echo "Applying path - $DPH_PRODUCT_WEB_CONSOLE_CI_PATH"
 terraform -chdir=$DPH_PRODUCT_WEB_CONSOLE_CI_PATH apply --auto-approve
-echo "Done.\n"
+echo "Done."
 
 if [[ "$DESIRED_STATE" == "down" ]]; then
   # Re-apply to destroy VPC used in CI projects
   echo "Reapplying..."
-  terraform -chdir=$DPH_PRODUCT_API_TEST_PATH apply --auto-approve -var vpc_cidr_block="" -var vpc_in_use=false
+  terraform -chdir=$DPH_PRODUCT_API_TEST_PATH apply --auto-approve -var vpc_in_use=false
   terraform -chdir=$DPH_PRODUCT_PLATFROM_CONFIG_PATH apply --auto-approve
-  echo "Done.\n"
+  echo "Done."
 fi
