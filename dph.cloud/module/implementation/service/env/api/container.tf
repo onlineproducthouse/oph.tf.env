@@ -60,11 +60,12 @@ resource "aws_security_group_rule" "container" {
   }
 
   security_group_id = aws_security_group.container[0].id
-  type              = each.value.type
-  protocol          = each.value.protocol
-  cidr_blocks       = each.value.cidr_blocks
-  from_port         = each.value.port
-  to_port           = each.value.port
+
+  type        = each.value.type
+  protocol    = each.value.protocol
+  cidr_blocks = each.value.cidr_blocks
+  from_port   = each.value.port
+  to_port     = each.value.port
 }
 
 resource "aws_cloudwatch_log_group" "container" {
@@ -105,6 +106,14 @@ resource "aws_ecs_cluster_capacity_providers" "container" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
+locals {
+  registry = {
+    base_url = ""
+  }
+}
+
 resource "aws_ecs_task_definition" "container" {
   count = length(module.cluster) > 0 ? 1 : 0
 
@@ -124,12 +133,12 @@ resource "aws_ecs_task_definition" "container" {
   container_definitions = jsonencode([
     {
       "name" : "${local.common.container_name}",
-      "image" : "httpd:2.4",
+      "image" : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com/httpd:2.4",
       "cpu" : "${var.api.container.cpu}",
       "memory" : "${var.api.container.memory}",
       "essential" : true,
       "command" : [
-        "/bin/sh -c \"echo '<html> <head> <title>DPH Sample App</title> <style>body {margin-top: 40px; background-color: #002050;} </style> </head><body> <div style=color:#eceae0;text-align:center> <h1>DPH Sample App</h1> <h2>Congratulations!</h2> <p>Your container application running in Amazon ECS is ready for deployment.</p> </div><div><p>Built by digitalproducthaus.com</p></div></body></html>' >  /usr/local/apache2/htdocs/index.html\""
+        "/bin/sh -c \"echo '<html> <head> <title>DPH Sample App</title> <style>body {margin-top: 40px; background-color: #002050;} </style> </head><body> <div style=color:#eceae0;text-align:center> <h1>DPH Sample App</h1> <h2>Congratulations!</h2> <p>Your container application running in Amazon ECS is ready for deployment.</p> </div><div><p>Built by digitalproducthaus.com</p></div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
       ],
       "entryPoint" : [
         "sh",
