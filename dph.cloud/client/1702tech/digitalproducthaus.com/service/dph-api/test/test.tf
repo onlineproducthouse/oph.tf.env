@@ -233,7 +233,7 @@ module "test" {
   client_info = var.client_info
 
   content = {
-    db_cert_source_path = "./content/db-cert-test.crt"
+    db_cert_source_path = "./content/ca.pem"
   }
 
   api = local.api
