@@ -1,36 +1,13 @@
 #####################################################
 #                                                   #
-#                     VARIABLES                     #
-#                                                   #
-#####################################################
-
-
-#####################################################
-#                                                   #
 #                   CONFIGURATION                   #
 #                                                   #
 #####################################################
 
-locals {
-  common = {
-    cluster_name           = "${var.api.name}-cluster"
-    task_definition_family = "${var.api.name}-task-family"
-    container_name         = "${var.api.name}-container"
-    service_name           = "${var.api.name}-service"
-    port_mapping_name      = "${var.api.name}-port"
-
-    logging = {
-      driver = "awslogs"
-      prefix = "ecs"
-      group  = var.api.container.log_group
-    }
-  }
-}
-
 resource "aws_security_group" "container" {
   count = length(module.private_subnet) > 0 ? 1 : 0
 
-  name   = "${local.common.container_name}-sg"
+  name   = "${local.config.container_name}-sg"
   vpc_id = aws_vpc.api[0].id
 
   lifecycle {
@@ -69,7 +46,7 @@ resource "aws_security_group_rule" "container" {
 }
 
 resource "aws_cloudwatch_log_group" "container" {
-  name              = local.common.logging.group
+  name              = local.config.logging.group
   retention_in_days = 30
 
   tags = {
@@ -87,37 +64,106 @@ module "cluster" {
 
   client_info = var.client_info
   cluster = {
-    name                      = local.common.cluster_name
+    name                      = local.config.cluster_name
     enable_container_insights = var.api.container.enable_container_insights
   }
 }
 
+resource "aws_launch_template" "container" {
+  count = length(aws_security_group.container) > 0 ? 1 : 0
+
+  image_id               = var.api.compute.instance.image_id
+  instance_type          = var.api.compute.instance.instance_type
+  name_prefix            = "${var.api.name}-lt"
+  vpc_security_group_ids = [aws_security_group.container[0].id]
+
+  user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+    ecs_cluster_name   = local.config.cluster_name
+    ecs_log_driver     = "[\"${local.config.logging.driver}\"]"
+    logs_group         = local.config.logging.group
+    logs_stream_prefix = local.config.logging.prefix
+  }))
+
+  iam_instance_profile {
+    arn = aws_iam_instance_profile.api.arn
+  }
+}
+
+resource "aws_autoscaling_group" "container" {
+  count = length(module.private_subnet) > 0 && length(aws_lb_target_group.lb) > 0 ? 1 : 0
+
+  name_prefix               = "${var.api.name}-asg"
+  vpc_zone_identifier       = module.private_subnet[0].id_list
+  health_check_type         = "ELB"
+  health_check_grace_period = 600
+  target_group_arns         = [aws_lb_target_group.lb[0].arn]
+  min_size                  = var.api.compute.auto_scaling.minimum
+  max_size                  = var.api.compute.auto_scaling.maximum
+  desired_capacity          = var.api.compute.auto_scaling.desired
+
+  launch_template {
+    id      = aws_launch_template.container[0].id
+    version = "$Latest"
+  }
+
+  lifecycle {
+    create_before_destroy = false
+  }
+
+  dynamic "tag" {
+    for_each = [
+      { key = "owner", value = var.client_info.owner },
+      { key = "environment_name", value = var.client_info.environment_name },
+      { key = "project_name", value = var.client_info.project_name },
+      { key = "service_name", value = var.client_info.service_name },
+    ]
+
+    content {
+      key                 = tag.value.key
+      value               = tag.value.value
+      propagate_at_launch = true
+    }
+  }
+}
+
+resource "aws_ecs_capacity_provider" "container" {
+  count = length(aws_autoscaling_group.container) > 0 ? 1 : 0
+
+  name = aws_autoscaling_group.container[0].name
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.container[0].arn
+    managed_termination_protection = "ENABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 4
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 100
+    }
+  }
+}
+
 resource "aws_ecs_cluster_capacity_providers" "container" {
-  count = length(module.cluster) > 0 ? 1 : 0
+  count = length(module.cluster) > 0 && length(aws_autoscaling_group.container) > 0 ? 1 : 0
 
   cluster_name = module.cluster[0].name
 
-  capacity_providers = ["FARGATE"]
+  capacity_providers = [aws_autoscaling_group.container[0].name]
 
   default_capacity_provider_strategy {
     base              = 1
     weight            = 100
-    capacity_provider = "FARGATE"
+    capacity_provider = aws_autoscaling_group.container[0].name
   }
 }
 
 data "aws_caller_identity" "current" {}
 
-locals {
-  registry = {
-    base_url = ""
-  }
-}
-
 resource "aws_ecs_task_definition" "container" {
   count = length(module.cluster) > 0 ? 1 : 0
 
-  family                   = local.common.task_definition_family
+  family                   = local.config.task_definition_family
   task_role_arn            = aws_iam_role.api.arn
   execution_role_arn       = aws_iam_role.api.arn
   network_mode             = var.api.container.network_mode
@@ -132,7 +178,7 @@ resource "aws_ecs_task_definition" "container" {
 
   container_definitions = jsonencode([
     {
-      "name" : "${local.common.container_name}",
+      "name" : "${local.config.container_name}",
       "image" : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com/httpd:2.4",
       "cpu" : "${var.api.container.cpu}",
       "memory" : "${var.api.container.memory}",
@@ -146,18 +192,18 @@ resource "aws_ecs_task_definition" "container" {
       ],
       "portMappings" : [
         {
-          "name" : "${local.common.port_mapping_name}",
+          "name" : "${local.config.port_mapping_name}",
           "protocol" : "tcp",
           "containerPort" : "${var.api.port}",
           "hostPort" : "${var.api.port}"
         }
       ],
       "logConfiguration" : {
-        "logDriver" : "${local.common.logging.driver}",
+        "logDriver" : "${local.config.logging.driver}",
         "options" : {
-          "awslogs-group" : "${local.common.logging.group}",
+          "awslogs-group" : "${local.config.logging.group}",
           "awslogs-region" : "${var.client_info.region}",
-          "awslogs-stream-prefix" : "${local.common.logging.prefix}"
+          "awslogs-stream-prefix" : "${local.config.logging.prefix}"
         }
       }
     }
@@ -165,13 +211,13 @@ resource "aws_ecs_task_definition" "container" {
 }
 
 resource "aws_ecs_service" "container" {
-  count = length(module.cluster) > 0 ? 1 : 0
+  count = length(aws_ecs_cluster_capacity_providers.container) > 0 ? 1 : 0
 
-  name                    = local.common.service_name
+  name                    = local.config.service_name
   cluster                 = module.cluster[0].id
   scheduling_strategy     = "REPLICA"
   enable_ecs_managed_tags = true
-  # iam_role                = aws_iam_role.api.arn
+  iam_role                = aws_iam_role.api.arn
 
   task_definition                    = aws_ecs_task_definition.container[0].arn
   desired_count                      = var.api.container.desired_tasks_count
@@ -182,21 +228,21 @@ resource "aws_ecs_service" "container" {
     ignore_changes = [desired_count, task_definition]
   }
 
+  ordered_placement_strategy {
+    type  = "binpack"
+    field = "cpu"
+  }
+
   load_balancer {
     target_group_arn = aws_lb_target_group.lb[0].arn
-    container_name   = local.common.container_name
+    container_name   = local.config.container_name
     container_port   = var.api.port
   }
 
   capacity_provider_strategy {
-    capacity_provider = "FARGATE"
+    capacity_provider = aws_autoscaling_group.container[0].name
     weight            = 1
     base              = 1
-  }
-
-  network_configuration {
-    subnets         = module.private_subnet[0].id_list
-    security_groups = [aws_security_group.container[0].id]
   }
 }
 
@@ -208,23 +254,23 @@ resource "aws_ecs_service" "container" {
 
 locals {
   container_output = {
-    cluster_name   = local.common.cluster_name
-    service_name   = local.common.service_name
-    container_name = local.common.container_name
+    cluster_name   = local.config.cluster_name
+    service_name   = local.config.service_name
+    container_name = local.config.container_name
     cpu            = var.api.container.cpu
     memory         = var.api.container.memory
     network_mode   = var.api.container.network_mode
 
-    port_mapping_name = local.common.port_mapping_name
+    port_mapping_name = local.config.port_mapping_name
     port              = var.api.port
 
-    task_definition_family = local.common.task_definition_family
+    task_definition_family = local.config.task_definition_family
     task_role_arn          = aws_iam_role.api.arn
 
     logging = {
-      driver = local.common.logging.driver
-      prefix = local.common.logging.prefix
-      group  = local.common.logging.group
+      driver = local.config.logging.driver
+      prefix = local.config.logging.prefix
+      group  = local.config.logging.group
     }
 
     security_group = var.api.network.in_use == true ? {

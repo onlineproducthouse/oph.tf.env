@@ -66,7 +66,18 @@ variable "api" {
       })
     })
 
-    compute = object({})
+    compute = object({
+      instance = object({
+        image_id      = string
+        instance_type = string
+      })
+
+      auto_scaling = object({
+        minimum = number
+        maximum = number
+        desired = number
+      })
+    })
 
     container = object({
       launch_type               = string

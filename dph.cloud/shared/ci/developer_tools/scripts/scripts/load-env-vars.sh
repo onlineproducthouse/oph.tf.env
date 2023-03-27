@@ -54,8 +54,10 @@ else
   aws s3 cp $ENV_FILE "s3://$ENV_FILE_STORE_LOCATION/$ENV_FILE_NAME"
   echo "Done uploading to S3"
 
+  cat $ENV_FILE
+
   # Authenticate ECR
   echo "ECR: Authenticating"
-  echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
+  source $ENV_FILE && echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
   echo "ECR: Authenticated"
 fi

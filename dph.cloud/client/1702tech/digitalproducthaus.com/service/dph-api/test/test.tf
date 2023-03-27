@@ -96,15 +96,15 @@ data "terraform_remote_state" "acm_certs" {
 locals {
   shared_resource_name = "${var.client_info.project_short_name}-${var.client_info.service_name}-${var.client_info.environment_name}"
 
-  availibility_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availibility_zones = ["eu-west-1a", "eu-west-1b"]
 
   cidr_blocks = {
     vpc    = "10.0.0.0/16"
     public = "0.0.0.0/0"
 
     subnets = {
-      private = ["10.0.50.0/24", "10.0.51.0/24", "10.0.52.0/24"]
-      public  = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/24"]
+      private = ["10.0.50.0/24", "10.0.51.0/24"]
+      public  = ["10.0.0.0/24", "10.0.1.0/24"]
     }
   }
 }
@@ -114,7 +114,18 @@ locals {
     name = local.shared_resource_name
     port = 7890
 
-    compute = {}
+    compute = {
+      instance = {
+        image_id      = ""
+        instance_type = "t3a.micro"
+      }
+
+      auto_scaling = {
+        minimum = 1
+        maximum = 2
+        desired = 1
+      }
+    }
 
     container = {
       launch_type               = "FARGATE"
@@ -133,7 +144,7 @@ locals {
 
     load_balancer = {
       domain_name_prefix = var.client_info.project_short_name
-      health_check_path  = "/" # /api/v1/HealthCheck/Ping OR /index.html
+      health_check_path  = "/api/v1/HealthCheck/Ping" # /api/v1/HealthCheck/Ping OR /index.html
       hosted_zone = {
         id = data.terraform_remote_state.networking.outputs.dns.hosted_zone_id
       }

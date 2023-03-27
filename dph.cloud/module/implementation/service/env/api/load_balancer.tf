@@ -1,21 +1,8 @@
 #####################################################
 #                                                   #
-#                     VARIABLES                     #
-#                                                   #
-#####################################################
-
-
-#####################################################
-#                                                   #
 #                   CONFIGURATION                   #
 #                                                   #
 #####################################################
-
-locals {
-  load_balancer = {
-    full_domain_name = "${var.api.load_balancer.domain_name_prefix}.${var.api.load_balancer.listener.certificate.domain_name}"
-  }
-}
 
 resource "aws_security_group" "lb" {
   count = length(module.public_subnet) > 0 ? 1 : 0
@@ -134,7 +121,7 @@ resource "aws_route53_record" "record_with_alias" {
   count = length(aws_lb.lb) > 0 ? 1 : 0
 
   zone_id = var.api.load_balancer.hosted_zone.id
-  name    = local.load_balancer.full_domain_name
+  name    = local.config.full_domain_name
   type    = "A"
 
   alias {
@@ -151,16 +138,12 @@ resource "aws_route53_record" "record_with_alias" {
 #####################################################
 
 locals {
-  lb_output = var.api.network.in_use == true ? {
-    domain_name = local.load_balancer.full_domain_name
+  lb_output = {
+    domain_name = local.config.full_domain_name
 
-    target_group = {
+    target_group = var.api.network.in_use == true ? {
       arn = aws_lb_target_group.lb[0].arn
-    }
     } : {
-    domain_name = ""
-
-    target_group = {
       arn = ""
     }
   }

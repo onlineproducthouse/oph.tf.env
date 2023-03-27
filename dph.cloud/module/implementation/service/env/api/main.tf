@@ -61,7 +61,18 @@ variable "api" {
       })
     })
 
-    compute = object({})
+    compute = object({
+      instance = object({
+        image_id      = string
+        instance_type = string
+      })
+
+      auto_scaling = object({
+        minimum = number
+        maximum = number
+        desired = number
+      })
+    })
 
     container = object({
       launch_type               = string
@@ -86,6 +97,23 @@ variable "api" {
 #                                                   #
 #####################################################
 
+locals {
+  config = {
+    cluster_name           = "${var.api.name}-cluster"
+    task_definition_family = "${var.api.name}-task-family"
+    container_name         = "${var.api.name}-container"
+    service_name           = "${var.api.name}-service"
+    port_mapping_name      = "${var.api.name}-port"
+
+    full_domain_name = "${var.api.load_balancer.domain_name_prefix}.${var.api.load_balancer.listener.certificate.domain_name}"
+
+    logging = {
+      driver = "awslogs"
+      prefix = "ecs"
+      group  = var.api.container.log_group
+    }
+  }
+}
 
 #####################################################
 #                                                   #
