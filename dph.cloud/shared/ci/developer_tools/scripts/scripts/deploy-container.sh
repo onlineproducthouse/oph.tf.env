@@ -38,14 +38,10 @@ source '.env' && source $RELEASE_MANIFEST && echo '{
   "executionRoleArn": "'${TASK_ROLE_ARN}'",
   "networkMode": "'${NETWORK_MODE}'",
   "requiresCompatibilities": [
-    "FARGATE"
+    "EC2"
   ],
   "cpu": "'${CONTAINER_CPU}'",
   "memory": "'${CONTAINER_MEMORY_RESERVATION}'",
-  "runtimePlatform": {
-    "operatingSystemFamily": "LINUX",
-    "cpuArchitecture": "X86_64"
-  },
   "containerDefinitions": [
     {
       "name": "'${CONTAINER_NAME}'",

@@ -171,11 +171,6 @@ resource "aws_ecs_task_definition" "container" {
   cpu                      = var.api.container.cpu
   memory                   = var.api.container.memory
 
-  runtime_platform {
-    operating_system_family = "LINUX"
-    cpu_architecture        = "X86_64"
-  }
-
   container_definitions = jsonencode([
     {
       "name" : "${local.config.container_name}",
