@@ -128,9 +128,9 @@ locals {
     }
 
     container = {
-      launch_type               = "FARGATE"
+      launch_type               = "EC2"
       enable_container_insights = false
-      network_mode              = "awsvpc"
+      network_mode              = "bridge"
       log_group                 = local.shared_resource_name
 
       cpu    = 256

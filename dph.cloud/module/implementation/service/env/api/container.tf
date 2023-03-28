@@ -46,7 +46,11 @@ resource "aws_security_group_rule" "container" {
 }
 
 resource "aws_cloudwatch_log_group" "container" {
-  name              = local.config.logging.group
+  for_each = {
+    for index, group in local.config.cloud_watch_log_group_list : group.key => group
+  }
+
+  name              = each.value.value
   retention_in_days = 30
 
   tags = {
