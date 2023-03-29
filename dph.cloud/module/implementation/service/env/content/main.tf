@@ -73,7 +73,7 @@ module "db_cert" {
   count = var.content.db_cert_source_path == "" ? 0 : 1
 
   bucket_id   = module.store.id
-  key         = "/${var.client_info.owner}/${var.client_info.project_short_name}/${var.client_info.service_name}/ca.pem"
+  key         = "/${var.client_info.owner}/${var.client_info.project_short_name}/${var.client_info.service_name}/root.crt"
   source_path = var.content.db_cert_source_path
 }
 
