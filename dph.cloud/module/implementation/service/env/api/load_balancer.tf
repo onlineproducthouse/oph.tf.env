@@ -5,7 +5,7 @@
 #####################################################
 
 resource "aws_security_group" "lb" {
-  count = length(module.public_subnet) > 0 ? 1 : 0
+  count = length(aws_vpc.api) > 0 ? 1 : 0
 
   name   = "${var.api.name}-lb-sg"
   vpc_id = aws_vpc.api[0].id
@@ -46,7 +46,7 @@ resource "aws_security_group_rule" "lb" {
 }
 
 resource "aws_lb" "lb" {
-  count = length(aws_security_group.lb) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
   name               = "${var.api.name}-lb"
   internal           = false
@@ -69,10 +69,10 @@ resource "aws_lb" "lb" {
 }
 
 resource "aws_lb_target_group" "lb" {
-  count = length(aws_lb.lb) > 0 ? 1 : 0
+  count = length(aws_vpc.api) > 0 ? 1 : 0
 
   name        = "${var.api.name}-lb-tg"
-  target_type = "ip"
+  target_type = "instance"
   vpc_id      = aws_vpc.api[0].id
 
   protocol = "HTTP"
@@ -81,11 +81,11 @@ resource "aws_lb_target_group" "lb" {
   health_check {
     enabled = true
 
-    interval            = 120
-    timeout             = 60
+    interval            = 60
+    timeout             = 30
     matcher             = 200
-    healthy_threshold   = 10
-    unhealthy_threshold = 10
+    healthy_threshold   = 5
+    unhealthy_threshold = 5
 
     protocol = "HTTP"
     port     = var.api.port
@@ -101,7 +101,7 @@ resource "aws_lb_target_group" "lb" {
 }
 
 resource "aws_lb_listener" "api" {
-  count = length(aws_lb.lb) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
   load_balancer_arn = aws_lb.lb[0].arn
 
@@ -118,7 +118,11 @@ resource "aws_lb_listener" "api" {
 }
 
 resource "aws_route53_record" "record_with_alias" {
-  count = length(aws_lb.lb) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
+
+  depends_on = [
+    aws_lb.lb[0]
+  ]
 
   zone_id = var.api.load_balancer.hosted_zone.id
   name    = local.config.full_domain_name
@@ -143,7 +147,7 @@ locals {
 
     target_group = var.api.network.in_use == true ? {
       arn = aws_lb_target_group.lb[0].arn
-    } : {
+      } : {
       arn = ""
     }
   }

@@ -5,7 +5,7 @@
 #####################################################
 
 resource "aws_security_group" "container" {
-  count = length(module.private_subnet) > 0 ? 1 : 0
+  count = length(aws_vpc.api) > 0 ? 1 : 0
 
   name   = "${local.config.container_name}-sg"
   vpc_id = aws_vpc.api[0].id
@@ -24,10 +24,15 @@ resource "aws_security_group" "container" {
 
 locals {
   container_sg_rules = [
-    { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
-    { name = "unsecure", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 80 },
-    { name = "secure", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 443 },
-    { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = var.api.port },
+    { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], from_port = 0, to_port = 0 },
+    { name = "unsecure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
+    { name = "secure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
+    { name = "ephemeral_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
+
+    { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = var.api.port, to_port = var.api.port },
+    { name = "unsecure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
+    { name = "secure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
+    { name = "ephemeral_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
   ]
 }
 
@@ -41,40 +46,22 @@ resource "aws_security_group_rule" "container" {
   type        = each.value.type
   protocol    = each.value.protocol
   cidr_blocks = each.value.cidr_blocks
-  from_port   = each.value.port
-  to_port     = each.value.port
-}
-
-resource "aws_cloudwatch_log_group" "container" {
-  for_each = {
-    for index, group in local.config.cloud_watch_log_group_list : group.key => group
-  }
-
-  name              = each.value.value
-  retention_in_days = 30
-
-  tags = {
-    owner            = var.client_info.owner
-    environment_name = var.client_info.environment_name
-    project_name     = var.client_info.project_name
-    service_name     = var.client_info.service_name
-  }
+  from_port   = each.value.from_port
+  to_port     = each.value.to_port
 }
 
 module "cluster" {
   source = "../../../../../module/interface/aws/containers/ecs/cluster"
 
-  count = length(aws_security_group.container) > 0 ? 1 : 0
-
   client_info = var.client_info
   cluster = {
     name                      = local.config.cluster_name
-    enable_container_insights = var.api.container.enable_container_insights
+    enable_container_insights = var.api.network.in_use == true ? var.api.container.enable_container_insights : false
   }
 }
 
 resource "aws_launch_template" "container" {
-  count = length(aws_security_group.container) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
   image_id               = var.api.compute.instance.image_id
   instance_type          = var.api.compute.instance.instance_type
@@ -94,9 +81,9 @@ resource "aws_launch_template" "container" {
 }
 
 resource "aws_autoscaling_group" "container" {
-  count = length(module.private_subnet) > 0 && length(aws_lb_target_group.lb) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
-  name_prefix               = "${var.api.name}-asg"
+  name                      = "${var.api.name}-asg"
   vpc_zone_identifier       = module.private_subnet[0].id_list
   health_check_type         = "ELB"
   health_check_grace_period = 600
@@ -131,13 +118,13 @@ resource "aws_autoscaling_group" "container" {
 }
 
 resource "aws_ecs_capacity_provider" "container" {
-  count = length(aws_autoscaling_group.container) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_vpc.api) > 0 ? 1 : 0
 
   name = aws_autoscaling_group.container[0].name
 
   auto_scaling_group_provider {
     auto_scaling_group_arn         = aws_autoscaling_group.container[0].arn
-    managed_termination_protection = "ENABLED"
+    managed_termination_protection = "DISABLED"
 
     managed_scaling {
       maximum_scaling_step_size = 4
@@ -149,9 +136,9 @@ resource "aws_ecs_capacity_provider" "container" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "container" {
-  count = length(module.cluster) > 0 && length(aws_autoscaling_group.container) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_ecs_capacity_provider.container) > 0 ? 1 : 0
 
-  cluster_name = module.cluster[0].name
+  cluster_name = module.cluster.name
 
   capacity_providers = [aws_autoscaling_group.container[0].name]
 
@@ -165,8 +152,6 @@ resource "aws_ecs_cluster_capacity_providers" "container" {
 data "aws_caller_identity" "current" {}
 
 resource "aws_ecs_task_definition" "container" {
-  count = length(module.cluster) > 0 ? 1 : 0
-
   family                   = local.config.task_definition_family
   task_role_arn            = aws_iam_role.api.arn
   execution_role_arn       = aws_iam_role.api.arn
@@ -210,15 +195,15 @@ resource "aws_ecs_task_definition" "container" {
 }
 
 resource "aws_ecs_service" "container" {
-  count = length(aws_ecs_cluster_capacity_providers.container) > 0 ? 1 : 0
+  count = var.api.network.in_use == true && length(aws_ecs_capacity_provider.container) > 0 ? 1 : 0
 
   name                    = local.config.service_name
-  cluster                 = module.cluster[0].id
+  cluster                 = module.cluster.id
   scheduling_strategy     = "REPLICA"
   enable_ecs_managed_tags = true
   iam_role                = aws_iam_role.api.arn
 
-  task_definition                    = aws_ecs_task_definition.container[0].arn
+  task_definition                    = aws_ecs_task_definition.container.arn
   desired_count                      = var.api.container.desired_tasks_count
   deployment_minimum_healthy_percent = var.api.container.deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.api.container.deployment_maximum_healthy_percent
