@@ -112,12 +112,16 @@ resource "aws_iam_policy" "api" {
 }
 
 resource "aws_iam_role" "api" {
-  name = "${var.api.name}-role"
-  path = "/system/"
+  name                 = "${var.api.name}-role"
+  path                 = "/system/"
+  permissions_boundary = ""
 
   force_detach_policies = true
-  managed_policy_arns   = [aws_iam_policy.api.arn]
-  permissions_boundary  = ""
+  managed_policy_arns = [
+    aws_iam_policy.api.arn,
+    # "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    # "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+  ]
 
   assume_role_policy = jsonencode({
     Version : "2012-10-17",
