@@ -58,7 +58,7 @@ module "public_subnet" {
 module "eip" {
   source = "../../../../interface/aws/networking/vpc/elastic_ip"
 
-  count = var.api.network.in_use == true && length(module.public_subnet) > 0 ? 1 : 0
+  count = length(module.public_subnet) > 0 ? 1 : 0
 
   subnet_count = length(module.public_subnet[0].id_list)
   client_info  = var.client_info
