@@ -25,8 +25,8 @@ resource "aws_security_group" "lb" {
 locals {
   lb_sg_rules = [
     { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
-    { name = "unsecure", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 80 },
-    { name = "secure", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 443 },
+    # { name = "unsecure", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 80 },
+    # { name = "secure", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 443 },
     { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = var.api.port },
   ]
 }
@@ -81,8 +81,8 @@ resource "aws_lb_target_group" "lb" {
   health_check {
     enabled = true
 
-    interval            = 60
-    timeout             = 30
+    interval            = 30
+    timeout             = 5
     matcher             = 200
     healthy_threshold   = 5
     unhealthy_threshold = 5

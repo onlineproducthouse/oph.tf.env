@@ -25,14 +25,14 @@ resource "aws_security_group" "container" {
 locals {
   container_sg_rules = [
     { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], from_port = 0, to_port = 0 },
-    { name = "unsecure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
-    { name = "secure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
-    { name = "ephemeral_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
+    # { name = "unsecure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
+    # { name = "secure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
+    # { name = "ephemeral_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
 
     { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = var.api.port, to_port = var.api.port },
-    { name = "unsecure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
-    { name = "secure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
-    { name = "ephemeral_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
+    # { name = "unsecure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
+    # { name = "secure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
+    # { name = "ephemeral_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
   ]
 }
 
@@ -86,7 +86,7 @@ resource "aws_autoscaling_group" "container" {
   name                      = "${var.api.name}-asg"
   vpc_zone_identifier       = module.private_subnet[0].id_list
   health_check_type         = "ELB"
-  health_check_grace_period = 600
+  health_check_grace_period = 300
   target_group_arns         = [aws_lb_target_group.lb[0].arn]
   min_size                  = var.api.compute.auto_scaling.minimum
   max_size                  = var.api.compute.auto_scaling.maximum
@@ -127,7 +127,7 @@ resource "aws_ecs_capacity_provider" "container" {
     managed_termination_protection = "DISABLED"
 
     managed_scaling {
-      maximum_scaling_step_size = 4
+      maximum_scaling_step_size = 2
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
       target_capacity           = 100
