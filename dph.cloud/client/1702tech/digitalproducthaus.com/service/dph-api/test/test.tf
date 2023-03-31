@@ -26,7 +26,7 @@ terraform {
 
   required_providers {
     aws = {
-      version = "4.8.0"
+      version = "4.60.0"
       source  = "hashicorp/aws"
     }
   }
@@ -116,7 +116,7 @@ locals {
 
     compute = {
       instance = {
-        image_id      = ""
+        image_id      = "ami-0ef8272297113026d"
         instance_type = "t3a.micro"
       }
 
@@ -130,16 +130,16 @@ locals {
     container = {
       launch_type               = "EC2"
       enable_container_insights = false
-      network_mode              = "bridge"
+      network_mode              = "host"
       log_group                 = local.shared_resource_name
 
-      cpu    = 256
-      memory = 512
+      cpu    = 1400
+      memory = 650
 
-      desired_tasks_count                = 2
+      desired_tasks_count                = 1
       target_capacity                    = 100
-      deployment_minimum_healthy_percent = 100
-      deployment_maximum_healthy_percent = 200
+      deployment_minimum_healthy_percent = 0
+      deployment_maximum_healthy_percent = 100
     }
 
     load_balancer = {
