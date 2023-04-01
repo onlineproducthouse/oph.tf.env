@@ -25,8 +25,6 @@ resource "aws_security_group" "lb" {
 locals {
   lb_sg_rules = [
     { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
-    # { name = "unsecure", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 80 },
-    # { name = "secure", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = 443 },
     { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = var.api.port },
   ]
 }

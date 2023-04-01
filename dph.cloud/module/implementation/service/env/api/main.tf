@@ -116,13 +116,6 @@ locals {
 
   cloud_watch_log_group_list = [
     { key = "main", value = local.config.logging.group },
-    # { key = "amazon-cloudwatch-agent", value = "${local.config.logging.group}/${local.config.logging.prefix}/amazon-cloudwatch-agent.log" },
-    # { key = "dmesg", value = "${local.config.logging.group}/${local.config.logging.prefix}/var/log/dmesg" },
-    # { key = "messages", value = "${local.config.logging.group}/${local.config.logging.prefix}/var/log/messages" },
-    # { key = "docker", value = "${local.config.logging.group}/${local.config.logging.prefix}/var/log/docker" },
-    # { key = "ecs-init", value = "${local.config.logging.group}/${local.config.logging.prefix}/var/log/ecs/ecs-init.log" },
-    # { key = "ecs-agent", value = "${local.config.logging.group}/${local.config.logging.prefix}/var/log/ecs/ecs-agent.log" },
-    # { key = "audit", value = "${local.config.logging.group}/${local.config.logging.prefix}/var/log/ecs/audit.log" },
   ]
 }
 

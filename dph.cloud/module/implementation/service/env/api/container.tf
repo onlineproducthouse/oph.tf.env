@@ -25,14 +25,7 @@ resource "aws_security_group" "container" {
 locals {
   container_sg_rules = [
     { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], from_port = 0, to_port = 0 },
-    # { name = "unsecure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
-    # { name = "secure_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
-    # { name = "ephemeral_out", type = "egress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
-
     { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = var.api.port, to_port = var.api.port },
-    # { name = "unsecure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 80, to_port = 80 },
-    # { name = "secure_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 443, to_port = 443 },
-    # { name = "ephemeral_in", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = 1024, to_port = 65535 },
   ]
 }
 
