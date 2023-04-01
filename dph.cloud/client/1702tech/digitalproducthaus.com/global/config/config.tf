@@ -26,7 +26,7 @@ terraform {
 
   required_providers {
     aws = {
-      version = "4.8.0"
+      version = "4.60.0"
       source  = "hashicorp/aws"
     }
   }
@@ -90,20 +90,54 @@ data "terraform_remote_state" "networking" {
   }
 }
 
+data "terraform_remote_state" "dph_dev_tools_store" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "shared/ci/storage/developer_tools/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "dph_ci_scripts" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "shared/ci/developer_tools/scripts/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "api_test_env" {
+  backend = "s3"
+
+  config = {
+    bucket = "dph-platform-terraform-remote-state"
+    key    = "client/1702tech/digitalproducthaus.com/service/dph-api/test/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
   image_registry_base_url    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
   test_user_email_addr_templ = "test-user@${data.terraform_remote_state.networking.outputs.dns.domain_name}"
 
   paths = {
-    build  = "/dph/config/build"
-    deploy = "/dph/config/deploy"
     global = "/dph/config/global"
     local  = "/dph/config/local"
     test   = "/dph/config/test"
-  }
-}
 
-locals {
+    ci_build_api      = "/dph/config/ci/build/api"
+    ci_build_database = "/dph/config/ci/build/database"
+    ci_build_web      = "/dph/config/ci/build/web"
+
+    ci_deploy_api      = "/dph/config/ci/deploy/api"
+    ci_deploy_database = "/dph/config/ci/deploy/database"
+    ci_deploy_web      = "/dph/config/ci/deploy/web"
+  }
+
   global = [
     { id = "global_project_name", path = local.paths.global, key = "PROJECT_NAME", value = var.client_info.project_name },
     { id = "global_do_not_reply", path = local.paths.global, key = "NO_REPLY_EMAIL_ADDRESS", value = data.terraform_remote_state.email.outputs.do_not_reply },
@@ -138,8 +172,12 @@ module "config" {
   client_info = var.client_info
 
   parameters = concat(
-    local.build,
-    local.deploy,
+    local.ci_build_api,
+    local.ci_build_database,
+    local.ci_build_web,
+    local.ci_deploy_api,
+    local.ci_deploy_database,
+    local.ci_deploy_web,
     local.global,
     local.local,
     local.test,

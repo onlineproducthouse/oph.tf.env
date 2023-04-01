@@ -4,24 +4,14 @@
 #                                                   #
 #####################################################
 
-data "terraform_remote_state" "api_test_env" {
-  backend = "s3"
-
-  config = {
-    bucket = "dph-platform-terraform-remote-state"
-    key    = "client/1702tech/digitalproducthaus.com/service/dph-api/test/terraform.tfstate"
-    region = "eu-west-1"
-  }
-}
-
 resource "random_uuid" "test_api_key_v1" {}
 
 locals {
   test = [
     { id = "test_env_name", path = local.paths.test, key = "ENVIRONMENT_NAME", value = "test" },
     { id = "test_db_protocol", path = local.paths.test, key = "DB_PROTOCOL", value = local.secrets.test.db_protocol },
-    { id = "test_db_username", path = local.paths.test, key = "DB_USERNAME", value = local.secrets.deploy.db_super_username },
-    { id = "test_db_pwd", path = local.paths.test, key = "DB_PASSWORD", value = local.secrets.deploy.db_super_password },
+    { id = "test_db_username", path = local.paths.test, key = "DB_USERNAME", value = local.secrets.ci_deploy_database.db_super_username },
+    { id = "test_db_pwd", path = local.paths.test, key = "DB_PASSWORD", value = local.secrets.ci_deploy_database.db_super_password },
     { id = "test_db_host", path = local.paths.test, key = "DB_HOST", value = local.secrets.test.db_host },
     { id = "test_db_port", path = local.paths.test, key = "DB_PORT", value = local.secrets.test.db_port },
     { id = "test_db_name", path = local.paths.test, key = "DB_NAME", value = local.secrets.test.db_name },
@@ -59,13 +49,6 @@ locals {
     { id = "test_client_api_host", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.api.load_balancer.domain_name },
     { id = "test_client_api_port", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.port },
     { id = "test_client_api_base_path", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_BASE_PATH", value = "/api/v1" },
-
-    { id = "test_log_driver", path = local.paths.test, key = "LOG_DRIVER", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.logging.driver },
-    { id = "test_log_group", path = local.paths.test, key = "LOG_GROUP", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.logging.group },
-    { id = "test_log_prefix", path = local.paths.test, key = "LOG_PREFIX", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.logging.prefix },
-
-    { id = "test_port_mapping_name", path = local.paths.test, key = "PORT_MAPPING_NAME", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.port_mapping_name },
-    { id = "test_network_mode", path = local.paths.test, key = "NETWORK_MODE", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.network_mode },
   ]
 }
 
@@ -75,6 +58,3 @@ locals {
 #                                                   #
 #####################################################
 
-output "test_env" {
-  value = data.terraform_remote_state.api_test_env.outputs
-}
