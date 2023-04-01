@@ -135,7 +135,11 @@ locals {
 
     ci_deploy_api      = "/dph/config/ci/deploy/api"
     ci_deploy_database = "/dph/config/ci/deploy/database"
-    ci_deploy_web      = "/dph/config/ci/deploy/web"
+
+    ci_deploy_web_storybook = "/dph/config/ci/deploy/web/storybook"
+    ci_deploy_web_www       = "/dph/config/ci/deploy/web/www"
+    ci_deploy_web_portal    = "/dph/config/ci/deploy/web/portal"
+    ci_deploy_web_console   = "/dph/config/ci/deploy/web/console"
   }
 
   global = [
@@ -177,7 +181,10 @@ module "config" {
     local.ci_build_web,
     local.ci_deploy_api,
     local.ci_deploy_database,
-    local.ci_deploy_web,
+    local.ci_deploy_web.storybook,
+    local.ci_deploy_web.www,
+    local.ci_deploy_web.portal,
+    local.ci_deploy_web.console,
     local.global,
     local.local,
     local.test,

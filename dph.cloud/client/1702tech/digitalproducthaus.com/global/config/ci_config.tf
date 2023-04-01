@@ -34,7 +34,24 @@ locals {
     { id = "ci_deploy_database_db_pwd", path = local.paths.ci_deploy_database, key = "DB_SUPER_PASSWORD", value = local.secrets.ci_deploy_database.db_super_password },
   ]
 
-  ci_deploy_web = []
+  ci_deploy_web = {
+    storybook = [
+      { id = "ci_deploy_web_storybook_s3_host_bucket_url", path = local.paths.ci_deploy_web_storybook, key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.api_test_env.outputs.web.storybook.host.id },
+      { id = "ci_deploy_web_storybook_cdn_id", path = local.paths.ci_deploy_web_storybook, key = "CDN_ID", value = data.terraform_remote_state.api_test_env.outputs.web.storybook.cdn.id },
+    ]
+    www = [
+      { id = "ci_deploy_web_www_s3_host_bucket_url", path = local.paths.ci_deploy_web_www, key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.api_test_env.outputs.web.www.host.id },
+      { id = "ci_deploy_web_www_cdn_id", path = local.paths.ci_deploy_web_www, key = "CDN_ID", value = data.terraform_remote_state.api_test_env.outputs.web.www.cdn.id },
+    ]
+    portal = [
+      { id = "ci_deploy_web_portal_s3_host_bucket_url", path = local.paths.ci_deploy_web_portal, key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.api_test_env.outputs.web.portal.host.id },
+      { id = "ci_deploy_web_portal_cdn_id", path = local.paths.ci_deploy_web_portal, key = "CDN_ID", value = data.terraform_remote_state.api_test_env.outputs.web.portal.cdn.id },
+    ]
+    console = [
+      { id = "ci_deploy_web_console_s3_host_bucket_url", path = local.paths.ci_deploy_web_console, key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.api_test_env.outputs.web.console.host.id },
+      { id = "ci_deploy_web_console_cdn_id", path = local.paths.ci_deploy_web_console, key = "CDN_ID", value = data.terraform_remote_state.api_test_env.outputs.web.console.cdn.id },
+    ]
+  }
 }
 
 #####################################################
