@@ -32,7 +32,7 @@ echo "Build number: $CODEBUILD_BUILD_NUMBER"
 LOCAL_ENV_FILE_NAME="${ENV_FILE_STORE_LOCATION}/${ENV_FILE_NAME}"
 
 # populate ecs json files
-source '.env' && source $RELEASE_MANIFEST && echo '{
+source $RELEASE_MANIFEST && echo '{
   "family": "'${TASK_FAMILY}'",
   "taskRoleArn": "'${TASK_ROLE_ARN}'",
   "executionRoleArn": "'${TASK_ROLE_ARN}'",

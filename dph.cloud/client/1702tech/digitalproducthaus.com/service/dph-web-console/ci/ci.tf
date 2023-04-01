@@ -26,7 +26,7 @@ terraform {
 
   required_providers {
     aws = {
-      version = "4.8.0"
+      version = "4.60.0"
       source  = "hashicorp/aws"
     }
   }
@@ -109,24 +109,12 @@ data "terraform_remote_state" "config" {
 }
 
 locals {
-  dph_dev_tools_arn     = data.terraform_remote_state.dph_dev_tools_store.outputs.arn
-  buildspec_key         = data.terraform_remote_state.dph_ci_scripts.outputs.buildspec_key
-  post_build_script_key = data.terraform_remote_state.dph_ci_scripts.outputs.post_build_script_key
-
-  shared_env_vars = [
-    { key = "AWS_REGION", value = var.client_info.region },
-    { key = "CI_FOLDER", value = "./ci" },
-    { key = "WORKING_DIR", value = "./" },
-    { key = "BUILD_ARTEFACT_PATH", value = "**" },
-    { key = "PROJECT_TYPE", value = "client" },
-    { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dph_dev_tools_store.outputs.id}" },
-    { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.dph_ci_scripts.outputs.load_environment_variables_key },
-    { key = "ENV_FILE_STORE_LOCATION", value = data.terraform_remote_state.config.outputs.test_env.content.store.id },
-    { key = "ENV_FILE_NAME", value = "${var.client_info.project_short_name}-${var.client_info.service_name}.env" },
-  ]
+  dph_dev_tools_arn = data.terraform_remote_state.dph_dev_tools_store.outputs.arn
+  buildspec_key     = data.terraform_remote_state.dph_ci_scripts.outputs.buildspec_key
+  buildspec         = "${local.dph_dev_tools_arn}${local.buildspec_key}"
 
   deployment_targets = {
-    test = data.terraform_remote_state.config.outputs.test_env.api.api.network.vpc.cidr_block == "" ? [] : [{
+    test = data.terraform_remote_state.config.outputs.platform.network.in_use != true ? [] : [{
       name = "test"
       vpc = {
         id      = ""
@@ -155,14 +143,14 @@ module "ci" {
   }
 
   build_job = {
-    buildspec             = "${local.dph_dev_tools_arn}${local.buildspec_key}"
-    post_build_script_key = local.post_build_script_key
-    cert_store_id         = data.terraform_remote_state.config.outputs.test_env.content.store.id
-    cert_key              = data.terraform_remote_state.config.outputs.test_env.content.db_cert.key
+    buildspec = "${local.buildspec}"
 
-    environment_variables = concat(local.shared_env_vars, [
+    environment_variables = concat(data.terraform_remote_state.config.outputs.ci.shared_env_vars, [
       { key = "CI_ACTION", value = "build" },
+      { key = "PROJECT_TYPE", value = "client" },
+      { key = "WORKING_DIR", value = "./" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
+      { key = "BUILD_ARTEFACT_PATH", value = "**" },
       { key = "RELEASE_ARTEFACT_PATH", value = "dph.client.web/dph.client.web.console/build" },
       { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
         data.terraform_remote_state.config.outputs.paths.global,
@@ -173,14 +161,17 @@ module "ci" {
   }
 
   deploy_job = {
-    buildspec          = "${local.dph_dev_tools_arn}${local.buildspec_key}"
+    buildspec          = "${local.buildspec}"
     deployment_targets = concat(local.deployment_targets.test)
 
-    environment_variables = concat(local.shared_env_vars, [
+    environment_variables = concat(data.terraform_remote_state.config.outputs.ci.shared_env_vars, [
       { key = "CI_ACTION", value = "deploy" },
-      { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.paths.global },
-      { key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.config.outputs.test_env.web.console.host.id },
-      { key = "CDN_ID", value = data.terraform_remote_state.config.outputs.test_env.web.console.cdn.id },
+      { key = "PROJECT_TYPE", value = "client" },
+      { key = "WORKING_DIR", value = "./" },
+      { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
+        data.terraform_remote_state.config.outputs.paths.global,
+        data.terraform_remote_state.config.outputs.paths.ci_deploy_web_console,
+      ]) },
     ])
   }
 

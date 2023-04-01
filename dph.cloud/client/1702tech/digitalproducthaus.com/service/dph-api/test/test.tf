@@ -122,7 +122,7 @@ locals {
 
       auto_scaling = {
         minimum = 1
-        maximum = 2
+        maximum = 1
         desired = 1
       }
     }
@@ -138,8 +138,8 @@ locals {
 
       desired_tasks_count                = 1
       target_capacity                    = 100
-      deployment_minimum_healthy_percent = 0
-      deployment_maximum_healthy_percent = 100
+      deployment_minimum_healthy_percent = 100
+      deployment_maximum_healthy_percent = 200
     }
 
     load_balancer = {
