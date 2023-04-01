@@ -193,3 +193,9 @@ module "config" {
 output "paths" {
   value = local.paths
 }
+
+output "platform" {
+  value = {
+    network = data.terraform_remote_state.api_test_env.outputs.api.api.network
+  }
+}

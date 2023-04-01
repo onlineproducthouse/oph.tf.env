@@ -135,6 +135,8 @@ module "private_route" {
 
 locals {
   network_output = var.api.network.in_use == true ? {
+    in_use = var.api.network.in_use
+
     vpc = {
       id         = aws_vpc.api[0].id
       cidr_block = var.api.network.cidr_blocks.vpc
@@ -147,6 +149,8 @@ locals {
       public  = module.public_subnet[0].id_list
     }
     } : {
+    in_use = var.api.network.in_use
+
     vpc = {
       id         = ""
       cidr_block = ""

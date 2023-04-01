@@ -7,9 +7,6 @@
 variable "build_job" {
   type = object({
     buildspec             = string
-    post_build_script_key = string
-    cert_store_id         = string
-    cert_key              = string
     environment_variables = list(object({
       key   = string
       value = string
@@ -18,9 +15,6 @@ variable "build_job" {
 
   default = {
     buildspec             = ""
-    post_build_script_key = ""
-    cert_store_id         = ""
-    cert_key              = ""
     environment_variables = []
   }
 }
@@ -56,14 +50,11 @@ module "build_job" {
     buildspec       = var.build_job.buildspec
 
     environment_variables = concat(var.build_job.environment_variables, [
-      { key = "CERT_STORE", value = "s3://${var.build_job.cert_store_id}" },
-      { key = "CERT_NAME", value = var.build_job.cert_key },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = length(module.registry) <= 0 ? "" : module.registry[0].name },
       { key = "RELEASE_ARTEFACT_STORE", value = module.release_artefact.id },
       { key = "TEST_BRANCH_RELEASE_ARTEFACT_KEY", value = local.release_artefacts[each.value].s3_object_key },
       { key = "RELEASE_MANIFEST", value = local.release_manifest },
-      { key = "POST_BUILD_SCRIPT_KEY", value = var.build_job.post_build_script_key },
       { key = "GIT_BRANCH", value = each.value },
     ])
 
