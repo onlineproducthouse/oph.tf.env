@@ -147,7 +147,7 @@ locals {
     { id = "global_do_not_reply", path = local.paths.global, key = "NO_REPLY_EMAIL_ADDRESS", value = data.terraform_remote_state.email.outputs.do_not_reply },
     { id = "global_dkr_repo", path = local.paths.global, key = "IMAGE_REGISTRY_BASE_URL", value = local.image_registry_base_url },
 
-    { id = "global_sendgrid_sender_street", path = local.paths.global, key = "SENDGRID_SENDER_ADDRESS", value = "17 Zebra Street" },
+    { id = "global_sendgrid_sender_street", path = local.paths.global, key = "SENDGRID_SENDER_ADDRESS", value = "17-Zebra-Street" },
     { id = "global_sendgrid_sender_city", path = local.paths.global, key = "SENDGRID_SENDER_CITY", value = "Bronkhorstspruit" },
     { id = "global_sendgrid_sender_state", path = local.paths.global, key = "SENDGRID_SENDER_STATE", value = "Gauteng" },
     { id = "global_sendgrid_sender_zip", path = local.paths.global, key = "SENDGRID_SENDER_ZIP", value = "1020" },
@@ -156,6 +156,7 @@ locals {
     { id = "global_sendgrid_sender_new_account_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_NEW_ACCOUNT_TEMPL_ID", value = local.secrets.global.sendgrid_sender_new_account_templ_id },
     { id = "global_sendgrid_sender_recover_account_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_RECOVER_ACCOUNT_TEMPL_ID", value = local.secrets.global.sendgrid_sender_recover_account_templ_id },
     { id = "global_sendgrid_sender_new_email_addr_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_NEW_EMAIL_ADDR_TEMPL_ID", value = local.secrets.global.sendgrid_sender_new_email_addr_templ_id },
+    { id = "global_sendgrid_sender_lead_link_invite_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_LEAD_LINK_INVITE_TEMPL_ID", value = local.secrets.global.sendgrid_sender_lead_link_invite_templ_id },
 
     { id = "global_cloudinary_cloud_name", path = local.paths.global, key = "CLOUDINARY_CLOUD_NAME", value = local.secrets.global.cloudinary_cloud_name },
 
@@ -167,6 +168,8 @@ locals {
     { id = "global_test_user_email_addr_third", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_THIRD", value = "third.${local.test_user_email_addr_templ}" },
     { id = "global_test_user_email_addr_fourth", path = local.paths.global, key = "TEST_USER_EMAIL_ADDR_FOURTH", value = "fourth.${local.test_user_email_addr_templ}" },
     { id = "global_test_user_pwd", path = local.paths.global, key = "TEST_USER_PWD", value = local.secrets.global.test_user_password },
+
+    { id = "global_portal_user_email_addr", path = local.paths.global, key = "PORTAL_USER_EMAIL_ADDR", value = "${local.secrets.global.portal_user_email_addr_prefix}@${data.terraform_remote_state.networking.outputs.dns.domain_name}" },
   ]
 }
 
