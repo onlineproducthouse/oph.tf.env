@@ -147,7 +147,7 @@ locals {
     { id = "global_do_not_reply", path = local.paths.global, key = "NO_REPLY_EMAIL_ADDRESS", value = data.terraform_remote_state.email.outputs.do_not_reply },
     { id = "global_dkr_repo", path = local.paths.global, key = "IMAGE_REGISTRY_BASE_URL", value = local.image_registry_base_url },
 
-    { id = "global_sendgrid_sender_street", path = local.paths.global, key = "SENDGRID_SENDER_ADDRESS", value = "17-Zebra-Street" },
+    { id = "global_sendgrid_sender_street", path = local.paths.global, key = "SENDGRID_SENDER_ADDRESS", value = "13-Zebra-Street" },
     { id = "global_sendgrid_sender_city", path = local.paths.global, key = "SENDGRID_SENDER_CITY", value = "Bronkhorstspruit" },
     { id = "global_sendgrid_sender_state", path = local.paths.global, key = "SENDGRID_SENDER_STATE", value = "Gauteng" },
     { id = "global_sendgrid_sender_zip", path = local.paths.global, key = "SENDGRID_SENDER_ZIP", value = "1020" },
@@ -161,6 +161,9 @@ locals {
     { id = "global_sendgrid_sender_organisation_member_invite_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_ORGANISATION_MEMBER_INVITE_TEMPL_ID", value = local.secrets.global.sendgrid_sender_organisation_member_invite_templ_id },
     { id = "global_sendgrid_sender_lead_signup_closed_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_LEAD_SIGNUP_CLOSED_TEMPL_ID", value = local.secrets.global.sendgrid_sender_lead_signup_closed_templ_id },
     { id = "global_sendgrid_sender_lead_pd_new_client_templ_id", path = local.paths.global, key = "SENDGRID_SENDER_LEAD_PD_NEW_CLIENT_TEMPL_ID", value = local.secrets.global.sendgrid_sender_lead_pd_new_client_templ_id },
+    { id = "sendgrid_sender_meeting_request_templ_id", path = local.paths.global, key = "SENDGRID_MEETING_REQUEST_TEMPL_ID", value = local.secrets.global.sendgrid_sender_meeting_request_templ_id },
+    { id = "sendgrid_sender_billing_event_created_templ_id", path = local.paths.global, key = "SENDGRID_BILLING_EVENT_CREATED_TEMPL_ID", value = local.secrets.global.sendgrid_sender_billing_event_created_templ_id },
+    { id = "sendgrid_sender_billing_event_payment_templ_id", path = local.paths.global, key = "SENDGRID_BILLING_EVENT_PAYMENT_TEMPL_ID", value = local.secrets.global.sendgrid_sender_billing_event_payment_templ_id },
 
     { id = "global_cloudinary_cloud_name", path = local.paths.global, key = "CLOUDINARY_CLOUD_NAME", value = local.secrets.global.cloudinary_cloud_name },
 
