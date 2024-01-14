@@ -110,6 +110,10 @@ locals {
 }
 
 locals {
+  file_service_storage = {
+    s3_bucket_name = "${local.shared_resource_name}-file-service"
+  }
+
   api = {
     name = local.shared_resource_name
     port = 7890
@@ -238,6 +242,13 @@ locals {
   }]
 }
 
+module "file_service_storage" {
+  source = "../../../../../../module/interface/aws/storage/s3/bucket"
+
+  bucket_name = local.file_service_storage.s3_bucket_name
+  client_info = var.client_info
+}
+
 module "test" {
   source = "../../../../../../module/implementation/service/env"
 
@@ -267,4 +278,8 @@ output "api" {
 
 output "web" {
   value = module.test.web
+}
+
+output "file_service_storage_bucket_name" {
+  value = module.file_service_storage.name
 }

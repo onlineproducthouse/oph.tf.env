@@ -49,6 +49,8 @@ locals {
     { id = "test_client_api_host", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_HOST", value = data.terraform_remote_state.api_test_env.outputs.api.api.load_balancer.domain_name },
     { id = "test_client_api_port", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_PORT", value = data.terraform_remote_state.api_test_env.outputs.api.api.container.port },
     { id = "test_client_api_base_path", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_BASE_PATH", value = "/api/v1" },
+
+    { id = "test_file_service_storage_bucket_name", path = local.paths.test, key = "FILE_SERVICE_S3_BUCKET", value = data.terraform_remote_state.api_test_env.outputs.file_service_storage_bucket_name },
   ]
 }
 
