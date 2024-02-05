@@ -5,6 +5,7 @@
 #####################################################
 
 resource "random_uuid" "local_api_key_v1" {}
+resource "random_uuid" "local_html_to_pdf_converter_api_key_v1" {}
 
 locals {
   local_api = {
@@ -59,5 +60,11 @@ locals {
     { id = "local_client_api_base_path", path = local.paths.local, key = "REACT_APP_LOCAL_CLIENT_API_BASE_PATH", value = "/api/v1" },
 
     { id = "local_file_service_storage_bucket_name", path = local.paths.local, key = "FILE_SERVICE_S3_BUCKET", value = data.terraform_remote_state.api_test_env.outputs.file_service_storage_bucket_name },
+
+    { id = "local_html_to_pdf_converter_api_port", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_PORT", value = local.secrets.local.html_to_pdf_converter_api_port },
+    { id = "local_html_to_pdf_converter_api_host", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_HOST", value = local.secrets.local.html_to_pdf_converter_api_host },
+    { id = "local_html_to_pdf_converter_api_key", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_KEY_LIST", value = join(",", [
+      random_uuid.local_html_to_pdf_converter_api_key_v1.result,
+    ]) },
   ]
 }

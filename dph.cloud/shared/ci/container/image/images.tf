@@ -74,8 +74,9 @@ locals {
     { name = "postgis/postgis", version = "14-3.2" },
     { name = "tonistiigi/binfmt", version = "latest" },
     { name = "golang", version = "1.19-alpine" },
-    { name = "node", version = "18.14-alpine" },
     { name = "httpd", version = "2.4" },
+    { name = "node-alpine", version = "18.14" },
+    { name = "node", version = "18.14" },
   ]
 }
 

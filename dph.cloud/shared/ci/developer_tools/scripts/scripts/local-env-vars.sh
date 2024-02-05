@@ -47,11 +47,11 @@ else
 
     echo "Total parameters retrieved from AWS SSM: $AWS_SSM_PARAMS_COUNT"
 
-    # Authenticate ECR
-    echo "ECR: Authenticating"
-    echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
-    echo "ECR: Authenticated"
-
     echo "Done loading environment variables at path: $i"
   done
+
+  # Authenticate ECR
+  echo "ECR: Authenticating"
+  echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
+  echo "ECR: Authenticated"
 fi
