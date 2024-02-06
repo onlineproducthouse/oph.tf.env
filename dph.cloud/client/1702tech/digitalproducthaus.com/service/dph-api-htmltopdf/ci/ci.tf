@@ -174,7 +174,7 @@ module "ci" {
     }
 
     git = {
-      branch_names   = ["dev", "test"]
+      branch_names   = ["dev"]
       connection_arn = data.terraform_remote_state.git_repo_webhook.outputs.arn
       repo_name      = "digitalproducttome/dph.api.htmltopdf"
     }
