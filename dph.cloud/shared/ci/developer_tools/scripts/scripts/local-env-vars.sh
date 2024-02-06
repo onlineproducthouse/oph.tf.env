@@ -31,9 +31,9 @@ else
     AWS_SSM_PARAMS_RESULT=$(echo $(aws ssm get-parameters-by-path --path "$i" --region "$AWS_REGION" --recursive --with-decryption --output "json") | jq '.Parameters')
     AWS_SSM_PARAMS_COUNT=$(echo $AWS_SSM_PARAMS_RESULT | jq '. | length')
 
-    for ((j = 0; j < $((AWS_SSM_PARAMS_COUNT * 1)); j++)); do
-      echo "Current index: $j"
+    echo "Total parameters retrieved from AWS SSM: $AWS_SSM_PARAMS_COUNT"
 
+    for ((j = 0; j < $((AWS_SSM_PARAMS_COUNT * 1)); j++)); do
       PARAM_NAME=$(echo $AWS_SSM_PARAMS_RESULT | jq ".[$j].Name")
       PARAM_VALUE=$(echo $AWS_SSM_PARAMS_RESULT | jq ".[$j].Value")
 
@@ -45,13 +45,11 @@ else
       echo $PARAM >>$ENV_FILE
     done
 
-    echo "Total parameters retrieved from AWS SSM: $AWS_SSM_PARAMS_COUNT"
-
     echo "Done loading environment variables at path: $i"
   done
 
   # Authenticate ECR
   echo "ECR: Authenticating"
-  echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
+  source $ENV_FILE && echo $(aws ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_REGISTRY_BASE_URL)
   echo "ECR: Authenticated"
 fi
