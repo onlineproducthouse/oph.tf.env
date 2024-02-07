@@ -61,6 +61,7 @@ locals {
 
     { id = "local_file_service_storage_bucket_name", path = local.paths.local, key = "FILE_SERVICE_S3_BUCKET", value = data.terraform_remote_state.api_test_env.outputs.file_service_storage_bucket_name },
 
+    { id = "local_htmltopdf_converter_api_protocol", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_PROTOCOL", value = "http" },
     { id = "local_htmltopdf_converter_api_port", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_PORT", value = local.secrets.local.html_to_pdf_converter_api_port },
     { id = "local_htmltopdf_converter_api_host", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_HOST", value = local.secrets.local.html_to_pdf_converter_api_host },
     { id = "local_htmltopdf_converter_api_key", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_KEY", value = random_uuid.local_html_to_pdf_converter_api_key_v1.result },
