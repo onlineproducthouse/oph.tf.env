@@ -5,6 +5,7 @@
 #####################################################
 
 resource "random_uuid" "test_api_key_v1" {}
+resource "random_uuid" "test_html_to_pdf_converter_api_key_v1" {}
 
 locals {
   test = [
@@ -51,6 +52,17 @@ locals {
     { id = "test_client_api_base_path", path = local.paths.test, key = "REACT_APP_TEST_CLIENT_API_BASE_PATH", value = "/api/v1" },
 
     { id = "test_file_service_storage_bucket_name", path = local.paths.test, key = "FILE_SERVICE_S3_BUCKET", value = data.terraform_remote_state.api_test_env.outputs.file_service_storage_bucket_name },
+
+    { id = "test_htmltopdf_converter_api_protocol", path = local.paths.test, key = "HTML_TO_PDF_CONVERTER_API_PROTOCOL", value = "https" },
+    { id = "test_htmltopdf_converter_api_port", path = local.paths.test, key = "HTML_TO_PDF_CONVERTER_API_PORT", value = local.secrets.test.html_to_pdf_converter_api_port },
+    { id = "test_htmltopdf_converter_api_host", path = local.paths.test, key = "HTML_TO_PDF_CONVERTER_API_HOST", value = local.secrets.test.html_to_pdf_converter_api_host },
+    { id = "test_htmltopdf_converter_api_key", path = local.paths.test, key = "HTML_TO_PDF_CONVERTER_API_KEY", value = random_uuid.test_html_to_pdf_converter_api_key_v1.result },
+    { id = "test_htmltopdf_converter_api_key_list", path = local.paths.test, key = "HTML_TO_PDF_CONVERTER_API_KEY_LIST", value = join(",", [
+      random_uuid.test_html_to_pdf_converter_api_key_v1.result,
+    ]) },
+
+    { id = "test_paystack_public_key", path = local.paths.test, key = "PAYSTACK_PUBLIC_KEY", value = local.secrets.test.paystack_public_key },
+    { id = "test_paystack_secret_key", path = local.paths.test, key = "PAYSTACK_SECRET_KEY", value = local.secrets.test.paystack_secret_key },
   ]
 }
 

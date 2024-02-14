@@ -68,5 +68,8 @@ locals {
     { id = "local_htmltopdf_converter_api_key_list", path = local.paths.local, key = "HTML_TO_PDF_CONVERTER_API_KEY_LIST", value = join(",", [
       random_uuid.local_html_to_pdf_converter_api_key_v1.result,
     ]) },
+
+    { id = "local_paystack_public_key", path = local.paths.local, key = "PAYSTACK_PUBLIC_KEY", value = local.secrets.local.paystack_public_key },
+    { id = "local_paystack_secret_key", path = local.paths.local, key = "PAYSTACK_SECRET_KEY", value = local.secrets.local.paystack_secret_key },
   ]
 }
