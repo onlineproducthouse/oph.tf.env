@@ -148,7 +148,7 @@ module "ci" {
     environment_variables = concat(data.terraform_remote_state.config.outputs.ci.shared_env_vars, [
       { key = "CI_ACTION", value = "build" },
       { key = "PROJECT_TYPE", value = "container" },
-      { key = "WORKING_DIR", value = "./dph.db.dph" },
+      { key = "WORKING_DIR", value = "./oph.db.oph" },
       { key = "ENVIRONMENT_NAME", value = "ci" },
       { key = "BUILD_ARTEFACT_PATH", value = "**" },
       { key = "RELEASE_ARTEFACT_PATH", value = "./" },

@@ -10,10 +10,9 @@ if [[ $CI_ACTION == "build" ]]; then
 
   if [[ "$GIT_BRANCH" == "dev" ]]; then
     echo "No post-build action required for branch: '$GIT_BRANCH'"
-    exit 0
   fi
 
-  if [[ "$GIT_BRANCH" == "test" ]]; then
+  if [[ "$GIT_BRANCH" == "qa" ]]; then
     echo "Target branch: '$GIT_BRANCH'"
     echo "Target project type: '$PROJECT_TYPE'"
 
@@ -33,8 +32,5 @@ if [[ $CI_ACTION == "build" ]]; then
       aws s3 cp "./$TEST_BRANCH_RELEASE_ARTEFACT_KEY.zip" "s3://$RELEASE_ARTEFACT_STORE"
     fi
 
-    exit 0
   fi
 fi
-
-exit 0
