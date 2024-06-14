@@ -1,10 +1,10 @@
-# 1720tech AWS Platform Infrastructure
+# onlineproducthouse.com Cloud Platform Infrastructure
 
-Terraform code for managing 1720tech's AWS resources as Infrastructure As Code (IAC)
+Terraform code for managing onlineproducthouse.com's cloud resources using Infrastructure As Code (IAC)
 
 ## Getting started
 
-To work with this codebase, you need to have Terraform and you AWS credentials configured.
+To work with this codebase, you need to have Terraform and your AWS credentials configured.
 
 - To set up Terraform, [click here](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Terraform documentation for AWS](https://www.terraform.io/docs/providers/aws/index.html)

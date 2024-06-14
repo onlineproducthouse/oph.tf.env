@@ -1,7 +1,0 @@
-region                                    = "eu-west-1"
-project_name                              = "dph-platform"
-terraform_state_bucket_name               = "dph-platform-terraform-remote-state"
-terraform_state_locks_dynamodb_table_name = "dph-platform-terraform-remote-state-locks"
-dynamodb_table_billing_mode               = "PAY_PER_REQUEST"
-dynamodb_hash_key                         = "LockID"
-owner                                     = "digitalproducthaus"
