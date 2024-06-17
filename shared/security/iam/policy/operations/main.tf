@@ -83,7 +83,7 @@ resource "aws_iam_policy" "operations" {
 output "operations" {
   value =  {
     for index, operation in local.operations : operation.name => {
-      arn = module.operations[operation.name].arn
+      arn = aws_iam_policy.operations[operation.name].arn
     }
   }
 }
