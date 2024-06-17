@@ -57,17 +57,17 @@ data "terraform_remote_state" "storage" {
 
 locals {
   scripts = [
+    { name = "build_client", key = "/oph/scripts/build-client.sh", source_path = "./scripts/build-client.sh" },
+    { name = "build_container", key = "/oph/scripts/build-container.sh", source_path = "./scripts/build-container.sh" },
+    { name = "codebuild_job", key = "/oph/scripts/codebuild.job.yml", source_path = "./scripts/codebuild.job.yml" },
+    { name = "deploy_client", key = "/oph/scripts/deploy-client.sh", source_path = "./scripts/deploy-client.sh" },
+    { name = "deploy_container", key = "/oph/scripts/deploy-container.sh", source_path = "./scripts/deploy-container.sh" },
+    { name = "import_docker_image", key = "/oph/scripts/import-docker-image.sh", source_path = "./scripts/import-docker-image.sh" },
     { name = "load_env_vars", key = "/oph/scripts/load-env-vars.sh", source_path = "./scripts/load-env-vars.sh" },
     { name = "local_env_vars", key = "/oph/scripts/local-env-vars.sh", source_path = "./scripts/local-env-vars.sh" },
-    { name = "build_container", key = "/oph/scripts/build-container.sh", source_path = "./scripts/build-container.sh" },
-    { name = "build_client", key = "/oph/scripts/build-client.sh", source_path = "./scripts/build-client.sh" },
-    { name = "codebuild_job", key = "/oph/scripts/codebuild.job.yml", source_path = "./scripts/codebuild.job.yml" },
-    { name = "deploy_container", key = "/oph/scripts/deploy-container.sh", source_path = "./scripts/deploy-container.sh" },
-    { name = "deploy_client", key = "/oph/scripts/deploy-client.sh", source_path = "./scripts/deploy-client.sh" },
     { name = "migrate_db", key = "/oph/scripts/migrate-db.sh", source_path = "./scripts/migrate-db.sh" },
-    { name = "product_platform_state", key = "/oph/scripts/product.platform.state.sh", source_path = "./scripts/product.platform.state.sh" },
     { name = "post_build", key = "/oph/scripts/post-build.sh", source_path = "./scripts/post-build.sh" },
-    { name = "import_docker_image", key = "/oph/scripts/import-docker-image.sh", source_path = "./scripts/import-docker-image.sh" },
+    { name = "product_platform_state", key = "/oph/scripts/product.platform.state.sh", source_path = "./scripts/product.platform.state.sh" },
   ]
 }
 
