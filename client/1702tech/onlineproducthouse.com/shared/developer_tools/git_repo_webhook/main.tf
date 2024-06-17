@@ -54,7 +54,7 @@ module "repo_webhook" {
   source = "../../../../../../module/interface/aws/developer_tools/codestar/connection"
 
   connection = {
-    name          = "${local.name}-bitbucket"
+    name          = "${local.name}-bb"
     provider_type = "Bitbucket"
   }
 }
