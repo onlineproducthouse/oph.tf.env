@@ -9,3 +9,8 @@ client_info = {
   environment_name       = "shared"
   environment_short_name = "shared"
 }
+
+networking = {
+  domain_name = "onlineproducthouse.com"
+  email_mx    = "1 SMTP.GOOGLE.COM"
+}
