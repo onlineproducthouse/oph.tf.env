@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/docker_images/terraform.tfstate"
+    key    = "shared/developer_tools/docker_registry/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -46,21 +46,20 @@ variable "client_info" {
 #####################################################
 
 locals {
-  images = [
-    { name = "redis-alpine", version = "7.0.15" },
-    { name = "postgis/postgis", version = "14-3.2" },
-    { name = "tonistiigi/binfmt", version = "latest" },
-    { name = "golang-alpine", version = "1.22" },
-    { name = "node-alpine", version = "20.14" },
-    { name = "node", version = "20.14" },
+  registries = [
+    { name = "redis" },
+    { name = "postgis/postgis" },
+    { name = "tonistiigi/binfmt" },
+    { name = "golang" },
+    { name = "node" },
   ]
 }
 
-module "images" {
+module "registries" {
   source = "../../../module/interface/aws/containers/ecr"
 
   for_each = {
-    for index, image in local.images : image.name => image
+    for index, registry in local.registries : registry.name => registry
   }
 
   ecr = {
@@ -74,10 +73,10 @@ module "images" {
 #                                                   #
 #####################################################
 
-output "images" {
+output "registry" {
   value = {
-    for index, image in local.images : image.name => {
-      tag_url = "${module.images[image.name].url}:${image.version}"
+    for index, registry in local.registries : registry.name => {
+      url = module.registries[registry.name].url
     }
   }
 }
