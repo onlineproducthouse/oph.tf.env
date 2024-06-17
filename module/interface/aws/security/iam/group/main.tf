@@ -18,7 +18,7 @@ variable "group" {
 #####################################################
 
 resource "aws_iam_group" "group" {
-  name = var.group.group_name
+  name = var.group.name
   path = "/groups/"
 }
 
