@@ -9,3 +9,36 @@ client_info = {
   environment_name       = "shared"
   environment_short_name = "shared"
 }
+
+sg_sender_auth = [
+  {
+    type  = "CNAME",
+    host  = "url4365.onlineproducthouse.com",
+    value = "sendgrid.net"
+  },
+  {
+    type  = "CNAME",
+    host  = "22274710.onlineproducthouse.com",
+    value = "sendgrid.net"
+  },
+  {
+    type  = "CNAME",
+    host  = "em8558.onlineproducthouse.com",
+    value = "u22274710.wl211.sendgrid.net"
+  },
+  {
+    type  = "CNAME",
+    host  = "s1._domainkey.onlineproducthouse.com",
+    value = "s1.domainkey.u22274710.wl211.sendgrid.net"
+  },
+  {
+    type  = "CNAME",
+    host  = "s2._domainkey.onlineproducthouse.com",
+    value = "s2.domainkey.u22274710.wl211.sendgrid.net"
+  },
+  {
+    type  = "TXT",
+    host  = "_dmarc.onlineproducthouse.com",
+    value = "v=DMARC1; p=none; fo=0; adkim=s; aspf=s"
+  },
+]
