@@ -59,7 +59,7 @@ module "users" {
   source = "../../../../module/interface/aws/security/iam/user"
 
   for_each = {
-    for index, user in local.users : user.name => user
+    for index, user in local.users : user.username => user
   }
 
   user = {
