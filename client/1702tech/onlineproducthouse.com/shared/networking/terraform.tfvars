@@ -13,4 +13,5 @@ client_info = {
 networking = {
   domain_name = "onlineproducthouse.com"
   email_mx    = "1 SMTP.GOOGLE.COM"
+  ip_address  = "169.1.24.244"
 }

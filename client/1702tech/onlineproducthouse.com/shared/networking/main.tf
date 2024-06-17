@@ -43,6 +43,7 @@ variable "networking" {
   type = object({
     domain_name = string
     email_mx    = string
+    ip_address  = string
   })
 }
 
@@ -58,6 +59,33 @@ module "dns" {
   dns = {
     domain_name     = var.networking.domain_name
     domain_email_mx = var.networking.email_mx
+  }
+}
+
+locals {
+  records = [
+    { name = "root", value = module.dns.domain_name },
+    { name = "www", value = "www.${module.dns.domain_name}" }
+  ]
+}
+
+module "root" {
+  source = "../../../../../module/interface/aws/networking/route53/hosted_zone/dns_record"
+
+  for_each = {
+    for index, record in local.records : record.name => record
+  }
+
+  record = {
+    with_alias             = false
+    zone_id                = module.dns.hosted_zone_id
+    alias_zone_id          = ""
+    name                   = each.value.value
+    alias_name             = ""
+    type                   = "A"
+    ttl                    = "14401"
+    evaluate_target_health = false
+    records                = [var.networking.ip_address]
   }
 }
 
