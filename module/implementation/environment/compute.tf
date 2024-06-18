@@ -35,7 +35,7 @@ resource "aws_security_group_rule" "compute" {
 }
 
 module "cluster" {
-  source = "../../../../module/interface/aws/containers/ecs/cluster"
+  source = "../../../module/interface/aws/containers/ecs/cluster"
 
   cluster = {
     name                      = local.cluster_name
@@ -44,7 +44,7 @@ module "cluster" {
 }
 
 resource "aws_launch_template" "compute" {
-  count = local.network_output.in_use == true && length(aws_vpc.environment) > 0 ? 1 : 0
+  count = length(aws_vpc.environment) > 0 ? 1 : 0
 
   image_id               = var.environment.compute.instance.image_id
   instance_type          = var.environment.compute.instance.instance_type
@@ -64,7 +64,7 @@ resource "aws_launch_template" "compute" {
 }
 
 resource "aws_autoscaling_group" "compute" {
-  count = local.network_output.in_use == true && length(aws_vpc.environment) > 0 ? 1 : 0
+  count = length(aws_vpc.environment) > 0 ? 1 : 0
 
   name                      = "${local.shared_name}-asg"
   vpc_zone_identifier       = module.private_subnet[0].id_list
@@ -85,7 +85,7 @@ resource "aws_autoscaling_group" "compute" {
 }
 
 resource "aws_ecs_capacity_provider" "compute" {
-  count = local.network_output.in_use == true && length(aws_vpc.environment) > 0 ? 1 : 0
+  count = length(aws_vpc.environment) > 0 ? 1 : 0
 
   name = aws_autoscaling_group.compute[0].name
 
@@ -103,7 +103,7 @@ resource "aws_ecs_capacity_provider" "compute" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "compute" {
-  count = local.network_output.in_use == true && length(aws_ecs_capacity_provider.compute) > 0 ? 1 : 0
+  count = length(aws_ecs_capacity_provider.compute) > 0 ? 1 : 0
 
   cluster_name = module.cluster.name
 
@@ -124,12 +124,11 @@ resource "aws_ecs_cluster_capacity_providers" "compute" {
 
 locals {
   compute_output = {
-    cluster_id     = module.cluster.id
-    cluster_name   = local.cluster_name
-    container_name = local.container_name
-    task_role_arn  = aws_iam_role.environment.arn
+    cluster_id    = module.cluster.id
+    cluster_name  = local.cluster_name
+    task_role_arn = aws_iam_role.environment.arn
 
-    auto_scaling_group = aws_autoscaling_group.compute
+    auto_scaling_group = local.network_output.in_use == true ? aws_autoscaling_group.compute[0] : null
 
     security_group = local.network_output.in_use == true ? {
       id    = aws_security_group.compute[0].id

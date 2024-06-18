@@ -8,22 +8,19 @@ variable "environment" {
   type = object({
     run = bool
 
-    name         = string
-    region       = string
-    owner_name   = string
-    project_name = string
-    service_name = string
+    name   = string
+    region = string
 
-    storage = {
+    storage = object({
       db_cert_key         = string
       db_cert_source_path = string
-    }
+    })
 
-    logs = {
+    logs = object({
       group = string
-    }
+    })
 
-    network = {
+    network = object({
       availibility_zones = list(string)
 
       cidr_blocks = object({
@@ -35,7 +32,7 @@ variable "environment" {
           public  = list(string)
         })
       })
-    }
+    })
 
     load_balancer = object({
       security_group_rules = list(object({
@@ -112,19 +109,19 @@ variable "web" {
   type = list(object({
     name = string
 
-    host = {
+    host = object({
       index_page = string
       error_page = string
-    }
+    })
 
-    cdn = {
+    cdn = object({
       hosted_zone_id = string
 
       certificate = object({
         arn         = string
         domain_name = string
       })
-    }
+    })
   }))
 }
 
@@ -135,67 +132,67 @@ variable "web" {
 #####################################################
 
 locals {
-  shared_name = "${var.environment.owner_name}-${var.environment.project_name}-${var.environment.service_name}-${var.environment.name}"
+  shared_name = var.environment.name
 }
 
-module "api" {
-  source = "./api"
+# module "api" {
+#   source = "./api"
 
-  for_each = {
-    for index, app in var.api : app.name => api
-  }
+#   for_each = {
+#     for index, app in var.api : app.name => app
+#   }
 
-  api = {
-    run = var.environment.run
+#   api = {
+#     run = var.environment.run
 
-    name   = "${local.shared_name}-${app.name}"
-    region = var.environment.region
-    vpc_id = local.network_output.vpc.id
-    port   = each.value.port
+#     name   = "${local.shared_name}-${each.value.name}"
+#     region = var.environment.region
+#     vpc_id = local.network_output.vpc.id
+#     port   = each.value.port
 
-    aws_autoscaling_group = {
-      name = local.compute_output.auto_scaling_group.name
-    }
+#     aws_autoscaling_group = {
+#       name = var.environment.run == true ? local.compute_output.auto_scaling_group.name : ""
+#     }
 
-    load_balancer = {
-      arn      = local.load_balancer_output.arn
-      dns_name = local.load_balancer_output.dns_name
-      zone_id  = local.load_balancer_output.zone_id
+#     load_balancer = {
+#       arn      = local.load_balancer_output.arn
+#       dns_name = local.load_balancer_output.dns_name
+#       zone_id  = local.load_balancer_output.zone_id
 
-      health_check_path = each.value.load_balancer.health_check_path
-      hosted_zone       = each.value.load_balancer.hosted_zone
-      listener          = each.value.load_balancer.listener
-    }
+#       health_check_path = each.value.load_balancer.health_check_path
+#       hosted_zone       = each.value.load_balancer.hosted_zone
+#       listener          = each.value.load_balancer.listener
+#     }
 
-    container = {
-      name                               = "${local.shared_name}-container"
-      role_arn                           = local.role_output.arn
-      network_mode                       = each.value.container.network_mode
-      launch_type                        = each.value.container.launch_type
-      cluster_id                         = local.compute_output.cluster_id
-      logging                            = local.logs_output.logging
-      cpu                                = each.value.container.cpu
-      memory                             = each.value.container.memory
-      desired_tasks_count                = each.value.container.desired_tasks_count
-      deployment_minimum_healthy_percent = each.value.container.deployment_minimum_healthy_percent
-      deployment_maximum_healthy_percent = each.value.container.deployment_maximum_healthy_percent
-    }
-  }
-}
+#     container = {
+#       name                               = "${local.shared_name}-${each.value.name}-container"
+#       role_arn                           = local.role_output.arn
+#       network_mode                       = each.value.container.network_mode
+#       launch_type                        = each.value.container.launch_type
+#       cluster_id                         = local.compute_output.cluster_id
+#       logging                            = local.logs_output.logging
+#       cpu                                = each.value.container.cpu
+#       memory                             = each.value.container.memory
+#       desired_tasks_count                = each.value.container.desired_tasks_count
+#       deployment_minimum_healthy_percent = each.value.container.deployment_minimum_healthy_percent
+#       deployment_maximum_healthy_percent = each.value.container.deployment_maximum_healthy_percent
+#     }
+#   }
+# }
 
-module "web" {
-  source = "./web"
+# module "web" {
+#   source = "./web"
 
-  for_each = {
-    for index, app in var.web : app.name => app
-  }
+#   for_each = {
+#     for index, app in var.web : app.name => app
+#   }
 
-  web = {
-    run  = var.environment.run
-    host = each.value.host
-    cdn  = each.value.cdn
-  }
-}
+#   web = {
+#     run  = var.environment.run
+#     host = each.value.host
+#     cdn  = each.value.cdn
+#   }
+# }
 
 #####################################################
 #                                                   #
@@ -215,10 +212,10 @@ output "environment" {
   }
 }
 
-output "api" {
-  value = module.api
-}
+# output "api" {
+#   value = module.api
+# }
 
-output "web" {
-  value = module.web
-}
+# output "web" {
+#   value = module.web
+# }

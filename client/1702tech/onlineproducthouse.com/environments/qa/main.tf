@@ -99,14 +99,11 @@ module "qa" {
   environment = {
     run = var.run
 
-    name         = local.name
-    region       = var.client_info.region
-    owner_name   = var.client_info.owner_short_name
-    project_name = var.client_info.project_short_name
-    service_name = var.client_info.service_short_name
+    name   = local.name
+    region = var.client_info.region
 
     storage = {
-      db_cert_key         = "/${var.client_info.owner}/${var.client_info.project_short_name}/${var.client_info.service_name}/root.crt"
+      db_cert_key         = "/${var.client_info.owner_short_name}/${var.client_info.project_short_name}/${var.client_info.service_name}/root.crt"
       db_cert_source_path = "./content/root.crt"
     }
 

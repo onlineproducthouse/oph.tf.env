@@ -34,8 +34,6 @@ resource "aws_s3_bucket_policy" "access_logs" {
 module "db_cert" {
   source = "../../../module/interface/aws/storage/s3/bucket/object"
 
-  count = var.environment.run == true ? 1 : 0
-
   object = {
     bucket_id   = module.storage.id
     key         = var.environment.storage.db_cert_key
@@ -52,6 +50,6 @@ module "db_cert" {
 locals {
   storage_output = {
     storage = module.storage
-    db_cert = module.db_cert[0]
+    db_cert = module.db_cert
   }
 }

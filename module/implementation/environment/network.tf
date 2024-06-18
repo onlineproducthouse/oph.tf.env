@@ -11,7 +11,7 @@ resource "aws_vpc" "environment" {
 }
 
 resource "aws_internet_gateway" "environment" {
-  count  = var.environment.run == true && length(aws_vpc.environment) > 0 ? 1 : 0
+  count  = length(aws_vpc.environment) > 0 ? 1 : 0
   vpc_id = aws_vpc.environment[0].id
 }
 
@@ -47,14 +47,14 @@ module "eip" {
 }
 
 resource "aws_nat_gateway" "environment" {
-  count         = var.environment.run == true && length(module.public_subnet) > 0 ? length(module.public_subnet[0].id_list) : 0
+  count         = length(module.public_subnet) > 0 ? length(module.public_subnet[0].id_list) : 0
   allocation_id = element(module.eip[0].eip_nat_id_list, count.index)
   subnet_id     = element(module.public_subnet[0].id_list, count.index)
 }
 
 module "public_route_table" {
   source = "../../interface/aws/networking/vpc/route_table"
-  count  = var.environment.run == true && length(module.public_subnet) > 0 ? 1 : 0
+  count  = length(module.public_subnet) > 0 ? 1 : 0
 
   route_table = {
     vpc_id         = aws_vpc.environment[0].id
@@ -64,7 +64,7 @@ module "public_route_table" {
 
 module "private_route_table" {
   source = "../../interface/aws/networking/vpc/route_table"
-  count  = var.environment.run == true && length(module.private_subnet) > 0 ? 1 : 0
+  count  = length(module.private_subnet) > 0 ? 1 : 0
 
   route_table = {
     vpc_id         = aws_vpc.environment[0].id
@@ -74,7 +74,7 @@ module "private_route_table" {
 
 module "public_route" {
   source = "../../interface/aws/networking/vpc/route_table/route"
-  count  = var.environment.run == true && length(module.public_subnet) > 0 ? length(module.public_route_table[0].route_table_id_list) : 0
+  count  = length(module.public_subnet) > 0 ? length(module.public_route_table[0].route_table_id_list) : 0
 
   route = {
     is_private = false
@@ -89,7 +89,7 @@ module "public_route" {
 
 module "private_route" {
   source = "../../interface/aws/networking/vpc/route_table/route"
-  count  = var.environment.run == true && length(module.private_subnet) > 0 ? length(module.private_route_table[0].route_table_id_list) : 0
+  count  = length(module.private_subnet) > 0 ? length(module.private_route_table[0].route_table_id_list) : 0
 
   route = {
     is_private = true

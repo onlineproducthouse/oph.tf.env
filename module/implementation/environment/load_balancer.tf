@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "load_balancer" {
 }
 
 resource "aws_lb" "environment" {
-  count = local.network_output.in_use == true && length(aws_vpc.environment) > 0 ? 1 : 0
+  count = length(aws_vpc.environment) > 0 ? 1 : 0
 
   name               = "${local.shared_name}-lb"
   internal           = false
@@ -61,8 +61,8 @@ locals {
 
 locals {
   load_balancer_output = local.network_output.in_use == true ? {
-    arn      = aws_lb.load_balancer[0].arn
-    dns_name = aws_lb.load_balancer[0].dns_name
-    zone_id  = aws_lb.load_balancer[0].zone_id
+    arn      = aws_lb.environment[0].arn
+    dns_name = aws_lb.environment[0].dns_name
+    zone_id  = aws_lb.environment[0].zone_id
   } : local.null_load_balancer_output
 }
