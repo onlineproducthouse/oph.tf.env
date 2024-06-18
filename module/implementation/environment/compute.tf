@@ -5,8 +5,7 @@
 #####################################################
 
 locals {
-  cluster_name   = "${local.shared_name}-cluster"
-  container_name = "${local.shared_name}-container"
+  cluster_name = "${local.shared_name}-cluster"
 }
 
 resource "aws_security_group" "compute" {
@@ -64,7 +63,7 @@ resource "aws_launch_template" "compute" {
 }
 
 resource "aws_autoscaling_group" "compute" {
-  count = length(aws_vpc.environment) > 0 ? 1 : 0
+  count = local.network_output.in_use == true && length(aws_vpc.environment) > 0 ? 1 : 0
 
   name                      = "${local.shared_name}-asg"
   vpc_zone_identifier       = module.private_subnet[0].id_list
@@ -128,14 +127,22 @@ locals {
     cluster_name  = local.cluster_name
     task_role_arn = aws_iam_role.environment.arn
 
-    auto_scaling_group = local.network_output.in_use == true ? aws_autoscaling_group.compute[0] : null
+    auto_scaling_group = local.network_output.in_use == true ? {
+      name = aws_autoscaling_group.compute[0].name
+      id   = aws_autoscaling_group.compute[0].id
+      arn  = aws_autoscaling_group.compute[0].arn
+      } : {
+      name = ""
+      id   = ""
+      arn  = ""
+    }
 
     security_group = local.network_output.in_use == true ? {
-      id    = aws_security_group.compute[0].id
-      rules = aws_security_group_rule.compute
+      id = aws_security_group.compute[0].id
+      # rules = aws_security_group_rule.compute
       } : {
-      id    = ""
-      rules = {}
+      id = ""
+      # rules = {}
     }
   }
 }

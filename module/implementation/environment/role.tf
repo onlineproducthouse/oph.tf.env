@@ -155,7 +155,7 @@ resource "aws_iam_role" "environment" {
 }
 
 resource "aws_iam_instance_profile" "environment" {
-  name = "ecsInstanceRole"
+  name = "${local.shared_name}-ecs-role"
   path = "/system/"
   role = aws_iam_role.environment.name
 }

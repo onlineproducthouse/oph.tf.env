@@ -108,7 +108,7 @@ module "qa" {
     }
 
     logs = {
-      group = local.name
+      group = "${local.name}-log-group"
     }
 
     network = {
