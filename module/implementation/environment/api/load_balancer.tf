@@ -61,6 +61,8 @@ resource "aws_route53_record" "api" {
 }
 
 resource "aws_autoscaling_attachment" "api" {
+  count = var.api.run == true ? 1 : 0
+
   autoscaling_group_name = var.api.aws_autoscaling_group.name
   lb_target_group_arn    = aws_lb_target_group.api[0].arn
 }

@@ -135,50 +135,50 @@ locals {
   shared_name = var.environment.name
 }
 
-# module "api" {
-#   source = "./api"
+module "api" {
+  source = "./api"
 
-#   for_each = {
-#     for index, app in var.api : app.name => app
-#   }
+  for_each = {
+    for index, app in var.api : app.name => app
+  }
 
-#   api = {
-#     run = var.environment.run
+  api = {
+    run = local.network_output.in_use
 
-#     name   = "${local.shared_name}-${each.value.name}"
-#     region = var.environment.region
-#     vpc_id = local.network_output.vpc.id
-#     port   = each.value.port
+    name   = "${local.shared_name}-${each.value.name}"
+    region = var.environment.region
+    vpc_id = local.network_output.vpc.id
+    port   = each.value.port
 
-#     aws_autoscaling_group = {
-#       name = var.environment.run == true ? local.compute_output.auto_scaling_group.name : ""
-#     }
+    aws_autoscaling_group = {
+      name = local.network_output.in_use == true ? local.compute_output.auto_scaling_group.name : ""
+    }
 
-#     load_balancer = {
-#       arn      = local.load_balancer_output.arn
-#       dns_name = local.load_balancer_output.dns_name
-#       zone_id  = local.load_balancer_output.zone_id
+    load_balancer = {
+      arn      = local.load_balancer_output.arn
+      dns_name = local.load_balancer_output.dns_name
+      zone_id  = local.load_balancer_output.zone_id
 
-#       health_check_path = each.value.load_balancer.health_check_path
-#       hosted_zone       = each.value.load_balancer.hosted_zone
-#       listener          = each.value.load_balancer.listener
-#     }
+      health_check_path = each.value.load_balancer.health_check_path
+      hosted_zone       = each.value.load_balancer.hosted_zone
+      listener          = each.value.load_balancer.listener
+    }
 
-#     container = {
-#       name                               = "${local.shared_name}-${each.value.name}-container"
-#       role_arn                           = local.role_output.arn
-#       network_mode                       = each.value.container.network_mode
-#       launch_type                        = each.value.container.launch_type
-#       cluster_id                         = local.compute_output.cluster_id
-#       logging                            = local.logs_output.logging
-#       cpu                                = each.value.container.cpu
-#       memory                             = each.value.container.memory
-#       desired_tasks_count                = each.value.container.desired_tasks_count
-#       deployment_minimum_healthy_percent = each.value.container.deployment_minimum_healthy_percent
-#       deployment_maximum_healthy_percent = each.value.container.deployment_maximum_healthy_percent
-#     }
-#   }
-# }
+    container = {
+      name                               = "${local.shared_name}-${each.value.name}-container"
+      role_arn                           = local.role_output.arn
+      network_mode                       = each.value.container.network_mode
+      launch_type                        = each.value.container.launch_type
+      cluster_id                         = local.compute_output.cluster_id
+      logging                            = local.logs_output.logging
+      cpu                                = each.value.container.cpu
+      memory                             = each.value.container.memory
+      desired_tasks_count                = each.value.container.desired_tasks_count
+      deployment_minimum_healthy_percent = each.value.container.deployment_minimum_healthy_percent
+      deployment_maximum_healthy_percent = each.value.container.deployment_maximum_healthy_percent
+    }
+  }
+}
 
 # module "web" {
 #   source = "./web"
@@ -212,9 +212,9 @@ output "environment" {
   }
 }
 
-# output "api" {
-#   value = module.api
-# }
+output "api" {
+  value = module.api
+}
 
 # output "web" {
 #   value = module.web

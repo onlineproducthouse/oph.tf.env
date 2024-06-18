@@ -5,7 +5,7 @@
 #####################################################
 
 locals {
-  task_definition_family = "${var.api.name}-task-def-fam"
+  task_definition_family = "${var.api.name}-task"
   port_mapping_name      = "${var.api.name}-port"
   service_name           = "${var.api.name}-svc"
 }
@@ -13,6 +13,8 @@ locals {
 data "aws_caller_identity" "current" {}
 
 resource "aws_ecs_task_definition" "api" {
+  count = var.api.run == true ? 1 : 0
+
   family                   = local.task_definition_family
   task_role_arn            = var.api.container.role_arn
   execution_role_arn       = var.api.container.role_arn
@@ -64,7 +66,7 @@ resource "aws_ecs_service" "api" {
   enable_ecs_managed_tags = true
   iam_role                = var.api.container.role_arn
 
-  task_definition                    = aws_ecs_task_definition.api.arn
+  task_definition                    = aws_ecs_task_definition.api[0].arn
   desired_count                      = var.api.container.desired_tasks_count
   deployment_minimum_healthy_percent = var.api.container.deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.api.container.deployment_maximum_healthy_percent
