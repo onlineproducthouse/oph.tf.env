@@ -62,15 +62,8 @@ resource "aws_s3_bucket_acl" "host_acl" {
 #####################################################
 
 locals {
-  null_host_output = {
-    id       = ""
-    endpoint = ""
-  }
-}
-
-locals {
-  host_output = var.web.run == true ? {
+  host_output = {
     id       = aws_s3_bucket.host.id
     endpoint = aws_s3_bucket_website_configuration.host.website_endpoint
-  } : local.null_host_output
+  }
 }

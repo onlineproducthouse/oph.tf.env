@@ -8,19 +8,19 @@ variable "web" {
   type = object({
     run = bool
 
-    host = {
+    host = object({
       index_page = string
       error_page = string
-    }
+    })
 
-    cdn = {
+    cdn = object({
       hosted_zone_id = string
 
       certificate = object({
         arn         = string
         domain_name = string
       })
-    }
+    })
   })
 }
 

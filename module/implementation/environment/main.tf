@@ -180,19 +180,19 @@ module "api" {
   }
 }
 
-# module "web" {
-#   source = "./web"
+module "web" {
+  source = "./web"
 
-#   for_each = {
-#     for index, app in var.web : app.name => app
-#   }
+  for_each = {
+    for index, app in var.web : app.name => app
+  }
 
-#   web = {
-#     run  = var.environment.run
-#     host = each.value.host
-#     cdn  = each.value.cdn
-#   }
-# }
+  web = {
+    run  = local.network_output.in_use
+    host = each.value.host
+    cdn  = each.value.cdn
+  }
+}
 
 #####################################################
 #                                                   #
@@ -216,6 +216,6 @@ output "api" {
   value = module.api
 }
 
-# output "web" {
-#   value = module.web
-# }
+output "web" {
+  value = module.web
+}
