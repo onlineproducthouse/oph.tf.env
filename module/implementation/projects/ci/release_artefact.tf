@@ -5,10 +5,23 @@
 #####################################################
 
 module "release_artefact" {
-  source = "../../../module/implementation/shared/storage"
-
-  storage = {
+  source = "../../../interface/aws/storage/s3/bucket"
+  bucket = {
     bucket_name = "${var.ci.name}-release-artefacts"
+  }
+}
+
+module "release_artefact_versioning" {
+  source = "../../../interface/aws/storage/s3/bucket/versioning"
+  versioning = {
+    bucket_id = module.release_artefact.id
+  }
+}
+
+module "release_artefact_encryption" {
+  source = "../../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  encryption_configuration = {
+    bucket_id = module.release_artefact.id
   }
 }
 

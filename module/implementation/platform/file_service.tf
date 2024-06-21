@@ -4,25 +4,25 @@
 #                                                   #
 #####################################################
 
-locals {
-  cloud_watch_log_group_list = [
-    { key = "main", value = local.logging.group },
-  ]
-
-  logging = {
-    driver = "awslogs"
-    prefix = "ecs"
-    group  = var.environment.logs.group
+module "file_service" {
+  source = "../../interface/aws/storage/s3/bucket"
+  bucket = {
+    bucket_name = "${var.platform.name}-fs"
   }
 }
 
-resource "aws_cloudwatch_log_group" "environment" {
-  for_each = {
-    for index, group in local.cloud_watch_log_group_list : group.key => group
+module "versioning" {
+  source = "../../interface/aws/storage/s3/bucket/versioning"
+  versioning = {
+    bucket_id = module.file_service.id
   }
+}
 
-  name              = each.value.value
-  retention_in_days = 30
+module "encryption" {
+  source = "../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  encryption_configuration = {
+    bucket_id = module.file_service.id
+  }
 }
 
 #####################################################
@@ -32,7 +32,8 @@ resource "aws_cloudwatch_log_group" "environment" {
 #####################################################
 
 locals {
-  logs_output = {
-    logging = local.logging
+  file_service_output = {
+    id  = module.file_service.id
+    arn = module.file_service.arn
   }
 }

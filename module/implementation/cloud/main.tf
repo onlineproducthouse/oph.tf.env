@@ -4,23 +4,46 @@
 #                                                   #
 #####################################################
 
-variable "web" {
+variable "cloud" {
   type = object({
     run = bool
 
-    host = object({
-      index_page = string
-      error_page = string
-    })
+    name   = string
+    region = string
 
-    cdn = object({
-      hosted_zone_id = string
+    network = object({
+      availibility_zones = list(string)
 
-      certificate = object({
-        arn         = string
-        domain_name = string
+      cidr_blocks = object({
+        vpc    = string
+        public = string
+
+        subnets = object({
+          private = list(string)
+          public  = list(string)
+        })
       })
     })
+
+    load_balancer = object({
+      security_group_rules = list(object({
+        name        = string
+        type        = string
+        protocol    = string
+        cidr_blocks = list(string)
+        port        = number
+      }))
+    })
+
+    dns = object({
+      hosted_zone_id = string
+    })
+
+    ssl = list(object({
+      key         = string
+      region      = string
+      domain_name = string
+    }))
   })
 }
 
@@ -36,9 +59,10 @@ variable "web" {
 #                                                   #
 #####################################################
 
-output "web" {
+output "cloud" {
   value = {
-    host = local.host_output
-    cdn  = local.cdn_output
+    run           = var.cloud.run
+    network       = local.network_output
+    load_balancer = local.load_balancer_output
   }
 }

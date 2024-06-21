@@ -18,14 +18,14 @@ variable "dns" {
 #####################################################
 
 module "hosted_zone" {
-  source = "../../../../../module/interface/aws/networking/route53/hosted_zone"
+  source = "../../interface/aws/networking/route53/hosted_zone"
   hosted_zone = {
     domain_name = var.dns.domain_name
   }
 }
 
 module "email_mx" {
-  source = "../../../../../module/interface/aws/networking/route53/hosted_zone/dns_record"
+  source = "../../interface/aws/networking/route53/hosted_zone/dns_record"
 
   record = {
     with_alias             = false

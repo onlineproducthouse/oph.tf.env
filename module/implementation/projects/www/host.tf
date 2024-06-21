@@ -5,18 +5,18 @@
 #####################################################
 
 resource "aws_s3_bucket" "host" {
-  bucket = var.web.cdn.certificate.domain_name
+  bucket = var.www.cdn.certificate.domain_name
 }
 
 resource "aws_s3_bucket_website_configuration" "host" {
   bucket = aws_s3_bucket.host.id
 
   index_document {
-    suffix = var.web.host.index_page
+    suffix = var.www.host.index_page
   }
 
   error_document {
-    key = var.web.host.error_page
+    key = var.www.host.error_page
   }
 }
 
@@ -31,7 +31,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "host" {
 }
 
 resource "aws_s3_bucket_policy" "host" {
-  count = var.web.run == true ? 1 : 0
+  count = var.www.run == true ? 1 : 0
 
   bucket = aws_s3_bucket.host.id
 
@@ -52,7 +52,7 @@ resource "aws_s3_bucket_policy" "host" {
 
 resource "aws_s3_bucket_acl" "host_acl" {
   bucket = aws_s3_bucket.host.id
-  acl    = var.web.run == true ? "public-read" : "private"
+  acl    = var.www.run == true ? "public-read" : "private"
 }
 
 #####################################################

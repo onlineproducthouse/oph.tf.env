@@ -5,14 +5,14 @@
 #####################################################
 
 locals {
-  cluster_name = "${local.shared_name}-cluster"
+  cluster_name = "${var.platform.name}-cluster"
 }
 
 resource "aws_security_group" "compute" {
-  count = length(aws_vpc.environment) > 0 ? 1 : 0
+  count = var.platform.run == true ? 1 : 0
 
-  name   = "${local.shared_name}-compute-sg"
-  vpc_id = aws_vpc.environment[0].id
+  name   = "${var.platform.name}-compute-sg"
+  vpc_id = var.platform.cloud.vpc_id
 
   lifecycle {
     create_before_destroy = false
@@ -20,8 +20,8 @@ resource "aws_security_group" "compute" {
 }
 
 resource "aws_security_group_rule" "compute" {
-  for_each = length(aws_security_group.compute) > 0 ? {
-    for index, rule in var.environment.compute.security_group_rules : rule.name => rule
+  for_each = var.platform.run == true && length(aws_security_group.compute) > 0 ? {
+    for index, rule in var.platform.compute.security_group_rules : rule.name => rule
   } : {}
 
   security_group_id = aws_security_group.compute[0].id
@@ -34,20 +34,20 @@ resource "aws_security_group_rule" "compute" {
 }
 
 module "cluster" {
-  source = "../../../module/interface/aws/containers/ecs/cluster"
+  source = "../../interface/aws/containers/ecs/cluster"
 
   cluster = {
     name                      = local.cluster_name
-    enable_container_insights = local.network_output.in_use == true ? var.environment.compute.enable_container_insights : false
+    enable_container_insights = var.platform.run == true ? var.platform.compute.enable_container_insights : false
   }
 }
 
 resource "aws_launch_template" "compute" {
-  count = length(aws_vpc.environment) > 0 ? 1 : 0
+  count = var.platform.run == true && length(aws_security_group.compute) > 0 ? 1 : 0
 
-  image_id               = var.environment.compute.instance.image_id
-  instance_type          = var.environment.compute.instance.instance_type
-  name_prefix            = "${local.shared_name}-lt"
+  image_id               = var.platform.compute.instance.image_id
+  instance_type          = var.platform.compute.instance.instance_type
+  name_prefix            = "${var.platform.name}-lt"
   vpc_security_group_ids = [aws_security_group.compute[0].id]
 
   user_data = base64encode(templatefile("${path.module}/content/user_data.sh", {
@@ -63,15 +63,15 @@ resource "aws_launch_template" "compute" {
 }
 
 resource "aws_autoscaling_group" "compute" {
-  count = local.network_output.in_use == true && length(aws_vpc.environment) > 0 ? 1 : 0
+  count = var.platform.run == true && length(aws_launch_template.compute) > 0 ? 1 : 0
 
-  name                      = "${local.shared_name}-asg"
-  vpc_zone_identifier       = module.private_subnet[0].id_list
+  name                      = "${var.platform.name}-asg"
+  vpc_zone_identifier       = var.platform.cloud.private_subnet_id_list
   health_check_type         = "ELB"
   health_check_grace_period = 300
-  min_size                  = var.environment.compute.auto_scaling.minimum
-  max_size                  = var.environment.compute.auto_scaling.maximum
-  desired_capacity          = var.environment.compute.auto_scaling.desired
+  min_size                  = var.platform.compute.auto_scaling.minimum
+  max_size                  = var.platform.compute.auto_scaling.maximum
+  desired_capacity          = var.platform.compute.auto_scaling.desired
 
   launch_template {
     id      = aws_launch_template.compute[0].id
@@ -84,7 +84,7 @@ resource "aws_autoscaling_group" "compute" {
 }
 
 resource "aws_ecs_capacity_provider" "compute" {
-  count = length(aws_vpc.environment) > 0 ? 1 : 0
+  count = var.platform.run == true && length(aws_autoscaling_group.compute) > 0 ? 1 : 0
 
   name = aws_autoscaling_group.compute[0].name
 
@@ -96,13 +96,13 @@ resource "aws_ecs_capacity_provider" "compute" {
       maximum_scaling_step_size = 2
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
-      target_capacity           = var.environment.compute.target_capacity
+      target_capacity           = var.platform.compute.target_capacity
     }
   }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "compute" {
-  count = length(aws_ecs_capacity_provider.compute) > 0 ? 1 : 0
+  count = var.platform.run == true && length(aws_autoscaling_group.compute) > 0 ? 1 : 0
 
   cluster_name = module.cluster.name
 
@@ -127,7 +127,7 @@ locals {
     cluster_name  = local.cluster_name
     task_role_arn = aws_iam_role.environment.arn
 
-    auto_scaling_group = local.network_output.in_use == true ? {
+    auto_scaling_group = var.platform.run == true ? {
       name = aws_autoscaling_group.compute[0].name
       id   = aws_autoscaling_group.compute[0].id
       arn  = aws_autoscaling_group.compute[0].arn
@@ -137,7 +137,7 @@ locals {
       arn  = ""
     }
 
-    security_group = local.network_output.in_use == true ? {
+    security_group = var.platform.run == true ? {
       id = aws_security_group.compute[0].id
       # rules = aws_security_group_rule.compute
       } : {

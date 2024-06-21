@@ -4,10 +4,19 @@
 #                                                   #
 #####################################################
 
-module "file_service" {
-  source = "../../../module/implementation/shared/storage"
-  storage = {
-    bucket_name = "${local.shared_name}-fs"
+data "aws_caller_identity" "current" {}
+
+locals {
+  registry = {
+    base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.ci.region}.amazonaws.com"
+  }
+}
+
+module "registry" {
+  source = "../../../interface/aws/containers/ecr"
+
+  ecr = {
+    name = "${var.ci.name}-registry"
   }
 }
 
@@ -18,8 +27,8 @@ module "file_service" {
 #####################################################
 
 locals {
-  file_service_output = {
-    bucket_name = module.file_service.id
-    bucket_arn  = module.file_service.arn
+  registry_output = {
+    name     = module.registry.name
+    base_url = local.registry.base_url
   }
 }

@@ -4,12 +4,25 @@
 #                                                   #
 #####################################################
 
-module "build_artefact" {
-  source = "../../../module/implementation/shared/storage"
+locals {
+  cloud_watch_log_group_list = [
+    { key = "main", value = local.logging.group },
+  ]
 
-  storage = {
-    bucket_name = "${var.ci.name}-build-artefacts"
+  logging = {
+    driver = "awslogs"
+    prefix = "ecs"
+    group  = var.platform.logs.group
   }
+}
+
+resource "aws_cloudwatch_log_group" "platform" {
+  for_each = {
+    for index, group in local.cloud_watch_log_group_list : group.key => group
+  }
+
+  name              = each.value.value
+  retention_in_days = 30
 }
 
 #####################################################
@@ -19,7 +32,7 @@ module "build_artefact" {
 #####################################################
 
 locals {
-  build_artefact_output = {
-    id = module.build_artefact.id
+  logs_output = {
+    logging = local.logging
   }
 }

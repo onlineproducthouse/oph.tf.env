@@ -30,7 +30,7 @@ variable "ci" {
       }))
 
       deployment_targets = list(object({
-        name = string // "qa", "prod"
+        name = string // qa, prod
         vpc = object({
           id      = string
           subnets = list(string)
@@ -48,7 +48,7 @@ variable "ci" {
       git = object({
         connection_arn = string
         repo_name      = string
-        branch_names   = list(string)
+        branch_names   = list(string) # qa, prod
       })
     })
   })

@@ -4,40 +4,30 @@
 #                                                   #
 #####################################################
 
-locals {
-  release_artefacts = {
-    for index, branch in var.ci.pipeline.git.branch_names : branch => {
-      s3_object_key = "${branch}_release_artefact"
-    }
+module "deploy_job" {
+  source = "../../../interface/aws/developer_tools/codebuild/projects"
+
+  for_each = {
+    for i, target in var.ci.deploy_job.deployment_targets : target.name => target
   }
-}
-
-module "build_job" {
-  source = "../../interface/aws/developer_tools/codebuild/projects"
-
-  for_each = var.ci.run == true ? {
-    for index, branch in var.ci.pipeline.git.branch_names : branch => branch
-  } : {}
 
   job = {
-    name            = "${var.ci.name}-${each.value}-build"
+    name            = "${var.ci.name}-${each.value.name}-deploy"
     service_role    = local.role_output.arn
     is_docker_build = var.ci.is_docker_build
     build_timeout   = var.ci.build_timeout
-    buildspec       = var.ci.build_job.buildspec
+    buildspec       = var.ci.deploy_job.buildspec
 
-    environment_variables = concat(var.ci.build_job.environment_variables, [
+    environment_variables = concat(var.ci.deploy_job.environment_variables, [
+      { key = "ENVIRONMENT_NAME", value = each.value.name },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry_output.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = local.registry_output.name },
-      { key = "RELEASE_ARTEFACT_STORE", value = local.release_artefact_output.id },
-      { key = "QA_BRANCH_RELEASE_ARTEFACT_KEY", value = local.release_artefacts[each.value].s3_object_key },
       { key = "RELEASE_MANIFEST", value = local.release_manifest },
-      { key = "GIT_BRANCH", value = each.value },
     ])
 
     vpc = {
-      id      = ""
-      subnets = []
+      id      = each.value.vpc.id
+      subnets = each.value.vpc.subnets
     }
   }
 }
@@ -47,3 +37,7 @@ module "build_job" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
+
+locals {
+  deploy_job_output = module.deploy_job
+}

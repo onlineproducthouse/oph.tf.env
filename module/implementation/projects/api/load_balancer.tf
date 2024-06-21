@@ -30,7 +30,7 @@ resource "aws_lb_target_group" "api" {
 }
 
 resource "aws_lb_listener" "api" {
-  count = var.api.run == true ? 1 : 0
+  count = var.api.run == true && length(aws_lb_target_group.api) > 0 ? 1 : 0
 
   load_balancer_arn = var.api.load_balancer.arn
 
@@ -46,6 +46,13 @@ resource "aws_lb_listener" "api" {
   }
 }
 
+resource "aws_autoscaling_attachment" "api" {
+  count = var.api.run == true && length(aws_lb_target_group.api) > 0 ? 1 : 0
+
+  autoscaling_group_name = var.api.aws_autoscaling_group.name
+  lb_target_group_arn    = aws_lb_target_group.api[0].arn
+}
+
 resource "aws_route53_record" "api" {
   count = var.api.run == true ? 1 : 0
 
@@ -58,13 +65,6 @@ resource "aws_route53_record" "api" {
     zone_id                = var.api.load_balancer.zone_id
     evaluate_target_health = true
   }
-}
-
-resource "aws_autoscaling_attachment" "api" {
-  count = var.api.run == true ? 1 : 0
-
-  autoscaling_group_name = var.api.aws_autoscaling_group.name
-  lb_target_group_arn    = aws_lb_target_group.api[0].arn
 }
 
 #####################################################

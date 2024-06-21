@@ -49,7 +49,7 @@ resource "aws_codepipeline" "build" {
       version          = "1"
 
       configuration = {
-        ProjectName = module.build_job[each.value].name
+        ProjectName = local.build_job_output[each.value].name
       }
     }
   }
@@ -113,7 +113,7 @@ resource "aws_codepipeline" "release" {
         version         = "1"
 
         configuration = {
-          ProjectName = module.deploy_job["qa"].name
+          ProjectName = local.deploy_job_output[each.value.name].name
         }
       }
     }
@@ -150,7 +150,7 @@ resource "aws_codepipeline" "release" {
         version         = "1"
 
         configuration = {
-          ProjectName = module.deploy_job["prod"].name
+          ProjectName = local.deploy_job_output[each.value.name].name
         }
       }
     }

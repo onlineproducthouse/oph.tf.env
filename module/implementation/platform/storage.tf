@@ -5,9 +5,23 @@
 #####################################################
 
 module "storage" {
-  source = "../../../module/implementation/shared/storage"
-  storage = {
-    bucket_name = "${local.shared_name}-storage"
+  source = "../../interface/aws/storage/s3/bucket"
+  bucket = {
+    bucket_name = "${var.platform.name}-storage"
+  }
+}
+
+module "versioning" {
+  source = "../../interface/aws/storage/s3/bucket/versioning"
+  versioning = {
+    bucket_id = module.storage.id
+  }
+}
+
+module "encryption" {
+  source = "../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  encryption_configuration = {
+    bucket_id = module.storage.id
   }
 }
 
@@ -25,20 +39,10 @@ resource "aws_s3_bucket_policy" "access_logs" {
           "AWS" : "arn:aws:iam::156460612806:root"
         },
         "Action" : "s3:PutObject",
-        "Resource" : "arn:aws:s3:::${module.storage.id}/${local.shared_name}-lb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        "Resource" : "arn:aws:s3:::${module.storage.id}/${var.platform.name}-lb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })
-}
-
-module "db_cert" {
-  source = "../../../module/interface/aws/storage/s3/bucket/object"
-
-  object = {
-    bucket_id   = module.storage.id
-    key         = var.environment.storage.db_cert_key
-    source_path = var.environment.storage.db_cert_source_path
-  }
 }
 
 #####################################################
@@ -49,7 +53,7 @@ module "db_cert" {
 
 locals {
   storage_output = {
-    storage = module.storage
-    db_cert = module.db_cert
+    id  = module.storage.id
+    arn = module.storage.arn
   }
 }

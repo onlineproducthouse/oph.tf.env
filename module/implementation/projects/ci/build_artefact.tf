@@ -4,21 +4,24 @@
 #                                                   #
 #####################################################
 
-data "aws_caller_identity" "current" {}
-
-locals {
-  registry = {
-    base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.ci.region}.amazonaws.com"
+module "build_artefact" {
+  source = "../../../interface/aws/storage/s3/bucket"
+  bucket = {
+    bucket_name = "${var.ci.name}-build-artefacts"
   }
 }
 
-module "registry" {
-  source = "../../../module/interface/aws/containers/ecr"
+module "build_artefact_versioning" {
+  source = "../../../interface/aws/storage/s3/bucket/versioning"
+  versioning = {
+    bucket_id = module.build_artefact.id
+  }
+}
 
-  count = var.ci.run == true ? 1 : 0
-
-  ecr = {
-    name = "${var.ci.name}-registry"
+module "build_artefact_encryption" {
+  source = "../../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  encryption_configuration = {
+    bucket_id = module.build_artefact.id
   }
 }
 
@@ -29,8 +32,7 @@ module "registry" {
 #####################################################
 
 locals {
-  registry_output = {
-    name     = module.registry[0].name
-    base_url = local.registry.base_url
+  build_artefact_output = {
+    id = module.build_artefact.id
   }
 }
