@@ -85,7 +85,7 @@ echo "Done."
 
 # apply modules
 echo "Applying path - $OPH_PRODUCT_API_QA_PATH"
-terraform -chdir=$OPH_PRODUCT_API_QA_PATH apply --auto-approve -var vpc_in_use=$OPH_VPC_IN_USE
+terraform -chdir=$OPH_PRODUCT_API_QA_PATH apply --auto-approve -var run=$OPH_VPC_IN_USE
 echo "Done."
 
 echo "Applying path - $OPH_PRODUCT_PLATFROM_CONFIG_PATH"
@@ -119,7 +119,7 @@ echo "Done."
 if [[ "$DESIRED_STATE" == "down" ]]; then
   # Re-apply to destroy VPC used in CI projects
   echo "Reapplying..."
-  terraform -chdir=$OPH_PRODUCT_API_QA_PATH apply --auto-approve -var vpc_in_use=false
+  terraform -chdir=$OPH_PRODUCT_API_QA_PATH apply --auto-approve -var run=false
   terraform -chdir=$OPH_PRODUCT_PLATFROM_CONFIG_PATH apply --auto-approve
   echo "Done."
 fi
