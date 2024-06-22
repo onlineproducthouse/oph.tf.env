@@ -72,22 +72,6 @@ locals {
 
   api_port           = data.terraform_remote_state.cloud.outputs.qa.ports.api
   api_htmltopdf_port = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf
-  health_check_path  = "/HealthCheck/Ping"
-
-  container = {
-    network_mode                       = "host"
-    launch_type                        = "EC2"
-    cpu                                = 1400
-    memory                             = 650
-    desired_tasks_count                = 1
-    deployment_minimum_healthy_percent = 100
-    deployment_maximum_healthy_percent = 200
-  }
-
-  host = {
-    index_page = "index.html"
-    error_page = "index.html"
-  }
 
   dns = {
     domain_name    = data.terraform_remote_state.dns.outputs.dns.domain_name
