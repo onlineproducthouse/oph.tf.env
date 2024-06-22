@@ -11,6 +11,16 @@ variable "platform" {
     name   = string
     region = string
 
+    dns = object({
+      hosted_zone_id = string
+    })
+
+    ssl = list(object({
+      key         = string
+      region      = string
+      domain_name = string
+    }))
+
     cloud = object({
       vpc_id                 = string
       private_subnet_id_list = list(string)
@@ -66,5 +76,6 @@ output "platform" {
     role         = local.role_output
     logs         = local.logs_output
     compute      = local.compute_output
+    ssl          = local.ssl_output
   }
 }

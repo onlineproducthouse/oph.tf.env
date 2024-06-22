@@ -34,16 +34,6 @@ variable "cloud" {
         port        = number
       }))
     })
-
-    dns = object({
-      hosted_zone_id = string
-    })
-
-    ssl = list(object({
-      key         = string
-      region      = string
-      domain_name = string
-    }))
   })
 }
 
