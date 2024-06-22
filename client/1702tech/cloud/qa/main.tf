@@ -50,8 +50,10 @@ variable "client_info" {
 locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
-  api_port           = 7890
-  api_htmltopdf_port = 7891
+  ports = {
+    api       = 7890
+    htmltopdf = 7891
+  }
 }
 
 module "qa" {
@@ -80,8 +82,8 @@ module "qa" {
     load_balancer = {
       security_group_rules = [
         { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
-        { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.api_port },
-        { name = "api-htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.api_htmltopdf_port },
+        { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.api },
+        { name = "api-htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.htmltopdf },
       ]
     }
   }
@@ -94,5 +96,8 @@ module "qa" {
 #####################################################
 
 output "qa" {
-  value = module.qa.cloud
+  value = {
+    ports = local.ports
+    cloud = module.qa.cloud
+  }
 }
