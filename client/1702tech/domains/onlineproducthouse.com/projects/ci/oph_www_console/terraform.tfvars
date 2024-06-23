@@ -1,0 +1,9 @@
+client_info = {
+  region                 = "eu-west-1"
+  project_name           = "onlineproducthouse.com"
+  project_short_name     = "oph"
+  service_name           = "console"
+  service_short_name     = "console"
+  environment_name       = "continuous-integration"
+  environment_short_name = "ci"
+}
