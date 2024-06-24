@@ -25,9 +25,6 @@ variable "client_info" {
   type = object({
     region = string
 
-    owner_name       = string
-    owner_short_name = string
-
     project_name       = string
     project_short_name = string
 
@@ -81,7 +78,7 @@ resource "aws_iam_policy" "operations" {
 #####################################################
 
 output "operations" {
-  value =  {
+  value = {
     for index, operation in local.operations : operation.name => {
       arn = aws_iam_policy.operations[operation.name].arn
     }

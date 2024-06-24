@@ -14,8 +14,6 @@ provider "aws" {
 
   default_tags {
     tags = {
-      owner_name             = var.client_info.owner_name
-      owner_short_name       = var.client_info.owner_short_name
       project_name           = var.client_info.project_name
       project_short_name     = var.client_info.project_short_name
       service_name           = var.client_info.service_name

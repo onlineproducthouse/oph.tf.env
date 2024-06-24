@@ -25,9 +25,6 @@ variable "client_info" {
   type = object({
     region = string
 
-    owner_name       = string
-    owner_short_name = string
-
     project_name       = string
     project_short_name = string
 
