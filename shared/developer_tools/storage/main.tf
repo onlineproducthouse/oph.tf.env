@@ -25,9 +25,6 @@ variable "client_info" {
   type = object({
     region = string
 
-    owner_name       = string
-    owner_short_name = string
-
     project_name       = string
     project_short_name = string
 
@@ -46,13 +43,27 @@ variable "client_info" {
 #####################################################
 
 locals {
-  name = "${var.client_info.owner_short_name}-${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
+  name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 }
 
 module "storage" {
-  source = "../../../module/implementation/shared/storage"
-  storage = {
-    bucket_name = local.name
+  source = "../../../module/interface/aws/storage/s3/bucket"
+  bucket = {
+    name = "${local.name}-storage"
+  }
+}
+
+module "versioning" {
+  source = "../../../module/interface/aws/storage/s3/bucket/versioning"
+  versioning = {
+    bucket_id = module.storage.id
+  }
+}
+
+module "encryption" {
+  source = "../../../module/interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  encryption_configuration = {
+    bucket_id = module.storage.id
   }
 }
 

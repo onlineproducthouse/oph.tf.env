@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/docker_registry/terraform.tfstate"
+    key    = "shared/developer_tools/docker_registries/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -24,9 +24,6 @@ terraform {
 variable "client_info" {
   type = object({
     region = string
-
-    owner_name       = string
-    owner_short_name = string
 
     project_name       = string
     project_short_name = string
@@ -47,11 +44,11 @@ variable "client_info" {
 
 locals {
   registries = [
-    { name = "redis" },
-    { name = "postgis/postgis" },
-    { name = "tonistiigi/binfmt" },
-    { name = "golang" },
-    { name = "node" },
+    { key = "redis", name = "redis" },
+    { key = "postgis", name = "postgis/postgis" },
+    { key = "tonistiigibinfmt", name = "tonistiigi/binfmt" },
+    { key = "golang", name = "golang" },
+    { key = "node", name = "node" },
   ]
 }
 
@@ -59,7 +56,7 @@ module "registries" {
   source = "../../../module/interface/aws/containers/ecr"
 
   for_each = {
-    for index, registry in local.registries : registry.name => registry
+    for index, registry in local.registries : registry.key => registry
   }
 
   ecr = {
@@ -73,10 +70,12 @@ module "registries" {
 #                                                   #
 #####################################################
 
-output "registry" {
+output "registries" {
   value = {
-    for index, registry in local.registries : registry.name => {
-      url = module.registries[registry.name].url
+    for index, registry in local.registries : registry.key => {
+      key  = registry.key
+      name = registry.name
+      url  = module.registries[registry.key].url
     }
   }
 }
