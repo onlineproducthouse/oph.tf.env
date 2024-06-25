@@ -85,7 +85,7 @@ resource "aws_iam_policy" "developer" {
           "ecr:ListTagsForResource"
         ],
         Effect   = "Allow",
-        Resource = "arn:aws:ecr:*:${data.aws_caller_identity.current.account_id}:*"
+        Resource = "*"
       },
       {
         Sid = "Stmt1664385491775",
@@ -95,7 +95,7 @@ resource "aws_iam_policy" "developer" {
           "s3:ListBucket"
         ],
         Effect   = "Allow",
-        Resource = "arn:aws:s3:::*"
+        Resource = "*"
       },
       {
         Sid = "Stmt1664385866577",
@@ -106,7 +106,7 @@ resource "aws_iam_policy" "developer" {
           "ses:VerifyEmailIdentity"
         ],
         Effect   = "Allow",
-        Resource = "arn:aws:ses:*:${data.aws_caller_identity.current.account_id}:*"
+        Resource = "*"
       },
       {
         Sid = "Stmt1664386088180",
@@ -114,7 +114,7 @@ resource "aws_iam_policy" "developer" {
           "ssm:GetParametersByPath"
         ],
         Effect   = "Allow",
-        Resource = "arn:aws:ssm:*:${data.aws_caller_identity.current.account_id}:*",
+        Resource = "*",
         Condition = {
           Bool = {
             Recursive = "true"

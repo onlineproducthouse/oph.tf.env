@@ -42,24 +42,21 @@ variable "client_info" {
 #                                                   #
 #####################################################
 
-data "terraform_remote_state" "developer_policies" {
+data "terraform_remote_state" "iam_policies" {
   backend = "s3"
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/security/iam/policy/developer/terraform.tfstate"
+    key    = "shared/security/iam/policy/terraform.tfstate"
     region = "eu-west-1"
   }
 }
 
-data "terraform_remote_state" "operations_policies" {
-  backend = "s3"
-
-  config = {
-    bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/security/iam/policy/operations/terraform.tfstate"
-    region = "eu-west-1"
-  }
+locals {
+  groups = [
+    { name = "developer", policies = data.terraform_remote_state.iam_policies.outputs.policies.developer },
+    { name = "operations", policies = data.terraform_remote_state.iam_policies.outputs.policies.operations },
+  ]
 }
 
 module "groups" {
