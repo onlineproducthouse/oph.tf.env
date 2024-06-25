@@ -69,10 +69,7 @@ locals {
     ]
 
     operations = [
-      data.terraform_remote_state.operations_policies.outputs.operations["business"].arn,
-      data.terraform_remote_state.operations_policies.outputs.operations["compute_ec2"].arn,
-      data.terraform_remote_state.operations_policies.outputs.operations["compute_autoscaling"].arn,
-      data.terraform_remote_state.operations_policies.outputs.operations["compute_elasticloadbalancing"].arn,
+      data.terraform_remote_state.operations_policies.outputs.operations["compute"].arn,
       data.terraform_remote_state.operations_policies.outputs.operations["container"].arn,
       data.terraform_remote_state.operations_policies.outputs.operations["database"].arn,
       data.terraform_remote_state.operations_policies.outputs.operations["developer_tools"].arn,
@@ -98,18 +95,15 @@ output "policy" {
     }
 
     document = {
-      developer                    = data.terraform_remote_state.developer_policies.outputs.policy,
-      business                     = data.terraform_remote_state.operations_policies.outputs.operations["business"].policy,
-      compute_ec2                  = data.terraform_remote_state.operations_policies.outputs.operations["compute_ec2"].policy,
-      compute_autoscaling          = data.terraform_remote_state.operations_policies.outputs.operations["compute_autoscaling"].policy,
-      compute_elasticloadbalancing = data.terraform_remote_state.operations_policies.outputs.operations["compute_elasticloadbalancing"].policy,
-      container                    = data.terraform_remote_state.operations_policies.outputs.operations["container"].policy,
-      database                     = data.terraform_remote_state.operations_policies.outputs.operations["database"].policy,
-      developer_tools              = data.terraform_remote_state.operations_policies.outputs.operations["developer_tools"].policy,
-      monitoring                   = data.terraform_remote_state.operations_policies.outputs.operations["monitoring"].policy,
-      networking                   = data.terraform_remote_state.operations_policies.outputs.operations["networking"].policy,
-      security                     = data.terraform_remote_state.operations_policies.outputs.operations["security"].policy,
-      storage                      = data.terraform_remote_state.operations_policies.outputs.operations["storage"].policy,
+      developer       = data.terraform_remote_state.developer_policies.outputs.policy,
+      compute         = data.terraform_remote_state.operations_policies.outputs.operations["compute"].policy,
+      container       = data.terraform_remote_state.operations_policies.outputs.operations["container"].policy,
+      database        = data.terraform_remote_state.operations_policies.outputs.operations["database"].policy,
+      developer_tools = data.terraform_remote_state.operations_policies.outputs.operations["developer_tools"].policy,
+      monitoring      = data.terraform_remote_state.operations_policies.outputs.operations["monitoring"].policy,
+      networking      = data.terraform_remote_state.operations_policies.outputs.operations["networking"].policy,
+      security        = data.terraform_remote_state.operations_policies.outputs.operations["security"].policy,
+      storage         = data.terraform_remote_state.operations_policies.outputs.operations["storage"].policy,
     }
   }
 }

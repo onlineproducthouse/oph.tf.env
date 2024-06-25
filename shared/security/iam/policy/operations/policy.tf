@@ -1,98 +1,6 @@
 locals {
   policy = {
-    business = {
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Sid = "Stmt1664392197262",
-          Action = [
-            "ses:CloneReceiptRuleSet",
-            "ses:CreateReceiptFilter",
-            "ses:CreateReceiptRule",
-            "ses:CreateReceiptRuleSet",
-            "ses:DeleteIdentity",
-            "ses:DeleteIdentityPolicy",
-            "ses:DeleteReceiptFilter",
-            "ses:DeleteReceiptRule",
-            "ses:DeleteReceiptRuleSet",
-            "ses:DeleteVerifiedEmailAddress",
-            "ses:DescribeActiveReceiptRuleSet",
-            "ses:DescribeConfigurationSet",
-            "ses:DescribeReceiptRule",
-            "ses:DescribeReceiptRuleSet",
-            "ses:GetAccountSendingEnabled",
-            "ses:GetIdentityDkimAttributes",
-            "ses:GetIdentityMailFromDomainAttributes",
-            "ses:GetIdentityNotificationAttributes",
-            "ses:GetIdentityPolicies",
-            "ses:GetIdentityVerificationAttributes",
-            "ses:GetSendQuota",
-            "ses:GetSendStatistics",
-            "ses:ListIdentities",
-            "ses:ListIdentityPolicies",
-            "ses:ListReceiptFilters",
-            "ses:ListReceiptRuleSets",
-            "ses:ListVerifiedEmailAddresses",
-            "ses:PutConfigurationSetDeliveryOptions",
-            "ses:PutIdentityPolicy",
-            "ses:ReorderReceiptRuleSet",
-            "ses:SendBounce",
-            "ses:SetActiveReceiptRuleSet",
-            "ses:SetIdentityDkimEnabled",
-            "ses:SetIdentityMailFromDomain",
-            "ses:SetIdentityNotificationTopic",
-            "ses:SetReceiptRulePosition",
-            "ses:UpdateAccountSendingEnabled",
-            "ses:UpdateConfigurationSetSendingEnabled",
-            "ses:UpdateReceiptRule",
-            "ses:VerifyDomainDkim",
-            "ses:VerifyDomainIdentity",
-            "ses:VerifyEmailAddress",
-            "ses:VerifyEmailIdentity"
-          ],
-          Effect   = "Allow",
-          Resource = "*"
-        },
-        {
-          Sid = "Stmt1664392367315",
-          Action = [
-            "ses:CreateEmailIdentity",
-            "ses:CreateEmailIdentityPolicy",
-            "ses:DeleteEmailIdentity",
-            "ses:DeleteEmailIdentityPolicy",
-            "ses:GetAccount",
-            "ses:GetBlacklistReports",
-            "ses:GetConfigurationSet",
-            "ses:GetConfigurationSetEventDestinations",
-            "ses:GetDedicatedIp",
-            "ses:GetDedicatedIps",
-            "ses:GetEmailIdentity",
-            "ses:GetEmailIdentityPolicies",
-            "ses:ListEmailIdentities",
-            "ses:PutAccountDetails",
-            "ses:PutAccountSendingAttributes",
-            "ses:PutConfigurationSetDeliveryOptions",
-            "ses:PutConfigurationSetReputationOptions",
-            "ses:PutConfigurationSetSendingOptions",
-            "ses:PutDedicatedIpInPool",
-            "ses:PutEmailIdentityMailFromAttributes",
-            "ses:TagResource",
-            "ses:UntagResource",
-            "ses:UpdateEmailIdentityPolicy"
-          ],
-          Effect   = "Allow",
-          Resource = "*"
-        },
-        {
-          Sid      = "Stmt1664392409832",
-          Action   = "support:*",
-          Effect   = "Allow",
-          Resource = "*"
-        },
-      ]
-    }
-
-    compute_ec2 = {
+    compute = {
       Version = "2012-10-17",
       Statement = [
         {
@@ -215,20 +123,7 @@ locals {
             "ec2:UnassignPrivateIpAddresses",
             "ec2:UnmonitorInstances",
             "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
-            "ec2:UpdateSecurityGroupRuleDescriptionsIngress"
-          ],
-          Effect   = "Allow",
-          Resource = "*"
-        },
-      ]
-    }
-
-    compute_autoscaling = {
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Sid = "Stmt1664390222286",
-          Action = [
+            "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
             "autoscaling:AttachInstances",
             "autoscaling:AttachLoadBalancerTargetGroups",
             "autoscaling:AttachLoadBalancers",
@@ -265,20 +160,7 @@ locals {
             "autoscaling:UpdateAutoScalingGroup",
             "application-autoscaling:DescribeScalingActivities",
             "application-autoscaling:DescribeScalingPolicies",
-            "application-autoscaling:DescribeScalableTargets"
-          ],
-          Effect   = "Allow",
-          Resource = "*"
-        },
-      ]
-    }
-
-    compute_elasticloadbalancing = {
-      Version = "2012-10-17",
-      Statement = [
-        {
-          Sid = "Stmt1664390969881",
-          Action = [
+            "application-autoscaling:DescribeScalableTargets",
             "elasticloadbalancing:AddListenerCertificates",
             "elasticloadbalancing:AddTags",
             "elasticloadbalancing:CreateListener",
@@ -303,7 +185,7 @@ locals {
             "elasticloadbalancing:SetRulePriorities",
             "elasticloadbalancing:SetSecurityGroups",
             "elasticloadbalancing:SetSubnets",
-            "elasticloadbalancing:SetWebAcl"
+            "elasticloadbalancing:SetWebAcl",
           ],
           Effect   = "Allow",
           Resource = "*"
@@ -427,6 +309,12 @@ locals {
     developer_tools = {
       Version = "2012-10-17",
       Statement = [
+        {
+          Sid      = "Stmt1664392409832",
+          Action   = "support:*",
+          Effect   = "Allow",
+          Resource = "*"
+        },
         {
           "Sid" : "ConnectionsFullAccess",
           "Effect" : "Allow",

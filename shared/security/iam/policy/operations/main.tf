@@ -46,10 +46,7 @@ data "aws_caller_identity" "current" {}
 
 locals {
   operations = [
-    { name = "business", description = "oph policy for business", policy = local.policy.business },
-    { name = "compute_ec2", description = "oph policy for compute_ec2", policy = local.policy.compute_ec2 },
-    { name = "compute_autoscaling", description = "oph policy for compute_autoscaling", policy = local.policy.compute_autoscaling },
-    { name = "compute_elasticloadbalancing", description = "oph policy for compute_elasticloadbalancing", policy = local.policy.compute_elasticloadbalancing },
+    { name = "compute", description = "oph policy for compute", policy = local.policy.compute },
     { name = "container", description = "oph policy for container", policy = local.policy.container },
     { name = "database", description = "oph policy for database", policy = local.policy.database },
     { name = "developer_tools", description = "oph policy for developer tools", policy = local.policy.developer_tools },
