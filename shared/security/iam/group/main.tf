@@ -54,8 +54,8 @@ data "terraform_remote_state" "iam_policies" {
 
 locals {
   groups = [
-    { name = "developer", policies = data.terraform_remote_state.iam_policies.outputs.policies.developer },
-    { name = "operations", policies = data.terraform_remote_state.iam_policies.outputs.policies.operations },
+    { name = "developer", policies = data.terraform_remote_state.iam_policies.outputs.policy.arn_list.developer },
+    { name = "operations", policies = data.terraform_remote_state.iam_policies.outputs.policy.arn_list.operations },
   ]
 }
 

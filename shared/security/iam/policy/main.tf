@@ -63,9 +63,9 @@ data "terraform_remote_state" "operations_policies" {
 }
 
 locals {
-  policies = {
+  policy_arn_list = {
     developer = [
-      data.terraform_remote_state.developer_policies.outputs.developer_policy_arn,
+      data.terraform_remote_state.developer_policies.outputs.policy_arn,
     ]
 
     operations = [
@@ -90,9 +90,26 @@ locals {
 #                                                   #
 #####################################################
 
-output "policies" {
+output "policy" {
   value = {
-    developer  = local.policies.developer
-    operations = local.policies.operations
+    arn_list = {
+      developer  = local.policy_arn_list.developer
+      operations = local.policy_arn_list.operations
+    }
+
+    document = {
+      developer                    = data.terraform_remote_state.developer_policies.outputs.policy,
+      business                     = data.terraform_remote_state.operations_policies.outputs.operations["business"].policy,
+      compute_ec2                  = data.terraform_remote_state.operations_policies.outputs.operations["compute_ec2"].policy,
+      compute_autoscaling          = data.terraform_remote_state.operations_policies.outputs.operations["compute_autoscaling"].policy,
+      compute_elasticloadbalancing = data.terraform_remote_state.operations_policies.outputs.operations["compute_elasticloadbalancing"].policy,
+      container                    = data.terraform_remote_state.operations_policies.outputs.operations["container"].policy,
+      database                     = data.terraform_remote_state.operations_policies.outputs.operations["database"].policy,
+      developer_tools              = data.terraform_remote_state.operations_policies.outputs.operations["developer_tools"].policy,
+      monitoring                   = data.terraform_remote_state.operations_policies.outputs.operations["monitoring"].policy,
+      networking                   = data.terraform_remote_state.operations_policies.outputs.operations["networking"].policy,
+      security                     = data.terraform_remote_state.operations_policies.outputs.operations["security"].policy,
+      storage                      = data.terraform_remote_state.operations_policies.outputs.operations["storage"].policy,
+    }
   }
 }
