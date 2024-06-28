@@ -70,3 +70,9 @@ module "users" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
+
+output "users" {
+  value = [
+    for i, u in module.users : { name = u.name, arn = u.arn }
+  ]
+}

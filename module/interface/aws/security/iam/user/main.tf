@@ -32,3 +32,11 @@ resource "aws_iam_user_group_membership" "user" {
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
+
+output "name" {
+  value = aws_iam_user.user.name
+}
+
+output "arn" {
+  value = aws_iam_user.user.arn
+}
