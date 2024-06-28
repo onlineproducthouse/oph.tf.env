@@ -82,6 +82,7 @@ output "groups" {
   value = {
     for index, group in local.groups : group.name => {
       name = module.groups[group.name].name
+      arn  = module.groups[group.name].arn
     }
   }
 }

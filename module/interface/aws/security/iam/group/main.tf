@@ -38,3 +38,7 @@ resource "aws_iam_group_policy_attachment" "group" {
 output "name" {
   value = aws_iam_group.group.name
 }
+
+output "arn" {
+  value = aws_iam_group.group.arn
+}
