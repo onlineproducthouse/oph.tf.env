@@ -67,6 +67,26 @@ data "terraform_remote_state" "dns" {
   }
 }
 
+data "terraform_remote_state" "ssl_api" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/domains/onlineproducthouse.com/platform/qa/ssl/api/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "ssl_www" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/domains/onlineproducthouse.com/platform/qa/ssl/www/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
@@ -91,19 +111,6 @@ module "qa" {
     dns = {
       hosted_zone_id = local.dns.hosted_zone_id
     }
-
-    ssl = [
-      {
-        key         = "api",
-        region      = var.client_info.region
-        domain_name = "api.qa.${local.dns.domain_name}"
-      },
-      {
-        key         = "www",
-        region      = "us-east-1"
-        domain_name = "qa.${local.dns.domain_name}"
-      },
-    ]
 
     cloud = {
       vpc_id                 = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
@@ -132,7 +139,7 @@ module "qa" {
       security_group_rules = [
         { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], from_port = 0, to_port = 0 },
         { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = local.api_port, to_port = local.api_port },
-        { name = "api-htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = local.api_htmltopdf_port, to_port = local.api_htmltopdf_port },
+        { name = "htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = local.api_htmltopdf_port, to_port = local.api_htmltopdf_port },
       ]
     }
   }
@@ -153,7 +160,7 @@ module "db_certs" {
   }
 
   object = {
-    bucket_id   = module.qa.platform.storage.id
+    bucket_id   = data.terraform_remote_state.cloud.outputs.qa.cloud.storage.id
     key         = "/${local.key_prefix}/${each.value.key}.crt"
     source_path = "./content/${each.value.key}.crt"
   }
@@ -170,5 +177,6 @@ output "qa" {
     run      = var.run
     platform = module.qa.platform
     db_certs = module.db_certs
+    ssl      = merge(data.terraform_remote_state.ssl_api.outputs.certs, data.terraform_remote_state.ssl_www.outputs.certs)
   }
 }

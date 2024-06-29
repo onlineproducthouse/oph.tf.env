@@ -6,14 +6,9 @@
 
 variable "certificate" {
   type = object({
-    region         = string
     hosted_zone_id = string
     domain_name    = string
   })
-}
-
-provider "aws" {
-  region = var.certificate.region
 }
 
 #####################################################
