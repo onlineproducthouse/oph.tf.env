@@ -44,7 +44,7 @@ variable "client_info" {
 
 locals {
   name                   = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
-  bitbucket_account_name = "1702tech"
+  bitbucket_account_name = "onlineproducthouse"
 }
 
 module "repo_webhook" {
