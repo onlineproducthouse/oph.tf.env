@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/onlineproducthouse.com/projects/www/qa/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/www/qa/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"

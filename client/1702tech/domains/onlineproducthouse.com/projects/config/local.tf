@@ -12,13 +12,13 @@ locals {
     api = {
       protocol = "http"
       host     = "127.0.0.1"
-      port     = data.terraform_remote_state.qa_api.outputs.qa.api.container.port
+      port     = data.terraform_remote_state.qa_api.outputs.qa.api.api.container.port
     }
 
     htmltopdf = {
       protocol = "http"
       host     = "127.0.0.1"
-      port     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.container.port
+      port     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port
     }
 
     www_app_url     = "http://127.0.0.1:3000"
@@ -31,11 +31,11 @@ locals {
     { id = "local_run_swagger", path = local.paths.local, key = "RUN_SWAGGER", value = "true" },
     { id = "local_db_connection_string", path = local.paths.local, key = "DB_CONNECTION_STRING", value = "postgres://root:password@127.0.0.1:5432/localdb" },
     { id = "local_redis_connection_string", path = local.paths.local, key = "REDIS_CONNECTION_STRING", value = "redis://127.0.0.1:6379" },
-    { id = "local_sg_api_key", path = local.paths.local, key = "SG_API_KEY", value = local.secrets.qa.sg_api_key },
-    { id = "local_fs_s3_bucket_name", path = local.paths.local, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa.outputs.qa.platform.file_service.bucket_name },
+    { id = "local_sg_api_key", path = local.paths.local, key = "SG_API_KEY", value = local.qa_secrets.sg_api_key },
+    { id = "local_fs_s3_bucket_name", path = local.paths.local, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa_platform.outputs.qa.platform.file_service.id },
 
-    { id = "local_paystack_public_key", path = local.paths.local, key = "PAYSTACK_PUBLIC_KEY", value = local.secrets.qa.paystack.public_key },
-    { id = "local_paystack_secret_key", path = local.paths.local, key = "PAYSTACK_SECRET_KEY", value = local.secrets.qa.paystack.secret_key },
+    { id = "local_paystack_public_key", path = local.paths.local, key = "PAYSTACK_PUBLIC_KEY", value = local.qa_secrets.paystack.public_key },
+    { id = "local_paystack_secret_key", path = local.paths.local, key = "PAYSTACK_SECRET_KEY", value = local.qa_secrets.paystack.secret_key },
 
     { id = "local_api_protocol", path = local.paths.local, key = "API_PROTOCOL", value = local.local_env.api.protocol },
     { id = "local_api_host", path = local.paths.local, key = "API_HOST", value = local.local_env.api.host },

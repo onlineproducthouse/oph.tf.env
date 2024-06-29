@@ -51,44 +51,44 @@ locals {
   qa_env = {
     api = {
       protocol = "https"
-      host     = data.terraform_remote_state.qa_api.outputs.qa.api.load_balancer.domain_name
-      port     = "${data.terraform_remote_state.qa_api.outputs.qa.api.container.port}"
+      host     = data.terraform_remote_state.qa_api.outputs.qa.api.api.load_balancer.domain_name
+      port     = "${data.terraform_remote_state.qa_api.outputs.qa.api.api.container.port}"
     }
 
     htmltopdf = {
       protocol = "https"
-      host     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.load_balancer.domain_name
-      port     = "${data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.container.port}"
+      host     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.load_balancer.domain_name
+      port     = "${data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port}"
     }
 
-    www_app_url     = data.terraform_remote_state.qa_www.outputs.qa.www.host.id
-    portal_app_url  = data.terraform_remote_state.qa_www.outputs.qa.portal.host.id
-    console_app_url = data.terraform_remote_state.qa_www.outputs.qa.console.host.id
+    www_app_url     = data.terraform_remote_state.qa_www.outputs.qa.www.www.host.id
+    portal_app_url  = data.terraform_remote_state.qa_www.outputs.qa.portal.www.host.id
+    console_app_url = data.terraform_remote_state.qa_www.outputs.qa.console.www.host.id
 
     db_connection_string = join("", [
-      local.secrets.qa.db.protocol,
+      local.qa_secrets.db.protocol,
       "://",
-      local.secrets.qa.db.username,
+      local.qa_secrets.db.username,
       ":",
-      local.secrets.qa.db.password,
+      local.qa_secrets.db.password,
       "@",
-      local.secrets.qa.db.host,
+      local.qa_secrets.db.host,
       ":",
-      local.secrets.qa.db.port,
+      local.qa_secrets.db.port,
       "/",
-      local.secrets.qa.db.name,
+      local.qa_secrets.db.name,
     ])
 
     redis_connection_string = join("", [
-      local.secrets.qa.redis.protocol,
+      local.qa_secrets.redis.protocol,
       "://",
-      local.secrets.qa.redis.username,
+      local.qa_secrets.redis.username,
       ":",
-      local.secrets.qa.redis.pwd,
+      local.qa_secrets.redis.pwd,
       "@",
-      local.secrets.qa.redis.host,
+      local.qa_secrets.redis.host,
       ":",
-      local.secrets.qa.redis.port,
+      local.qa_secrets.redis.port,
     ])
   }
 
@@ -97,11 +97,11 @@ locals {
     { id = "qa_run_swagger", path = local.paths.qa, key = "RUN_SWAGGER", value = "true" },
     { id = "qa_db_connection_string", path = local.paths.qa, key = "DB_CONNECTION_STRING", value = local.qa_env.db_connection_string },
     { id = "qa_redis_connection_string", path = local.paths.qa, key = "REDIS_CONNECTION_STRING", value = local.qa_env.redis_connection_string },
-    { id = "qa_sg_api_key", path = local.paths.qa, key = "SG_API_KEY", value = local.secrets.qa.sg_api_key },
-    { id = "qa_fs_s3_bucket_name", path = local.paths.qa, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa.outputs.qa.platform.file_service.bucket_name },
+    { id = "qa_sg_api_key", path = local.paths.qa, key = "SG_API_KEY", value = local.qa_secrets.sg_api_key },
+    { id = "qa_fs_s3_bucket_name", path = local.paths.qa, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa_platform.outputs.qa.platform.file_service.id },
 
-    { id = "qa_paystack_public_key", path = local.paths.qa, key = "PAYSTACK_PUBLIC_KEY", value = local.secrets.qa.paystack.public_key },
-    { id = "qa_paystack_secret_key", path = local.paths.qa, key = "PAYSTACK_SECRET_KEY", value = local.secrets.qa.paystack.secret_key },
+    { id = "qa_paystack_public_key", path = local.paths.qa, key = "PAYSTACK_PUBLIC_KEY", value = local.qa_secrets.paystack.public_key },
+    { id = "qa_paystack_secret_key", path = local.paths.qa, key = "PAYSTACK_SECRET_KEY", value = local.qa_secrets.paystack.secret_key },
 
     { id = "qa_api_protocol", path = local.paths.qa, key = "API_PROTOCOL", value = local.qa_env.api.protocol },
     { id = "qa_api_host", path = local.paths.qa, key = "API_HOST", value = local.qa_env.api.host },
