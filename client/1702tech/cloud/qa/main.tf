@@ -83,7 +83,7 @@ module "qa" {
       security_group_rules = [
         { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
         { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.api },
-        { name = "api-htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.htmltopdf },
+        { name = "htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.htmltopdf },
       ]
     }
   }
