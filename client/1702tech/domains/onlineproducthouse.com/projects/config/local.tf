@@ -55,12 +55,12 @@ locals {
     { id = "local_portal_app_url", path = local.paths.local, key = "PORTAL_APP_URL", value = local.local_env.portal_app_url },
     { id = "local_console_app_url", path = local.paths.local, key = "CONSOLE_APP_URL", value = local.local_env.console_app_url },
 
-    { id = "local_client_api_key", path = local.paths.local, key = "VUE_APP_LOCAL_CLIENT_API_KEY", value = random_uuid.local_api_key_v1.result },
-    { id = "local_client_api_protocol", path = local.paths.local, key = "VUE_APP_LOCAL_CLIENT_API_PROTOCOL", value = local.local_env.api.protocol },
-    { id = "local_client_ws_api_protocol", path = local.paths.local, key = "VUE_APP_LOCAL_CLIENT_WS_API_PROTOCOL", value = "ws" },
-    { id = "local_client_api_host", path = local.paths.local, key = "VUE_APP_LOCAL_CLIENT_API_HOST", value = local.local_env.api.host },
-    { id = "local_client_api_port", path = local.paths.local, key = "VUE_APP_LOCAL_CLIENT_API_PORT", value = local.local_env.api.port },
-    { id = "local_client_api_base_path", path = local.paths.local, key = "VUE_APP_LOCAL_CLIENT_API_BASE_PATH", value = "/api/v1" },
+    { id = "local_client_api_key", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_KEY", value = random_uuid.local_api_key_v1.result },
+    { id = "local_client_api_protocol", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_PROTOCOL", value = local.local_env.api.protocol },
+    { id = "local_client_ws_api_protocol", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_WS_API_PROTOCOL", value = "ws" },
+    { id = "local_client_api_host", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_HOST", value = local.local_env.api.host },
+    { id = "local_client_api_port", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_PORT", value = local.local_env.api.port },
+    { id = "local_client_api_base_path", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_BASE_PATH", value = "/api/v1" },
   ]
 }
 
