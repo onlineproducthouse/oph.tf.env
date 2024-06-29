@@ -112,14 +112,14 @@ locals {
 
         listener = {
           certificate = {
-            arn         = data.terraform_remote_state.platform.outputs.qa.platform.ssl.api.cert_arn
-            domain_name = "api.${data.terraform_remote_state.platform.outputs.qa.platform.ssl.api.cert_domain_name}"
+            arn         = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
+            domain_name = "api.${data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name}"
           }
         }
       }
 
       container = {
-        name         = "${local.name}-api-container"
+        name         = "${local.name}-api-cntnr"
         role_arn     = data.terraform_remote_state.platform.outputs.qa.platform.role.arn
         network_mode = "host"
         launch_type  = "EC2"
@@ -154,14 +154,14 @@ locals {
 
         listener = {
           certificate = {
-            arn         = data.terraform_remote_state.platform.outputs.qa.platform.ssl.api.cert_arn
-            domain_name = "htmltopdf.${data.terraform_remote_state.platform.outputs.qa.platform.ssl.api.cert_domain_name}"
+            arn         = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
+            domain_name = "htmltopdf.${data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name}"
           }
         }
       }
 
       container = {
-        name         = "${local.name}-htmltopdf-container"
+        name         = "${local.name}-htmltopdf-cntnr"
         role_arn     = data.terraform_remote_state.platform.outputs.qa.platform.role.arn
         network_mode = "host"
         launch_type  = "EC2"
