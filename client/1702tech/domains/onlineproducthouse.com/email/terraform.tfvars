@@ -11,7 +11,7 @@ client_info = {
 sg_sender_auth = [
   {
     type  = "CNAME",
-    host  = "url4365.onlineproducthouse.com",
+    host  = "url4367.onlineproducthouse.com",
     value = "sendgrid.net"
   },
   {
@@ -21,7 +21,7 @@ sg_sender_auth = [
   },
   {
     type  = "CNAME",
-    host  = "em8558.onlineproducthouse.com",
+    host  = "em9398.onlineproducthouse.com",
     value = "u22274710.wl211.sendgrid.net"
   },
   {
