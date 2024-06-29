@@ -50,9 +50,11 @@ resource "aws_s3_bucket_policy" "host" {
   })
 }
 
-resource "aws_s3_bucket_acl" "host_acl" {
+resource "aws_s3_bucket_versioning" "host" {
   bucket = aws_s3_bucket.host.id
-  acl    = var.www.run == true ? "public-read" : "private"
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 #####################################################

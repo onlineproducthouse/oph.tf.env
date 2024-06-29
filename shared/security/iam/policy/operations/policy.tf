@@ -740,6 +740,7 @@ locals {
             "s3:PutObjectTagging",
             "s3:PutObjectVersionAcl",
             "s3:PutObjectVersionTagging",
+            "s3:PutPublicAccessBlock",
             "s3:ReplicateDelete",
             "s3:ReplicateObject",
             "s3:ReplicateTags",

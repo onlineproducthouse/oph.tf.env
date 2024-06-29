@@ -81,8 +81,8 @@ locals {
         hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
 
         certificate = {
-          arn         = data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_arn
-          domain_name = "storybook.${data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_domain_name}"
+          arn         = data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_arn
+          domain_name = "storybook.${data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_domain_name}"
         }
       }
     },
@@ -93,8 +93,8 @@ locals {
         hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
 
         certificate = {
-          arn         = data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_arn
-          domain_name = "www.${data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_domain_name}"
+          arn         = data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_arn
+          domain_name = "www.${data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_domain_name}"
         }
       }
     },
@@ -105,8 +105,8 @@ locals {
         hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
 
         certificate = {
-          arn         = data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_arn
-          domain_name = "portal.${data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_domain_name}"
+          arn         = data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_arn
+          domain_name = "portal.${data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_domain_name}"
         }
       }
     },
@@ -117,8 +117,8 @@ locals {
         hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
 
         certificate = {
-          arn         = data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_arn
-          domain_name = "console.${data.terraform_remote_state.platform.outputs.qa.platform.ssl.www.cert_domain_name}"
+          arn         = data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_arn
+          domain_name = "console.${data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_domain_name}"
         }
       }
     },
