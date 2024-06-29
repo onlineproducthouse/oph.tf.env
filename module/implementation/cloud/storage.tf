@@ -7,7 +7,7 @@
 module "storage" {
   source = "../../interface/aws/storage/s3/bucket"
   bucket = {
-    bucket_name = "${var.platform.name}-storage"
+    name = "${var.cloud.name}-storage"
   }
 }
 
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_policy" "access_logs" {
           "AWS" : "arn:aws:iam::156460612806:root"
         },
         "Action" : "s3:PutObject",
-        "Resource" : "arn:aws:s3:::${module.storage.id}/${var.platform.name}-lb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+        "Resource" : "arn:aws:s3:::${module.storage.id}/${var.cloud.name}-lb/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
       }
     ]
   })

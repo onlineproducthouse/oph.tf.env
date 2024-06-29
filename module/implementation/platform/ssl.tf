@@ -8,12 +8,12 @@ module "ssl" {
   source = "../../interface/aws/security/acm/certificate"
 
   for_each = {
-    for index, domain in var.cloud.ssl : domain.key => domain
+    for i, v in var.platform.ssl : v.key => v
   }
 
   certificate = {
     region         = each.value.region
-    hosted_zone_id = var.cloud.dns.hosted_zone_id
+    hosted_zone_id = var.platform.dns.hosted_zone_id
     domain_name    = each.value.domain_name
   }
 }

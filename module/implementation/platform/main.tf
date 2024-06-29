@@ -71,7 +71,6 @@ variable "platform" {
 
 output "platform" {
   value = {
-    storage      = local.storage_output
     file_service = local.file_service_output
     role         = local.role_output
     logs         = local.logs_output

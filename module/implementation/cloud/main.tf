@@ -54,5 +54,6 @@ output "cloud" {
     run           = var.cloud.run
     network       = local.network_output
     load_balancer = local.load_balancer_output
+    storage       = local.storage_output
   }
 }

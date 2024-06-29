@@ -58,7 +58,7 @@ resource "aws_launch_template" "compute" {
   }))
 
   iam_instance_profile {
-    arn = aws_iam_instance_profile.environment.arn
+    arn = aws_iam_instance_profile.platform.arn
   }
 }
 
@@ -125,7 +125,7 @@ locals {
   compute_output = {
     cluster_id    = module.cluster.id
     cluster_name  = local.cluster_name
-    task_role_arn = aws_iam_role.environment.arn
+    task_role_arn = aws_iam_role.platform.arn
 
     auto_scaling_group = var.platform.run == true ? {
       name = aws_autoscaling_group.compute[0].name

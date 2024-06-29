@@ -40,7 +40,7 @@ resource "aws_lb" "cloud" {
 
   access_logs {
     enabled = true
-    bucket  = local.storage_output.storage.id
+    bucket  = local.storage_output.id
     prefix  = "${var.cloud.name}-lb"
   }
 }
@@ -60,7 +60,7 @@ locals {
 }
 
 locals {
-  load_balancer_output = local.network_output.run == true ? {
+  load_balancer_output = var.cloud.run == true ? {
     arn      = aws_lb.cloud[0].arn
     dns_name = aws_lb.cloud[0].dns_name
     zone_id  = aws_lb.cloud[0].zone_id

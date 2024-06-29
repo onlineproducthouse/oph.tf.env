@@ -7,7 +7,7 @@
 module "file_service" {
   source = "../../interface/aws/storage/s3/bucket"
   bucket = {
-    bucket_name = "${var.platform.name}-fs"
+    name = "${var.platform.name}-fs"
   }
 }
 
