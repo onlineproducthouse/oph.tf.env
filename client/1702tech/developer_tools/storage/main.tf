@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/storage/terraform.tfstate"
+    key    = "client/1702tech/developer_tools/storage/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -47,21 +47,21 @@ locals {
 }
 
 module "storage" {
-  source = "../../../module/interface/aws/storage/s3/bucket"
+  source = "../../../../module/interface/aws/storage/s3/bucket"
   bucket = {
     name = "${local.name}-storage"
   }
 }
 
 module "versioning" {
-  source = "../../../module/interface/aws/storage/s3/bucket/versioning"
+  source = "../../../../module/interface/aws/storage/s3/bucket/versioning"
   versioning = {
     bucket_id = module.storage.id
   }
 }
 
 module "encryption" {
-  source = "../../../module/interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+  source = "../../../../module/interface/aws/storage/s3/bucket/server_side_encryption_configuration"
   encryption_configuration = {
     bucket_id = module.storage.id
   }
