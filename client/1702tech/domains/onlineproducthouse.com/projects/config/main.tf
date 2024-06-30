@@ -159,11 +159,11 @@ output "config" {
     git_repo_webhook   = data.terraform_remote_state.git_repo_webhook.outputs
 
     oph_dev_tools = {
-      arn = data.terraform_remote_state.oph_dev_tools_store.outputs.arn
+      arn = data.terraform_remote_state.dev_tools_store.outputs.arn
     }
 
     oph_ci_scripts = {
-      buildspec = data.terraform_remote_state.oph_ci_scripts.outputs.scripts.codebuild_job.key
+      buildspec = data.terraform_remote_state.ci_scripts.outputs.scripts.codebuild_job.key
     }
 
     qa = {

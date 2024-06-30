@@ -3,24 +3,23 @@
 #                   CONFIGURATION                   #
 #                                                   #
 #####################################################
-# data.terraform_remote_state.qa.outputs.qa
 
-data "terraform_remote_state" "oph_dev_tools_store" {
+data "terraform_remote_state" "dev_tools_store" {
   backend = "s3"
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/storage/terraform.tfstate"
+    key    = "client/1702tech/developer_tools/storage/terraform.tfstate"
     region = "eu-west-1"
   }
 }
 
-data "terraform_remote_state" "oph_ci_scripts" {
+data "terraform_remote_state" "ci_scripts" {
   backend = "s3"
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/scripts/terraform.tfstate"
+    key    = "client/1702tech/developer_tools/scripts/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -148,13 +147,13 @@ locals {
     shared_env_vars = [
       { key = "AWS_REGION", value = var.client_info.region },
       { key = "CI_FOLDER", value = "./ci" },
-      { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.oph_dev_tools_store.outputs.id}" },
-      { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.oph_ci_scripts.outputs.scripts.load_env_vars.key },
+      { key = "DEV_TOOLS_STORE_SCRIPTS", value = "s3://${data.terraform_remote_state.dev_tools_store.outputs.id}" },
+      { key = "LOAD_ENV_VARS_SCRIPT", value = data.terraform_remote_state.ci_scripts.outputs.scripts.load_env_vars.key },
       { key = "ENV_FILE_STORE_LOCATION", value = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.storage.id },
       { key = "ENV_FILE_NAME", value = "${var.client_info.project_short_name}-${var.client_info.service_short_name}.env" },
       { key = "CERT_STORE", value = "s3://${data.terraform_remote_state.qa_cloud.outputs.qa.cloud.storage.id}" },
       { key = "CERT_NAME", value = data.terraform_remote_state.qa_platform.outputs.qa.db_certs["oph-db-qa"].key },
-      { key = "POST_BUILD_SCRIPT_KEY", value = data.terraform_remote_state.oph_ci_scripts.outputs.scripts.post_build.key },
+      { key = "POST_BUILD_SCRIPT_KEY", value = data.terraform_remote_state.ci_scripts.outputs.scripts.post_build.key },
     ]
   }
 }
