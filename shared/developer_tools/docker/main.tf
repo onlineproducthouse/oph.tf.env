@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/docker_registries/terraform.tfstate"
+    key    = "shared/developer_tools/docker/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -43,39 +43,61 @@ variable "client_info" {
 #####################################################
 
 locals {
-  registries = [
-    { key = "redis", name = "redis" },
-    { key = "postgis", name = "postgis/postgis" },
-    { key = "tonistiigibinfmt", name = "tonistiigi/binfmt" },
-    { key = "golang", name = "golang" },
-    { key = "node", name = "node" },
+  images = [
+    {
+      key  = "golang"
+      name = "golang"
+      versions = {
+        main   = "1.22.4"
+        alpine = "1.22.4-alpine"
+      }
+    },
+    {
+      key  = "node"
+      name = "node"
+      versions = {
+        main   = "20.14"
+        alpine = "20.14-alpine"
+      }
+    },
+    {
+      key  = "postgis"
+      name = "postgis/postgis"
+      versions = {
+        main   = "14-3.2"
+        alpine = null
+      }
+    },
+    {
+      key  = "redis"
+      name = "redis"
+      versions = {
+        main   = "latest"
+        alpine = null
+      }
+    },
+    {
+      key  = "tonistiigibinfmt"
+      name = "tonistiigi/binfmt"
+      versions = {
+        main   = "latest"
+        alpine = null
+      }
+    },
   ]
+
+  # images = {
+  #   for registry in local.registries : registry.key => {
+  #     key  = registry.key
+  #     name = registry.name
+  #     versions = {
+  #       main   = registry.versions.main
+  #       alpine = registry.versions.alpine
+  #     }
+  #   }
+  # }
 }
 
-module "registries" {
-  source = "../../../module/interface/aws/containers/ecr"
-
-  for_each = {
-    for index, registry in local.registries : registry.key => registry
-  }
-
-  ecr = {
-    name = each.value.name
-  }
-}
-
-#####################################################
-#                                                   #
-#                       OUTPUT                      #
-#                                                   #
-#####################################################
-
-output "registries" {
-  value = {
-    for index, registry in local.registries : registry.key => {
-      key  = registry.key
-      name = registry.name
-      url  = module.registries[registry.key].url
-    }
-  }
+output "images" {
+  value = local.images
 }

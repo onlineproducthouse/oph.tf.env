@@ -6,7 +6,8 @@
 
 variable "ecr" {
   type = object({
-    name = string
+    name         = string
+    force_delete = bool
   })
 }
 
@@ -19,6 +20,7 @@ variable "ecr" {
 resource "aws_ecr_repository" "ecr" {
   name                 = var.ecr.name
   image_tag_mutability = "MUTABLE"
+  force_delete         = var.ecr.force_delete
 
   image_scanning_configuration {
     scan_on_push = true
