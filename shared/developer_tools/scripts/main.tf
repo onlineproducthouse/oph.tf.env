@@ -42,18 +42,9 @@ variable "client_info" {
 #                                                   #
 #####################################################
 
-data "terraform_remote_state" "storage" {
-  backend = "s3"
-
-  config = {
-    bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/storage/terraform.tfstate"
-    region = "eu-west-1"
-  }
-}
-
 locals {
   scripts = [
+    { name = "assume_role", key = "/oph/scripts/assume-role.sh", source_path = "./scripts/assume-role.sh" },
     { name = "build_client", key = "/oph/scripts/build-client.sh", source_path = "./scripts/build-client.sh" },
     { name = "build_container", key = "/oph/scripts/build-container.sh", source_path = "./scripts/build-container.sh" },
     { name = "codebuild_job", key = "/oph/scripts/codebuild.job.yml", source_path = "./scripts/codebuild.job.yml" },
@@ -68,20 +59,6 @@ locals {
   ]
 }
 
-module "scripts" {
-  source = "../../../module/interface/aws/storage/s3/bucket/object"
-
-  for_each = {
-    for index, script in local.scripts : script.name => script
-  }
-
-  object = {
-    bucket_id   = data.terraform_remote_state.storage.outputs.id
-    key         = each.value.key
-    source_path = each.value.source_path
-  }
-}
-
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -89,11 +66,11 @@ module "scripts" {
 #####################################################
 
 output "scripts" {
-  value = module.scripts
-
-  # value = {
-  #   for index, script in local.scripts : script.key => {
-  #     key = module.scripts[script.key].key
-  #   }
-  # }
+  value = {
+    for script in local.scripts : script.name => {
+      key            = script.key,
+      etag           = filemd5(script.source_path),
+      content_base64 = filebase64(script.source_path),
+    }
+  }
 }
