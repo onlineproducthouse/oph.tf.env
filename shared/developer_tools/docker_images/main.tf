@@ -42,20 +42,10 @@ variable "client_info" {
 #                                                   #
 #####################################################
 
-data "terraform_remote_state" "registries" {
-  backend = "s3"
-
-  config = {
-    bucket = "oph-cloud-terraform-remote-state"
-    key    = "shared/developer_tools/docker_registries/terraform.tfstate"
-    region = "eu-west-1"
-  }
-}
-
 locals {
   golang = {
+    key  = "golang"
     name = "golang"
-    url  = data.terraform_remote_state.registries.outputs.registries.golang.url
     versions = {
       main   = "1.22.4"
       alpine = "1.22.4-alpine"
@@ -63,8 +53,8 @@ locals {
   }
 
   node = {
+    key  = "node"
     name = "node"
-    url  = data.terraform_remote_state.registries.outputs.registries.node.url
     versions = {
       main   = "20.14"
       alpine = "20.14-alpine"
@@ -72,24 +62,24 @@ locals {
   }
 
   postgis = {
-    name = "postgis"
-    url  = data.terraform_remote_state.registries.outputs.registries.postgis.url
+    key  = "postgis"
+    name = "postgis/postgis"
     versions = {
       main = "14-3.2"
     }
   }
 
   redis = {
+    key  = "redis"
     name = "redis"
-    url  = data.terraform_remote_state.registries.outputs.registries.redis.url
     versions = {
       main = "latest"
     }
   }
 
   tonistiigibinfmt = {
-    name = "tonistiigibinfmt"
-    url  = data.terraform_remote_state.registries.outputs.registries.tonistiigibinfmt.url
+    key  = "tonistiigibinfmt"
+    name = "tonistiigi/binfmt"
     versions = {
       main = "latest"
     }
@@ -104,27 +94,46 @@ locals {
 
 output "tags" {
   value = {
-    tags = {
-      golang = {
-        main   = "${local.golang.url}:${local.golang.versions.main}"
-        alpine = "${local.golang.url}:${local.golang.versions.alpine}"
+    golang = {
+      main = {
+        docker = "${local.golang.name}:${local.golang.versions.main}",
+        ecr    = "${local.golang.key}:${local.golang.versions.main}",
       }
-
-      node = {
-        main   = "${local.node.url}:${local.node.versions.main}"
-        alpine = "${local.node.url}:${local.node.versions.alpine}"
+      alpine = {
+        docker = "${local.golang.name}:${local.golang.versions.alpine}",
+        ecr    = "${local.golang.key}:${local.golang.versions.alpine}",
       }
+    }
 
-      postgis = {
-        main = "${local.postgis.url}:${local.postgis.versions.main}"
+    node = {
+      main = {
+        docker = "${local.node.name}:${local.node.versions.main}",
+        ecr    = "${local.node.key}:${local.node.versions.main}",
       }
-
-      redis = {
-        main = "${local.redis.url}:${local.redis.versions.main}"
+      alpine = {
+        docker = "${local.node.name}:${local.node.versions.alpine}",
+        ecr    = "${local.node.key}:${local.node.versions.alpine}",
       }
+    }
 
-      tonistiigibinfmt = {
-        main = "${local.tonistiigibinfmt.url}:${local.tonistiigibinfmt.versions.main}"
+    postgis = {
+      main = {
+        docker = "${local.postgis.name}:${local.postgis.versions.main}",
+        ecr    = "${local.postgis.key}:${local.postgis.versions.main}",
+      }
+    }
+
+    redis = {
+      main = {
+        docker = "${local.redis.name}:${local.redis.versions.main}",
+        ecr    = "${local.redis.key}:${local.redis.versions.main}",
+      }
+    }
+
+    tonistiigibinfmt = {
+      main = {
+        docker = "${local.tonistiigibinfmt.name}:${local.tonistiigibinfmt.versions.main}",
+        ecr    = "${local.tonistiigibinfmt.key}:${local.tonistiigibinfmt.versions.main}",
       }
     }
   }
