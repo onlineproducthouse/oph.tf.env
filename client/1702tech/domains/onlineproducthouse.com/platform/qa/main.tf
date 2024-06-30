@@ -160,9 +160,10 @@ module "db_certs" {
   }
 
   object = {
-    bucket_id   = data.terraform_remote_state.cloud.outputs.qa.cloud.storage.id
-    key         = "/${local.key_prefix}/${each.value.key}.crt"
-    source_path = "./content/${each.value.key}.crt"
+    bucket_id      = data.terraform_remote_state.cloud.outputs.qa.cloud.storage.id
+    key            = "/${local.key_prefix}/${each.value.key}.crt"
+    source_path    = "./content/${each.value.key}.crt"
+    content_base64 = null
   }
 }
 
