@@ -74,7 +74,7 @@ data "terraform_remote_state" "iam_users" {
 
 locals {
   role_name = {
-    shared  = "202406251925"
+    shared = "202406251925"
   }
 
   policy_document_list = [
@@ -98,6 +98,5 @@ locals {
 output "role_arn" {
   value = {
     for_oph_entities = aws_iam_role.client.arn
-    for_client_entities = aws_iam_role.default.arn
   }
 }

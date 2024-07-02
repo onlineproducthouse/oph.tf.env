@@ -323,6 +323,51 @@ locals {
           ],
           "Resource" : "*"
         },
+        {
+          Effect = "Allow",
+          Action = [
+            "codebuild:*"
+          ],
+          Resource = "*"
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "codepipeline:*"
+          ],
+          Resource = "*"
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "codestar-notifications:*"
+          ],
+          Resource = "*"
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "codepipeline:*"
+          ],
+          Resource = "*"
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "SNS:CreateTopic",
+            "SNS:Get*",
+            "SNS:List*",
+            "SNS:TagResource",
+            "SNS:Subscribe",
+            "SNS:Unsubscribe",
+            "SNS:SetTopicAttributes",
+            "SNS:RemovePermission",
+            "SNS:Publish",
+            "SNS:DeleteTopic",
+            "SNS:ConfirmSubscription ",
+          ],
+          Resource = "*"
+        },
       ]
     }
 
