@@ -1,5 +1,5 @@
 data "aws_iam_policy_document" "developer" {
-  
+
 }
 
 locals {
@@ -7,72 +7,109 @@ locals {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow",
-        Action = [
-          "codebuild:*"
-        ],
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "codepipeline:*"
-        ],
-        Resource = "*"
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "codestar-connections:*"
-        ],
-        Resource = "*"
-      },
-      {
-        Sid = "Stmt1664384493126",
-        Action = [
-          "ecr:DescribeImages",
-          "ecr:DescribeRepositories",
-          "ecr:GetAuthorizationToken",
-          "ecr:ListImages",
-          "ecr:ListTagsForResource"
-        ],
+        Sid      = "Stmt1664392409832",
+        Action   = "support:*",
         Effect   = "Allow",
         Resource = "*"
       },
       {
-        Sid = "Stmt1664385491775",
+        Sid = "Stmt1664391375625",
         Action = [
-          "s3:GetObject",
-          "s3:ListAllMyBuckets",
-          "s3:ListBucket"
+          "iam:AddUserToGroup",
+          "iam:AttachGroupPolicy",
+          "iam:AttachRolePolicy",
+          "iam:AttachUserPolicy",
+          "iam:ChangePassword",
+          "iam:CreateAccessKey",
+          "iam:CreateGroup",
+          "iam:CreateLoginProfile",
+          "iam:CreatePolicy",
+          "iam:CreatePolicyVersion",
+          "iam:CreateRole",
+          "iam:CreateUser",
+          "iam:CreateVirtualMFADevice",
+          "iam:DeactivateMFADevice",
+          "iam:DeleteAccessKey",
+          "iam:DeleteAccountPasswordPolicy",
+          "iam:DeleteGroup",
+          "iam:DeleteGroupPolicy",
+          "iam:DeleteLoginProfile",
+          "iam:DeletePolicy",
+          "iam:DeletePolicyVersion",
+          "iam:DeleteRole",
+          "iam:DeleteRolePolicy",
+          "iam:DeleteUser",
+          "iam:DeleteUserPolicy",
+          "iam:DeleteVirtualMFADevice",
+          "iam:DetachGroupPolicy",
+          "iam:DetachRolePolicy",
+          "iam:DetachUserPolicy",
+          "iam:EnableMFADevice",
+          "iam:GetAccessKeyLastUsed",
+          "iam:GetAccountAuthorizationDetails",
+          "iam:GetAccountPasswordPolicy",
+          "iam:GetAccountSummary",
+          "iam:GetContextKeysForCustomPolicy",
+          "iam:GetContextKeysForPrincipalPolicy",
+          "iam:GetGroup",
+          "iam:GetGroupPolicy",
+          "iam:GetLoginProfile",
+          "iam:GetPolicy",
+          "iam:GetPolicyVersion",
+          "iam:GetRole",
+          "iam:GetRolePolicy",
+          "iam:GetUser",
+          "iam:GetUserPolicy",
+          "iam:ListAccessKeys",
+          "iam:ListAccountAliases",
+          "iam:ListAttachedGroupPolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListAttachedUserPolicies",
+          "iam:ListEntitiesForPolicy",
+          "iam:ListGroupPolicies",
+          "iam:ListGroups",
+          "iam:ListGroupsForUser",
+          "iam:ListMFADeviceTags",
+          "iam:ListMFADevices",
+          "iam:ListPolicies",
+          "iam:ListPolicyTags",
+          "iam:ListPolicyVersions",
+          "iam:ListRolePolicies",
+          "iam:ListRoleTags",
+          "iam:ListRoles",
+          "iam:ListUserPolicies",
+          "iam:ListUserTags",
+          "iam:ListUsers",
+          "iam:ListVirtualMFADevices",
+          "iam:PassRole",
+          "iam:PutGroupPolicy",
+          "iam:PutRolePermissionsBoundary",
+          "iam:PutRolePolicy",
+          "iam:PutUserPermissionsBoundary",
+          "iam:PutUserPolicy",
+          "iam:RemoveUserFromGroup",
+          "iam:ResyncMFADevice",
+          "iam:SetDefaultPolicyVersion",
+          "iam:TagMFADevice",
+          "iam:TagPolicy",
+          "iam:TagRole",
+          "iam:TagUser",
+          "iam:UntagMFADevice",
+          "iam:UntagPolicy",
+          "iam:UntagRole",
+          "iam:UntagUser",
+          "iam:UpdateAccessKey",
+          "iam:UpdateAccountPasswordPolicy",
+          "iam:UpdateAssumeRolePolicy",
+          "iam:UpdateGroup",
+          "iam:UpdateLoginProfile",
+          "iam:UpdateRole",
+          "iam:UpdateRoleDescription",
+          "iam:UpdateUser",
         ],
         Effect   = "Allow",
         Resource = "*"
       },
-      {
-        Sid = "Stmt1664385866577",
-        Action = [
-          "ses:VerifyDomainDkim",
-          "ses:VerifyDomainIdentity",
-          "ses:VerifyEmailAddress",
-          "ses:VerifyEmailIdentity"
-        ],
-        Effect   = "Allow",
-        Resource = "*"
-      },
-      {
-        Sid = "Stmt1664386088180",
-        Action = [
-          "ssm:GetParametersByPath"
-        ],
-        Effect   = "Allow",
-        Resource = "*",
-        Condition = {
-          Bool = {
-            Recursive = "true"
-          }
-        }
-      }
     ]
   })
 }
