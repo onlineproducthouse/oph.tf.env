@@ -97,8 +97,8 @@ locals {
       db = {
         api = {
           qa = [
-            { id = "ci_deploy_db_api_qa_username", path = local.paths.ci.deploy.db.api.qa, key = "DB_SUPER_USERNAME", value = local.qa_secrets.db.username },
-            { id = "ci_deploy_db_api_qa_password", path = local.paths.ci.deploy.db.api.qa, key = "DB_SUPER_PASSWORD", value = local.qa_secrets.db.password },
+            { id = "ci_deploy_db_api_qa_username", path = local.paths.ci.deploy.db.api.qa, key = "DB_USERNAME", value = local.qa_secrets.db.username },
+            { id = "ci_deploy_db_api_qa_password", path = local.paths.ci.deploy.db.api.qa, key = "DB_PASSWORD", value = local.qa_secrets.db.password },
           ]
         }
       }

@@ -44,7 +44,6 @@ variable "client_info" {
 
 locals {
   scripts = [
-    { name = "assume_role", key = "/oph/scripts/assume-role.sh", source_path = "./scripts/assume-role.sh" },
     { name = "build_client", key = "/oph/scripts/build-client.sh", source_path = "./scripts/build-client.sh" },
     { name = "build_container", key = "/oph/scripts/build-container.sh", source_path = "./scripts/build-container.sh" },
     { name = "codebuild_job", key = "/oph/scripts/codebuild.job.yml", source_path = "./scripts/codebuild.job.yml" },
@@ -55,7 +54,6 @@ locals {
     { name = "local_env_vars", key = "/oph/scripts/local-env-vars.sh", source_path = "./scripts/local-env-vars.sh" },
     { name = "migrate_db", key = "/oph/scripts/migrate-db.sh", source_path = "./scripts/migrate-db.sh" },
     { name = "post_build", key = "/oph/scripts/post-build.sh", source_path = "./scripts/post-build.sh" },
-    { name = "product_platform_state", key = "/oph/scripts/product.platform.state.sh", source_path = "./scripts/product.platform.state.sh" },
   ]
 }
 
