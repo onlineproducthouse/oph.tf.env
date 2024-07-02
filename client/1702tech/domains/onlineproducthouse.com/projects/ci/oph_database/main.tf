@@ -142,7 +142,7 @@ module "notifications" {
   notifications = {
     name                = each.value.name
     pipeline_arn        = each.value.arn
-    alert_email_address = "ci-alerts@onlineproducthouse.com"
+    alert_email_address = data.terraform_remote_state.config.outputs.config.email.ci_alerts
   }
 }
 

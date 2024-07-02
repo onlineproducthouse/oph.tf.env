@@ -95,3 +95,11 @@ module "sender_auth" {
 output "do_not_reply" {
   value = "do-not-reply@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
 }
+
+output "root" {
+  value = "root@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
+}
+
+output "ci_alerts" {
+  value = "ci-alerts@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
+}

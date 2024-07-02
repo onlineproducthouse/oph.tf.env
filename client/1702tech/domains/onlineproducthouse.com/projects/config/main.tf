@@ -52,6 +52,16 @@ data "terraform_remote_state" "git_repo_webhook" {
   }
 }
 
+data "terraform_remote_state" "email" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/domains/onlineproducthouse.com/email/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
   paths = {
     shared = "/oph/config/shared"
@@ -157,6 +167,7 @@ output "config" {
     paths              = local.paths
     shared_ci_env_vars = local.ci_output.shared_env_vars
     git_repo_webhook   = data.terraform_remote_state.git_repo_webhook.outputs
+    email              = data.terraform_remote_state.email.outputs
 
     oph_dev_tools = {
       arn = data.terraform_remote_state.dev_tools_store.outputs.arn

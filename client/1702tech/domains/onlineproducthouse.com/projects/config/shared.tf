@@ -16,16 +16,6 @@ data "terraform_remote_state" "dns" {
   }
 }
 
-data "terraform_remote_state" "email" {
-  backend = "s3"
-
-  config = {
-    bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/email/terraform.tfstate"
-    region = "eu-west-1"
-  }
-}
-
 locals {
   image_registry_base_url    = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
   test_user_email_addr_templ = "test-user@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
@@ -44,7 +34,7 @@ locals {
     { id = "shared_test_user_email_addr_fourth", path = local.paths.shared, key = "TEST_USER_EMAIL_ADDR_FOURTH", value = "fourth.${local.test_user_email_addr_templ}" },
     { id = "shared_test_user_pwd", path = local.paths.shared, key = "TEST_USER_PWD", value = local.shared_secrets.test_user_password },
 
-    { id = "shared_portal_user_email_addr", path = local.paths.shared, key = "PORTAL_USER_EMAIL_ADDR", value = "${local.shared_secrets.portal_user_email_addr_prefix}@${data.terraform_remote_state.dns.outputs.dns.domain_name}" },
+    { id = "shared_portal_user_email_addr", path = local.paths.shared, key = "PORTAL_USER_EMAIL_ADDR", value = data.terraform_remote_state.email.outputs.root },
 
     { id = "shared_sg_street", path = local.paths.shared, key = "SG_SENDER_ADDRESS", value = "13-Zebra-Street" },
     { id = "shared_sg_city", path = local.paths.shared, key = "SG_SENDER_CITY", value = "Bronkhorstspruit" },
