@@ -156,3 +156,16 @@ resource "aws_codepipeline" "release" {
     }
   }
 }
+
+#####################################################
+#                                                   #
+#                       OUTPUT                      #
+#                                                   #
+#####################################################
+
+locals {
+  pipeline_output = concat(
+    [for v in aws_codepipeline.build : { name = v.name, arn = v.arn }],
+    [for v in aws_codepipeline.release : { name = v.name, arn = v.arn }],
+  )
+}

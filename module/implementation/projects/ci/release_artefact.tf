@@ -7,7 +7,7 @@
 module "release_artefact" {
   source = "../../../interface/aws/storage/s3/bucket"
   bucket = {
-    bucket_name = "${var.ci.name}-release-artefacts"
+    name = "${var.ci.name}-release-artefacts"
   }
 }
 

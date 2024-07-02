@@ -64,3 +64,6 @@ locals {
   release_manifest = "ReleaseManifest.sh"
 }
 
+output "pipeline" {
+  value = local.pipeline_output
+}

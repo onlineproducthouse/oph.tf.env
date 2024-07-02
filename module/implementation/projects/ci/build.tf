@@ -15,9 +15,9 @@ locals {
 module "build_job" {
   source = "../../../interface/aws/developer_tools/codebuild/projects"
 
-  for_each = var.ci.run == true ? {
+  for_each = {
     for index, branch in var.ci.pipeline.git.branch_names : branch => branch
-  } : {}
+  }
 
   job = {
     name            = "${var.ci.name}-${each.value}-build"
