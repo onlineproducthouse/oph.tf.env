@@ -9,8 +9,23 @@ terraform {
   }
 }
 
+data "terraform_remote_state" "client" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 provider "aws" {
-  region = var.client_info.region
+  profile = "default"
+  region  = var.client_info.region
+
+  assume_role {
+    role_arn = data.terraform_remote_state.client.outputs.role_arn.for_oph_entities
+  }
 
   default_tags {
     tags = {

@@ -125,11 +125,24 @@ module "ci" {
       }
 
       git = {
-        branch_names   = ["dev", "qa"]
+        # branch_names   = ["dev", "qa"]
+        branch_names   = ["dev"]
         connection_arn = data.terraform_remote_state.config.outputs.config.git_repo_webhook.arn
         repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.api"
       }
     }
+  }
+}
+
+module "notifications" {
+  source = "../../../../../../../module/implementation/projects/ci/notifications"
+
+  for_each = { for v in module.ci.pipeline : v.name => v }
+
+  notifications = {
+    name                = each.value.name
+    pipeline_arn        = each.value.arn
+    alert_email_address = data.terraform_remote_state.config.outputs.config.email.ci_alerts
   }
 }
 
