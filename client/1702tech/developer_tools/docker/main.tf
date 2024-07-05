@@ -44,10 +44,6 @@ variable "client_info" {
 
 data "aws_caller_identity" "current" {}
 
-locals {
-  base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
-}
-
 data "terraform_remote_state" "docker" {
   backend = "s3"
 
@@ -67,19 +63,13 @@ module "registries" {
 
   ecr = {
     name         = each.value.name
-    force_delete = false
+    force_delete = true
   }
 }
 
-#####################################################
-#                                                   #
-#                       OUTPUT                      #
-#                                                   #
-#####################################################
-
-output "docker" {
-  value = {
-    base_url = local.base_url
+locals {
+  docker = {
+    base_url = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.client_info.region}.amazonaws.com"
 
     images = {
       for image in data.terraform_remote_state.docker.outputs.images : image.key => {
@@ -106,4 +96,32 @@ output "docker" {
       }
     }
   }
+
+  docker_tags = chunklist(compact(flatten(concat(
+    [for v in [for image in local.docker.images : image.versions.main] : v == null ? null : [for tag in v.tag : tag]],
+    [for v in [for image in local.docker.images : image.versions.alpine] : v == null ? null : [for tag in v.tag : tag]]
+  ))), 2)
+}
+
+resource "skopeo2_copy" "images" {
+  count             = length(local.docker_tags)
+  source_image      = "docker://${local.docker_tags[count.index][0]}"
+  destination_image = "docker://${local.docker_tags[count.index][1]}"
+
+  insecure         = false
+  copy_all_images  = true
+  preserve_digests = true
+  retries          = 3
+  retry_delay      = 10
+  keep_image       = false
+}
+
+#####################################################
+#                                                   #
+#                       OUTPUT                      #
+#                                                   #
+#####################################################
+
+output "docker" {
+  value = local.docker
 }

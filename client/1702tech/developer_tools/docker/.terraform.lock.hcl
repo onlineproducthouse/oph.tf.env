@@ -1,6 +1,29 @@
 # This file is maintained automatically by "terraform init".
 # Manual edits may be lost in future updates.
 
+provider "registry.terraform.io/bsquare-corp/skopeo2" {
+  version     = "1.1.0"
+  constraints = "~> 1.1.0"
+  hashes = [
+    "h1:K5xPo+tnZPlak5YMNdW0IPx0oOhkxqjs1Ws+b3fFn+Y=",
+    "zh:2b11a3ab20b1ecd7acc73ac8cfc8b9b75b6104a3b0a9b84377a4c884f26ae68f",
+    "zh:33e6a4c2a2bb2b47217f8b93d9006f55dcc3d9519bae34e601a3d6b48fd2e2de",
+    "zh:3b249d8f61f28f7c200ae8286447af89503e51e569ae36df741ec55458039255",
+    "zh:4e093e5db2335205fc4ecdbbed58c71b7b00bec6f300c54dffc2272af3399142",
+    "zh:556b2ff7fb4bc88f198fb13c727d9a5bac240173f5b20859f899cc27c72b1b02",
+    "zh:60cfecfc6c8e1f7618a1997044e28d4f59a14a6d3b067971b28818f7dc8b051c",
+    "zh:66c5c42784bb1227f8c4e7392e5506d2885cd0b45044591d81c452613f6eb17e",
+    "zh:79c44153db4286d68389c15819cb499e83b419afa61de47c4195e23efd6703fa",
+    "zh:7a04ff981cff7411523c3b64bcd43a33859857c081526dbe502874ab5ae03311",
+    "zh:7bb02c4a2e5326915955068d7944e6e6e3de5cb052b95b299cb3fc54778a0c2d",
+    "zh:80d2e76bb229a4618a643d0f3b59df6efbc58b5452830ef153b420e7c29e145d",
+    "zh:82361e34d7c070d6360641e85ff4b4774fb511fce09036591428c5bb658ac99d",
+    "zh:ac68f6fb13da491c9f63bcbacf25a4f1e621ca0209e606a9b3fdceb74f43873b",
+    "zh:c0e57afc713ebfbacc9192b8132c928235c50375319a9a85ee874389aa72d837",
+    "zh:f569b65999264a9416862bca5cd2a6177d94ccb0424f3a4ef424428912b9cb3c",
+  ]
+}
+
 provider "registry.terraform.io/hashicorp/aws" {
   version     = "5.52.0"
   constraints = "5.52.0"
