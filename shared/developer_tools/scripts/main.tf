@@ -49,7 +49,6 @@ locals {
     { name = "codebuild_job", key = "/oph/scripts/codebuild.job.yml", source_path = "./scripts/codebuild.job.yml" },
     { name = "deploy_client", key = "/oph/scripts/deploy-client.sh", source_path = "./scripts/deploy-client.sh" },
     { name = "deploy_container", key = "/oph/scripts/deploy-container.sh", source_path = "./scripts/deploy-container.sh" },
-    { name = "import_docker_image", key = "/oph/scripts/import-docker-image.sh", source_path = "./scripts/import-docker-image.sh" },
     { name = "load_env_vars", key = "/oph/scripts/load-env-vars.sh", source_path = "./scripts/load-env-vars.sh" },
     { name = "local_env_vars", key = "/oph/scripts/local-env-vars.sh", source_path = "./scripts/local-env-vars.sh" },
     { name = "migrate_db", key = "/oph/scripts/migrate-db.sh", source_path = "./scripts/migrate-db.sh" },
