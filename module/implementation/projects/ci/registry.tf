@@ -16,8 +16,8 @@ module "registry" {
   source = "../../../interface/aws/containers/ecr"
 
   ecr = {
-    name         = "${var.ci.name}-registry"
-    force_delete = false
+    name         = var.ci.name
+    force_delete = true
   }
 }
 
