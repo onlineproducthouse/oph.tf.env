@@ -22,6 +22,7 @@ locals {
 
   shared = [
     { id = "shared_project_name", path = local.paths.shared, key = "PROJECT_NAME", value = var.client_info.project_name },
+    { id = "shared_project_short_name", path = local.paths.shared, key = "PROJECT_SHORT_NAME", value = var.client_info.project_short_name },
     { id = "shared_do_not_reply", path = local.paths.shared, key = "NO_REPLY_EMAIL_ADDRESS", value = data.terraform_remote_state.email.outputs.do_not_reply },
     { id = "shared_dkr_repo", path = local.paths.shared, key = "IMAGE_REGISTRY_BASE_URL", value = local.image_registry_base_url },
 
@@ -42,17 +43,20 @@ locals {
     { id = "shared_sg_zip", path = local.paths.shared, key = "SG_SENDER_ZIP", value = "1020" },
     { id = "shared_sg_email_address", path = local.paths.shared, key = "SG_SENDER_EMAIL_ADDRESS", value = data.terraform_remote_state.email.outputs.do_not_reply },
 
-    { id = "shared_sg_new_account_templ_id", path = local.paths.shared, key = "SG_SENDER_NEW_ACCOUNT_TEMPL_ID", value = local.shared_secrets.sg_new_account_templ_id },
-    { id = "shared_sg_recover_account_templ_id", path = local.paths.shared, key = "SG_SENDER_RECOVER_ACCOUNT_TEMPL_ID", value = local.shared_secrets.sg_recover_account_templ_id },
-    { id = "shared_sg_new_email_addr_templ_id", path = local.paths.shared, key = "SG_SENDER_NEW_EMAIL_ADDR_TEMPL_ID", value = local.shared_secrets.sg_new_email_addr_templ_id },
-    { id = "shared_sg_lead_link_invite_templ_id", path = local.paths.shared, key = "SG_SENDER_LEAD_LINK_INVITE_TEMPL_ID", value = local.shared_secrets.sg_lead_link_invite_templ_id },
-    { id = "shared_sg_agreement_version_published_templ_id", path = local.paths.shared, key = "SG_SENDER_AGREEMENT_VERSION_PUBLISHED_TEMPL_ID", value = local.shared_secrets.sg_agreement_version_published_templ_id },
-    { id = "shared_sg_organisation_member_invite_templ_id", path = local.paths.shared, key = "SG_SENDER_ORGANISATION_MEMBER_INVITE_TEMPL_ID", value = local.shared_secrets.sg_organisation_member_invite_templ_id },
-    { id = "shared_sg_lead_signup_closed_templ_id", path = local.paths.shared, key = "SG_SENDER_LEAD_SIGNUP_CLOSED_TEMPL_ID", value = local.shared_secrets.sg_lead_signup_closed_templ_id },
-    { id = "shared_sg_lead_pd_new_client_templ_id", path = local.paths.shared, key = "SG_SENDER_LEAD_PD_NEW_CLIENT_TEMPL_ID", value = local.shared_secrets.sg_lead_pd_new_client_templ_id },
-    { id = "shared_sg_meeting_request_templ_id", path = local.paths.shared, key = "SG_MEETING_REQUEST_TEMPL_ID", value = local.shared_secrets.sg_meeting_request_templ_id },
-    { id = "shared_sg_billing_event_created_templ_id", path = local.paths.shared, key = "SG_BILLING_EVENT_CREATED_TEMPL_ID", value = local.shared_secrets.sg_billing_event_created_templ_id },
-    { id = "shared_sg_billing_event_payment_templ_id", path = local.paths.shared, key = "SG_BILLING_EVENT_PAYMENT_TEMPL_ID", value = local.shared_secrets.sg_billing_event_payment_templ_id },
+    { id = "shared_sg_new_account_templ_id", path = local.paths.shared, key = "SG_NEW_ACCOUNT_TEMPL_ID", value = local.shared_secrets.sg_new_account_templ_id },
+    { id = "shared_sg_recover_account_templ_id", path = local.paths.shared, key = "SG_RECOVER_ACCOUNT_TEMPL_ID", value = local.shared_secrets.sg_recover_account_templ_id },
+    { id = "shared_sg_new_email_addr_templ_id", path = local.paths.shared, key = "SG_NEW_EMAIL_ADDR_TEMPL_ID", value = local.shared_secrets.sg_new_email_addr_templ_id },
+    { id = "shared_sg_lead_link_invite_templ_id", path = local.paths.shared, key = "SG_LEAD_LINK_INVITE_TEMPL_ID", value = local.shared_secrets.sg_lead_link_invite_templ_id },
+    { id = "shared_sg_agreement_version_published_templ_id", path = local.paths.shared, key = "SG_AGREEMENT_VERSION_PUBLISHED_TEMPL_ID", value = local.shared_secrets.sg_agreement_version_published_templ_id },
+    { id = "shared_sg_organisation_member_invite_templ_id", path = local.paths.shared, key = "SG_ORGANISATION_MEMBER_INVITE_TEMPL_ID", value = local.shared_secrets.sg_organisation_member_invite_templ_id },
+    { id = "shared_sg_lead_signup_closed_templ_id", path = local.paths.shared, key = "SG_LEAD_SIGNUP_CLOSED_TEMPL_ID", value = local.shared_secrets.sg_lead_signup_closed_templ_id },
+    { id = "shared_sg_lead_new_client_templ_id", path = local.paths.shared, key = "SG_LEAD_NEW_CLIENT_TEMPL_ID", value = local.shared_secrets.sg_lead_new_client_templ_id },
+    { id = "shared_sg_new_chat_message_templ_id", path = local.paths.shared, key = "SG_NEW_CHAT_MESSAGE_TEMPL_ID", value = local.shared_secrets.sg_new_chat_message_templ_id },
+    { id = "shared_sg_meeting_invite_templ_id", path = local.paths.shared, key = "SG_MEETING_INVITE_TEMPL_ID", value = local.shared_secrets.sg_meeting_invite_templ_id },
+    { id = "shared_sg_meeting_end_notes_templ_id", path = local.paths.shared, key = "SG_MEETING_END_NOTES_TEMPL_ID", value = local.shared_secrets.sg_meeting_end_notes_templ_id },
+    { id = "shared_sg_billing_invoice_created_templ_id", path = local.paths.shared, key = "SG_BILLING_INVOICE_CREATED_TEMPL_ID", value = local.shared_secrets.sg_billing_invoice_created_templ_id },
+    { id = "shared_sg_billing_quote_created_templ_id", path = local.paths.shared, key = "SG_BILLING_QUOTE_CREATED_TEMPL_ID", value = local.shared_secrets.sg_billing_quote_created_templ_id },
+    { id = "shared_sg_billing_payment_templ_id", path = local.paths.shared, key = "SG_BILLING_PAYMENT_TEMPL_ID", value = local.shared_secrets.sg_billing_payment_templ_id },
   ]
 }
 

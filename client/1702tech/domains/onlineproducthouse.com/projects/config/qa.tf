@@ -103,6 +103,9 @@ locals {
     { id = "qa_db_port", path = local.paths.qa, key = "DB_PORT", value = local.qa_secrets.db.port },
     { id = "qa_db_name", path = local.paths.qa, key = "DB_NAME", value = local.qa_secrets.db.name },
     { id = "qa_redis_connection_string", path = local.paths.qa, key = "REDIS_CONNECTION_STRING", value = local.qa_env.redis_connection_string },
+    { id = "qa_redis_host", path = local.paths.qa, key = "REDIS_HOST", value = local.qa_secrets.redis.host },
+    { id = "qa_redis_port", path = local.paths.qa, key = "REDIS_PORT", value = local.qa_secrets.redis.port },
+    { id = "qa_redis_pwd", path = local.paths.qa, key = "REDIS_PWD", value = local.qa_secrets.redis.pwd },
     { id = "qa_sg_api_key", path = local.paths.qa, key = "SG_API_KEY", value = local.qa_secrets.sg_api_key },
     { id = "qa_fs_s3_bucket_name", path = local.paths.qa, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa_platform.outputs.qa.platform.file_service.id },
 

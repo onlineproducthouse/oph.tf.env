@@ -37,6 +37,8 @@ locals {
     { id = "local_db_port", path = local.paths.local, key = "DB_PORT", value = "5432" },
     { id = "local_db_name", path = local.paths.local, key = "DB_NAME", value = "localdb" },
     { id = "local_redis_connection_string", path = local.paths.local, key = "REDIS_CONNECTION_STRING", value = "redis://127.0.0.1:6379" },
+    { id = "local_redis_host", path = local.paths.local, key = "REDIS_HOST", value = "127.0.0.1" },
+    { id = "local_redis_port", path = local.paths.local, key = "REDIS_PORT", value = "6379" },
     { id = "local_sg_api_key", path = local.paths.local, key = "SG_API_KEY", value = local.qa_secrets.sg_api_key },
     { id = "local_fs_s3_bucket_name", path = local.paths.local, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa_platform.outputs.qa.platform.file_service.id },
 
