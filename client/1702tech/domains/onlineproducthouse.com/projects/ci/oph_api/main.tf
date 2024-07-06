@@ -84,7 +84,7 @@ module "ci" {
 
     name            = local.name
     region          = var.client_info.region
-    build_timeout   = "10"
+    build_timeout   = "30"
     is_docker_build = true
 
     build_job = {
