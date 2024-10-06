@@ -434,6 +434,7 @@ locals {
             "logs:GetQueryResults",
             "logs:ListLogDeliveries",
             "logs:ListTagsLogGroup",
+            "logs:ListTagsForResource",
             "logs:PutMetricFilter",
             "logs:PutQueryDefinition",
             "logs:PutResourcePolicy",
