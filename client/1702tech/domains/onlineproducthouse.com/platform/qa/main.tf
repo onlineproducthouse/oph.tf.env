@@ -21,11 +21,6 @@ terraform {
 #                                                   #
 #####################################################
 
-variable "run" {
-  type    = bool
-  default = false
-}
-
 variable "client_info" {
   type = object({
     region = string
@@ -103,7 +98,7 @@ module "qa" {
   source = "../../../../../../module/implementation/platform"
 
   platform = {
-    run = var.run
+    run = data.terraform_remote_state.cloud.outputs.qa.cloud.run
 
     name   = local.name
     region = var.client_info.region
@@ -175,7 +170,7 @@ module "db_certs" {
 
 output "qa" {
   value = {
-    run      = var.run
+    run = data.terraform_remote_state.cloud.outputs.qa.cloud.run
     platform = module.qa.platform
     db_certs = module.db_certs
     ssl      = merge(data.terraform_remote_state.ssl_api.outputs.certs, data.terraform_remote_state.ssl_www.outputs.certs)

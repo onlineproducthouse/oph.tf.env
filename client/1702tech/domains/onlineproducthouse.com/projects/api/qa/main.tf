@@ -21,11 +21,6 @@ terraform {
 #                                                   #
 #####################################################
 
-variable "run" {
-  type    = bool
-  default = false
-}
-
 variable "client_info" {
   type = object({
     region = string
@@ -94,7 +89,7 @@ locals {
 
   api = [
     {
-      run = var.run
+      run = data.terraform_remote_state.platform.outputs.qa.run
 
       region = var.client_info.region
       name   = "api"
@@ -136,7 +131,7 @@ locals {
       }
     },
     {
-      run = var.run
+      run = data.terraform_remote_state.platform.outputs.qa.run
 
       region = var.client_info.region
       name   = "htmltopdf"
@@ -198,7 +193,7 @@ module "qa" {
 
 output "qa" {
   value = {
-    run       = var.run
+    run       = data.terraform_remote_state.platform.outputs.qa.run
     api       = module.qa.api
     htmltopdf = module.qa.htmltopdf
   }

@@ -21,11 +21,6 @@ terraform {
 #                                                   #
 #####################################################
 
-variable "run" {
-  type    = bool
-  default = false
-}
-
 variable "client_info" {
   type = object({
     region = string
@@ -64,7 +59,7 @@ locals {
   buildspec         = "${local.oph_dev_tools_arn}${local.buildspec_key}"
 
   deployment_targets = {
-    qa = var.run == true ? [{
+    qa = data.terraform_remote_state.config.outputs.config.qa.run == true ? [{
       name = "qa"
 
       vpc = {
@@ -80,7 +75,7 @@ module "ci" {
   source = "../../../../../../../module/implementation/projects/ci"
 
   ci = {
-    run = var.run
+    run = data.terraform_remote_state.config.outputs.config.qa.run
 
     name            = local.name
     region          = var.client_info.region

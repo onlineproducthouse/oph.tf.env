@@ -178,6 +178,7 @@ output "config" {
     }
 
     qa = {
+      run     = data.terraform_remote_state.qa_platform.outputs.qa.run
       vpc_id  = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.network.vpc.id
       subnets = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.network.subnet_id_list.private
     }
