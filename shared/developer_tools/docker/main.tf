@@ -57,7 +57,7 @@ locals {
       name = "node"
       versions = {
         main   = "22.9"
-        alpine = "22.9-alpine"
+        alpine = "22.9-alpine3.19"
       }
     },
     {
