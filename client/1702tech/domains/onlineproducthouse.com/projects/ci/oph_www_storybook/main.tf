@@ -21,11 +21,6 @@ terraform {
 #                                                   #
 #####################################################
 
-variable "run" {
-  type    = bool
-  default = false
-}
-
 variable "client_info" {
   type = object({
     region = string
@@ -64,7 +59,7 @@ locals {
   buildspec         = "${local.oph_dev_tools_arn}${local.buildspec_key}"
 
   deployment_targets = {
-    qa = var.run == true ? [{
+    qa = data.terraform_remote_state.config.outputs.config.qa.run == true ? [{
       name = "qa"
       vpc  = { id = "", subnets = [] }
     }] : []
@@ -75,7 +70,7 @@ module "ci" {
   source = "../../../../../../../module/implementation/projects/ci"
 
   ci = {
-    run = var.run
+    run = data.terraform_remote_state.config.outputs.config.qa.run
 
     name            = local.name
     region          = var.client_info.region
@@ -83,7 +78,7 @@ module "ci" {
     is_docker_build = true
 
     build_job = {
-      buildspec = "${local.buildspec}"
+      buildspec = local.buildspec
 
       environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
         { key = "CI_ACTION", value = "build" },
@@ -101,7 +96,7 @@ module "ci" {
     }
 
     deploy_job = {
-      buildspec          = "${local.buildspec}"
+      buildspec          = local.buildspec
       deployment_targets = concat(local.deployment_targets.qa)
 
       environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
@@ -126,7 +121,7 @@ module "ci" {
       git = {
         branch_names   = ["qa"]
         connection_arn = data.terraform_remote_state.config.outputs.config.git_repo_webhook.arn
-        repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.client"
+        repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.web"
       }
     }
   }
