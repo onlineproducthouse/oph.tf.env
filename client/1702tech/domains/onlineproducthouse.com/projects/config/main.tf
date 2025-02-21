@@ -80,10 +80,11 @@ locals {
         }
 
         website = {
-          storybook = "/oph/config/ci/build/website/storybook"
-          www       = "/oph/config/ci/build/website/www"
-          portal    = "/oph/config/ci/build/website/portal"
-          console   = "/oph/config/ci/build/website/console"
+          storybook    = "/oph/config/ci/build/website/storybook"
+          www          = "/oph/config/ci/build/website/www"
+          portal       = "/oph/config/ci/build/website/portal"
+          console      = "/oph/config/ci/build/website/console"
+          registration = "/oph/config/ci/build/website/registration"
         }
       }
 
@@ -120,6 +121,10 @@ locals {
           console = {
             qa = "/oph/config/ci/deploy/website/console/qa"
           }
+
+          registration = {
+            qa = "/oph/config/ci/deploy/website/registration/qa"
+          }
         }
       }
     }
@@ -143,6 +148,7 @@ module "config" {
     local.ci.build.website.www,
     local.ci.build.website.portal,
     local.ci.build.website.console,
+    local.ci.build.website.registration,
 
     local.ci.deploy.container.api.qa,
     local.ci.deploy.container.htmltopdf.qa,
@@ -153,6 +159,7 @@ module "config" {
     local.ci.deploy.website.www.qa,
     local.ci.deploy.website.portal.qa,
     local.ci.deploy.website.console.qa,
+    local.ci.deploy.website.registration.qa,
   )
 }
 

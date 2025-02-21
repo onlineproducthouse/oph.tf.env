@@ -25,6 +25,6 @@ echo '{
 
 echo $(aws cloudfront create-invalidation \
   --distribution-id $CDN_ID \
-  --invalidation-batch "file://$CI_FOLDER/inv-batch.json")
+  --invalidation-batch "file://$(pwd)/$CI_FOLDER/inv-batch.json")
 
 echo "Done."

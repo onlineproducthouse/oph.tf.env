@@ -61,9 +61,10 @@ locals {
       port     = "${data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port}"
     }
 
-    www_app_url     = data.terraform_remote_state.qa_www.outputs.qa.www.www.host.id
-    portal_app_url  = data.terraform_remote_state.qa_www.outputs.qa.portal.www.host.id
-    console_app_url = data.terraform_remote_state.qa_www.outputs.qa.console.www.host.id
+    www_app_url          = data.terraform_remote_state.qa_www.outputs.qa.www.www.host.id
+    portal_app_url       = data.terraform_remote_state.qa_www.outputs.qa.portal.www.host.id
+    console_app_url      = data.terraform_remote_state.qa_www.outputs.qa.console.www.host.id
+    registration_app_url = data.terraform_remote_state.qa_www.outputs.qa.registration.www.host.id
 
     db_connection_string = join("", [
       local.qa_secrets.db.protocol,
@@ -129,6 +130,7 @@ locals {
     { id = "qa_www_app_url", path = local.paths.qa, key = "WWW_APP_URL", value = local.qa_env.www_app_url },
     { id = "qa_portal_app_url", path = local.paths.qa, key = "PORTAL_APP_URL", value = local.qa_env.portal_app_url },
     { id = "qa_console_app_url", path = local.paths.qa, key = "CONSOLE_APP_URL", value = local.qa_env.console_app_url },
+    { id = "qa_registration_app_url", path = local.paths.qa, key = "REGISTRATION_APP_URL", value = local.qa_env.registration_app_url },
 
     { id = "qa_client_api_key", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_KEY", value = random_uuid.qa_api_key_v1.result },
     { id = "qa_client_api_protocol", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_PROTOCOL", value = local.qa_env.api.protocol },

@@ -117,6 +117,18 @@ locals {
         }
       }
     },
+    {
+      name = "registration"
+
+      cdn = {
+        hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
+
+        certificate = {
+          arn         = data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_arn
+          domain_name = "registration.${data.terraform_remote_state.platform.outputs.qa.ssl.www.cert_domain_name}"
+        }
+      }
+    },
   ]
 }
 
@@ -142,10 +154,11 @@ module "qa" {
 
 output "qa" {
   value = {
-    run       = data.terraform_remote_state.platform.outputs.qa.run
-    www       = module.qa.www
-    storybook = module.qa.storybook
-    portal    = module.qa.portal
-    console   = module.qa.console
+    run          = data.terraform_remote_state.platform.outputs.qa.run
+    www          = module.qa.www
+    storybook    = module.qa.storybook
+    portal       = module.qa.portal
+    console      = module.qa.console
+    registration = module.qa.registration
   }
 }

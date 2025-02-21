@@ -26,10 +26,11 @@ data "terraform_remote_state" "ci_scripts" {
 
 locals {
   cdn = {
-    storybook = data.terraform_remote_state.qa_www.outputs.qa.storybook.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.storybook.www.cdn.id
-    www       = data.terraform_remote_state.qa_www.outputs.qa.www.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.www.www.cdn.id
-    portal    = data.terraform_remote_state.qa_www.outputs.qa.portal.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.portal.www.cdn.id
-    console   = data.terraform_remote_state.qa_www.outputs.qa.console.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.console.www.cdn.id
+    storybook    = data.terraform_remote_state.qa_www.outputs.qa.storybook.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.storybook.www.cdn.id
+    www          = data.terraform_remote_state.qa_www.outputs.qa.www.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.www.www.cdn.id
+    portal       = data.terraform_remote_state.qa_www.outputs.qa.portal.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.portal.www.cdn.id
+    console      = data.terraform_remote_state.qa_www.outputs.qa.console.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.console.www.cdn.id
+    registration = data.terraform_remote_state.qa_www.outputs.qa.registration.www.cdn.id == "" ? "_" : data.terraform_remote_state.qa_www.outputs.qa.registration.www.cdn.id
   }
 
   ci = {
@@ -44,10 +45,11 @@ locals {
       }
 
       website = {
-        storybook = []
-        www       = []
-        portal    = []
-        console   = []
+        storybook    = []
+        www          = []
+        portal       = []
+        console      = []
+        registration = []
       }
     }
 
@@ -129,6 +131,13 @@ locals {
           qa = [
             { id = "ci_deploy_website_console_qa_s3_host_bucket_url", path = local.paths.ci.deploy.website.console.qa, key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.qa_www.outputs.qa.console.www.host.id },
             { id = "ci_deploy_website_console_qa_cdn_id", path = local.paths.ci.deploy.website.console.qa, key = "CDN_ID", value = local.cdn.console },
+          ]
+        }
+
+        registration = {
+          qa = [
+            { id = "ci_deploy_website_registration_qa_s3_host_bucket_url", path = local.paths.ci.deploy.website.registration.qa, key = "S3_HOST_BUCKET_URL", value = data.terraform_remote_state.qa_www.outputs.qa.registration.www.host.id },
+            { id = "ci_deploy_website_registration_qa_cdn_id", path = local.paths.ci.deploy.website.registration.qa, key = "CDN_ID", value = local.cdn.registration },
           ]
         }
       }
