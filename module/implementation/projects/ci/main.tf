@@ -6,8 +6,6 @@
 
 variable "ci" {
   type = object({
-    run = bool
-
     name            = string
     region          = string
     build_timeout   = string

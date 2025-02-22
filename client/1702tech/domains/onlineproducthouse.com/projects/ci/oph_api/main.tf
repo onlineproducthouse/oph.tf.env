@@ -75,8 +75,6 @@ module "ci" {
   source = "../../../../../../../module/implementation/projects/ci"
 
   ci = {
-    run = data.terraform_remote_state.config.outputs.config.qa.run
-
     name            = local.name
     region          = var.client_info.region
     build_timeout   = "30"
