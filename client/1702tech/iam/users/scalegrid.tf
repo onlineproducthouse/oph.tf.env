@@ -26,10 +26,6 @@ resource "aws_iam_user_policy_attachment" "scalegrid" {
   policy_arn = aws_iam_policy.scalegrid.arn
 }
 
-resource "aws_iam_access_key" "scalegrid" {
-  user = module.scalegrid_user.name
-}
-
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
