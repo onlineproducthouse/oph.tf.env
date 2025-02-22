@@ -70,8 +70,6 @@ module "ci" {
   source = "../../../../../../../module/implementation/projects/ci"
 
   ci = {
-    run = data.terraform_remote_state.config.outputs.config.qa.run
-
     name            = local.name
     region          = var.client_info.region
     build_timeout   = "10"
@@ -86,11 +84,11 @@ module "ci" {
         { key = "WORKING_DIR", value = "./" },
         { key = "ENVIRONMENT_NAME", value = var.client_info.environment_short_name },
         { key = "BUILD_ARTEFACT_PATH", value = "**" },
-        { key = "RELEASE_ARTEFACT_PATH", value = "oph.client.web/oph.client.web.registration/build" },
+        { key = "RELEASE_ARTEFACT_PATH", value = "oph.web/apps/registration/dist" },
         { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
-          data.terraform_remote_state.config.outputs.paths.shared,
-          data.terraform_remote_state.config.outputs.paths.local,
-          data.terraform_remote_state.config.outputs.paths.qa
+          data.terraform_remote_state.config.outputs.config.paths.shared,
+          data.terraform_remote_state.config.outputs.config.paths.local,
+          data.terraform_remote_state.config.outputs.config.paths.qa
         ]) },
       ])
     }
@@ -124,6 +122,18 @@ module "ci" {
         repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.web"
       }
     }
+  }
+}
+
+module "notifications" {
+  source = "../../../../../../../module/implementation/projects/ci/notifications"
+
+  for_each = { for v in module.ci.pipeline : v.name => v }
+
+  notifications = {
+    name                = each.value.name
+    pipeline_arn        = each.value.arn
+    alert_email_address = data.terraform_remote_state.config.outputs.config.email.ci_alerts
   }
 }
 
