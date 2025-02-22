@@ -62,6 +62,16 @@ data "terraform_remote_state" "operations_policies" {
   }
 }
 
+data "terraform_remote_state" "scalegrid_policies" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "shared/security/iam/policy/scalegrid/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 locals {
   policy_arn_list = {
     developer = [
@@ -104,6 +114,7 @@ output "policy" {
       networking      = data.terraform_remote_state.operations_policies.outputs.operations["networking"].policy,
       security        = data.terraform_remote_state.operations_policies.outputs.operations["security"].policy,
       storage         = data.terraform_remote_state.operations_policies.outputs.operations["storage"].policy,
+      scalegrid       = data.terraform_remote_state.scalegrid_policies.outputs.policy,
     }
   }
 }
