@@ -102,7 +102,7 @@ resource "aws_ecs_capacity_provider" "compute" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "compute" {
-  count = var.platform.run == true && length(aws_autoscaling_group.compute) > 0 ? 1 : 0
+  count = var.platform.run == true && length(aws_ecs_capacity_provider.compute) > 0 ? 1 : 0
 
   cluster_name = module.cluster.name
 
@@ -128,9 +128,9 @@ locals {
     task_role_arn = aws_iam_role.platform.arn
 
     auto_scaling_group = var.platform.run == true ? {
-      name = aws_autoscaling_group.compute[0].name
-      id   = aws_autoscaling_group.compute[0].id
-      arn  = aws_autoscaling_group.compute[0].arn
+      name = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].name : ""
+      id   = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].id : ""
+      arn  = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].arn : ""
       } : {
       name = ""
       id   = ""
@@ -138,7 +138,7 @@ locals {
     }
 
     security_group = var.platform.run == true ? {
-      id = aws_security_group.compute[0].id
+      id = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].id : ""
       # rules = aws_security_group_rule.compute
       } : {
       id = ""

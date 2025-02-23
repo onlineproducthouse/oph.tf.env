@@ -170,7 +170,7 @@ module "db_certs" {
 
 output "qa" {
   value = {
-    run = data.terraform_remote_state.cloud.outputs.qa.cloud.run
+    run      = data.terraform_remote_state.cloud.outputs.qa.cloud.run
     platform = module.qa.platform
     db_certs = module.db_certs
     ssl      = merge(data.terraform_remote_state.ssl_api.outputs.certs, data.terraform_remote_state.ssl_www.outputs.certs)

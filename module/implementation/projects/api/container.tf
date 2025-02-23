@@ -26,17 +26,10 @@ resource "aws_ecs_task_definition" "api" {
   container_definitions = jsonencode([
     {
       "name" : "${var.api.container.name}",
-      "image" : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.api.region}.amazonaws.com/httpd:2.4",
+      "image" : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.api.region}.amazonaws.com/oph-comingsoon:latest",
       "cpu" : "${var.api.container.cpu}",
       "memory" : "${var.api.container.memory}",
       "essential" : true,
-      "command" : [
-        "/bin/sh -c \"echo '<html> <head> <title>OPH Sample App</title> <style>body {margin-top: 40px; background-color: #002050;} </style> </head><body> <div style=color:#eceae0;text-align:center> <h1>OPH Sample App</h1> <h2>Congratulations!</h2> <p>Your container application running in Amazon ECS is ready for deployment.</p> </div><div><p>Built by onlineproducthouse.com.com</p></div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
-      ],
-      "entryPoint" : [
-        "sh",
-        "-c"
-      ],
       "portMappings" : [
         {
           "name" : "${local.port_mapping_name}",
@@ -52,7 +45,21 @@ resource "aws_ecs_task_definition" "api" {
           "awslogs-region" : "${var.api.region}",
           "awslogs-stream-prefix" : "${var.api.container.logging.prefix}"
         }
-      }
+      },
+      "environment" : [
+        {
+          "name" : "COMINGSOON_PROTOCOL",
+          "value" : "https"
+        },
+        {
+          "name" : "COMINGSOON_HOST",
+          "value" : "${var.api.load_balancer.listener.certificate.domain_name}"
+        },
+        {
+          "name" : "COMINGSOON_PORT",
+          "value" : "${tostring(var.api.port)}"
+        },
+      ]
     }
   ])
 }
@@ -72,7 +79,7 @@ resource "aws_ecs_service" "api" {
   deployment_maximum_percent         = var.api.container.deployment_maximum_healthy_percent
 
   lifecycle {
-    ignore_changes = [desired_count, task_definition]
+    ignore_changes = [task_definition]
   }
 
   ordered_placement_strategy {

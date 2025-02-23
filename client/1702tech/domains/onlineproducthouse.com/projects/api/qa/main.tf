@@ -73,11 +73,15 @@ data "terraform_remote_state" "dns" {
 }
 
 locals {
+  run = data.terraform_remote_state.platform.outputs.qa.run
+}
+
+locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
   api_port           = data.terraform_remote_state.cloud.outputs.qa.ports.api
   api_htmltopdf_port = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf
-  health_check_path  = "/HealthCheck/Ping"
+  health_check_path  = "/api/HealthCheck/Ping"
 
   aws_autoscaling_group = {
     name = data.terraform_remote_state.platform.outputs.qa.platform.compute.auto_scaling_group.name
@@ -89,7 +93,7 @@ locals {
 
   api = [
     {
-      run = data.terraform_remote_state.platform.outputs.qa.run
+      run = local.run
 
       region = var.client_info.region
       name   = "api"
@@ -100,7 +104,7 @@ locals {
 
       load_balancer = {
         arn               = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.arn
-        health_check_path = "/api${local.health_check_path}"
+        health_check_path = local.health_check_path
         dns_name          = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.dns_name
         zone_id           = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.zone_id
         hosted_zone       = local.hosted_zone
@@ -120,8 +124,8 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.cluster_id
 
-        cpu    = 1400
-        memory = 650
+        cpu    = 1000
+        memory = 450
 
         desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 100
@@ -131,7 +135,7 @@ locals {
       }
     },
     {
-      run = data.terraform_remote_state.platform.outputs.qa.run
+      run = local.run
 
       region = var.client_info.region
       name   = "htmltopdf"
@@ -162,8 +166,8 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.cluster_id
 
-        cpu    = 1400
-        memory = 650
+        cpu    = 1000
+        memory = 450
 
         desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 100
@@ -193,7 +197,7 @@ module "qa" {
 
 output "qa" {
   value = {
-    run       = data.terraform_remote_state.platform.outputs.qa.run
+    run       = local.run
     api       = module.qa.api
     htmltopdf = module.qa.htmltopdf
   }

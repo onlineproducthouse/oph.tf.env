@@ -52,13 +52,13 @@ locals {
     api = {
       protocol = "https"
       host     = data.terraform_remote_state.qa_api.outputs.qa.api.api.load_balancer.domain_name
-      port     = "${data.terraform_remote_state.qa_api.outputs.qa.api.api.container.port}"
+      port     = data.terraform_remote_state.qa_api.outputs.qa.api.api.container.port
     }
 
     htmltopdf = {
       protocol = "https"
       host     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.load_balancer.domain_name
-      port     = "${data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port}"
+      port     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port
     }
 
     www_app_url          = data.terraform_remote_state.qa_www.outputs.qa.www.www.host.id
