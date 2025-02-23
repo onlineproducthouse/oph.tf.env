@@ -57,6 +57,32 @@ resource "aws_s3_bucket_versioning" "host" {
   }
 }
 
+resource "aws_s3_bucket_ownership_controls" "host" {
+  bucket = aws_s3_bucket.host.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "host" {
+  bucket = aws_s3_bucket.host.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_acl" "host" {
+  depends_on = [
+    aws_s3_bucket_ownership_controls.host,
+    aws_s3_bucket_public_access_block.host,
+  ]
+
+  bucket = aws_s3_bucket.host.id
+  acl    = var.www.run ? "public-read" : "private"
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #

@@ -770,6 +770,7 @@ locals {
             "s3:PutBucketObjectLockConfiguration",
             "s3:PutBucketOwnershipControls",
             "s3:PutBucketPolicy",
+            "s3:PutBucketPublicAccessBlock",
             "s3:PutBucketRequestPayment",
             "s3:PutBucketTagging",
             "s3:PutBucketVersioning",
