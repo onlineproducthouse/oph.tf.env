@@ -118,8 +118,8 @@ module "ci" {
       }
 
       git = {
-        # branch_names   = ["dev", "qa"]
-        branch_names   = ["dev"]
+        branch_names   = ["dev", "qa"]
+        # branch_names   = ["dev"]
         connection_arn = data.terraform_remote_state.config.outputs.config.git_repo_webhook.arn
         repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.api.htmltopdf"
       }
