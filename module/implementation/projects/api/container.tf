@@ -53,11 +53,15 @@ resource "aws_ecs_task_definition" "api" {
         },
         {
           "name" : "COMINGSOON_HOST",
-          "value" : "${var.api.load_balancer.listener.certificate.domain_name}"
+          "value" : "${var.api.load_balancer.domain_name}"
         },
         {
           "name" : "COMINGSOON_PORT",
           "value" : "${tostring(var.api.port)}"
+        },
+        {
+          "name" : "COMINGSOON_FOR_PROJECT",
+          "value" : "${var.api.name}"
         },
       ]
     }

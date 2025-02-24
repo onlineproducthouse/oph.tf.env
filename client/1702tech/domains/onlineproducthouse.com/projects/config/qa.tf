@@ -51,13 +51,13 @@ locals {
   qa_env = {
     api = {
       protocol = "https"
-      host     = data.terraform_remote_state.qa_api.outputs.qa.api.api.load_balancer.domain_name
+      host     = data.terraform_remote_state.qa_api.outputs.qa.domain_name
       port     = data.terraform_remote_state.qa_api.outputs.qa.api.api.container.port
     }
 
     htmltopdf = {
       protocol = "https"
-      host     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.load_balancer.domain_name
+      host     = data.terraform_remote_state.qa_api.outputs.qa.domain_name
       port     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port
     }
 

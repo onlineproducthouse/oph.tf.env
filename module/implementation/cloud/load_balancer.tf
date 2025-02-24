@@ -36,7 +36,7 @@ resource "aws_lb" "cloud" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.load_balancer[0].id]
-  subnets            = local.network_output.subnet_id_list.public
+  subnets            = local.network_output.subnet.public.id_list
 
   access_logs {
     enabled = true

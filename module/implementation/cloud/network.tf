@@ -117,9 +117,16 @@ locals {
 
     eip = []
 
-    subnet_id_list = {
-      private = []
-      public  = []
+    subnet = {
+      private = {
+        cidr_blocks = []
+        id_list     = []
+      }
+
+      public = {
+        cidr_blocks = []
+        id_list     = []
+      }
     }
   }
 }
@@ -133,9 +140,16 @@ locals {
 
     eip = module.eip[0].eip_public_ip_list
 
-    subnet_id_list = {
-      private = module.private_subnet[0].id_list
-      public  = module.public_subnet[0].id_list
+    subnet = {
+      private = {
+        cidr_blocks = var.cloud.network.cidr_blocks.subnets.private
+        id_list     = module.private_subnet[0].id_list
+      }
+
+      public = {
+        cidr_blocks = var.cloud.network.cidr_blocks.subnets.public
+        id_list     = module.public_subnet[0].id_list
+      }
     }
   } : local.null_network_output
 }

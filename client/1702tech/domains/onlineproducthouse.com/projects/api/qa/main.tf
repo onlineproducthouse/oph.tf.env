@@ -79,9 +79,7 @@ locals {
 locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
-  api_port           = data.terraform_remote_state.cloud.outputs.qa.ports.api
-  api_htmltopdf_port = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf
-  health_check_path  = "/api/HealthCheck/Ping"
+  health_check_path = "/api/HealthCheck/Ping"
 
   aws_autoscaling_group = {
     name = data.terraform_remote_state.platform.outputs.qa.platform.compute.auto_scaling_group.name
@@ -95,26 +93,17 @@ locals {
     {
       run = local.run
 
-      region = var.client_info.region
-      name   = "api"
-      vpc_id = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
-      port   = local.api_port
-
+      region                = var.client_info.region
+      name                  = "api"
+      vpc_id                = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
+      port                  = data.terraform_remote_state.cloud.outputs.qa.ports.api
       aws_autoscaling_group = local.aws_autoscaling_group
 
       load_balancer = {
-        arn               = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.arn
-        health_check_path = local.health_check_path
-        dns_name          = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.dns_name
-        zone_id           = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.zone_id
-        hosted_zone       = local.hosted_zone
-
-        listener = {
-          certificate = {
-            arn         = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
-            domain_name = "api.${data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name}"
-          }
-        }
+        arn                      = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.arn
+        health_check_path        = local.health_check_path
+        listener_certificate_arn = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
+        domain_name              = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name
       }
 
       container = {
@@ -125,7 +114,7 @@ locals {
         cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.cluster_id
 
         cpu    = 1000
-        memory = 450
+        memory = 900
 
         desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 100
@@ -137,26 +126,17 @@ locals {
     {
       run = local.run
 
-      region = var.client_info.region
-      name   = "htmltopdf"
-      vpc_id = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
-      port   = local.api_htmltopdf_port
-
+      region                = var.client_info.region
+      name                  = "htmltopdf"
+      vpc_id                = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
+      port                  = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf
       aws_autoscaling_group = local.aws_autoscaling_group
 
       load_balancer = {
-        arn               = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.arn
-        health_check_path = local.health_check_path
-        dns_name          = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.dns_name
-        zone_id           = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.zone_id
-        hosted_zone       = local.hosted_zone
-
-        listener = {
-          certificate = {
-            arn         = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
-            domain_name = "htmltopdf.${data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name}"
-          }
-        }
+        arn                      = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.arn
+        health_check_path        = local.health_check_path
+        listener_certificate_arn = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
+        domain_name              = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name
       }
 
       container = {
@@ -179,6 +159,20 @@ locals {
   ]
 }
 
+resource "aws_route53_record" "domain_name" {
+  count = local.run == true ? 1 : 0
+
+  zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
+  name    = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name
+  type    = "A"
+
+  alias {
+    name                   = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.dns_name
+    zone_id                = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.zone_id
+    evaluate_target_health = true
+  }
+}
+
 module "qa" {
   source = "../../../../../../../module/implementation/projects/api"
 
@@ -197,8 +191,9 @@ module "qa" {
 
 output "qa" {
   value = {
-    run       = local.run
-    api       = module.qa.api
-    htmltopdf = module.qa.htmltopdf
+    run         = local.run
+    api         = module.qa.api
+    htmltopdf   = module.qa.htmltopdf
+    domain_name = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name
   }
 }

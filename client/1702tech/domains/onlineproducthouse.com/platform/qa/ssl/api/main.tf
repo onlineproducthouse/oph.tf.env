@@ -42,16 +42,6 @@ variable "client_info" {
 #                                                   #
 #####################################################
 
-data "terraform_remote_state" "cloud" {
-  backend = "s3"
-
-  config = {
-    bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/cloud/qa/terraform.tfstate"
-    region = "eu-west-1"
-  }
-}
-
 data "terraform_remote_state" "dns" {
   backend = "s3"
 

@@ -18,21 +18,10 @@ variable "api" {
     })
 
     load_balancer = object({
-      arn               = string
-      health_check_path = string
-      dns_name          = string
-      zone_id           = string
-
-      hosted_zone = object({
-        id = string
-      })
-
-      listener = object({
-        certificate = object({
-          arn         = string
-          domain_name = string
-        })
-      })
+      arn                      = string
+      health_check_path        = string
+      listener_certificate_arn = string
+      domain_name                = string
     })
 
     container = object({

@@ -38,7 +38,7 @@ resource "aws_lb_listener" "api" {
   port     = var.api.port
 
   ssl_policy      = "ELBSecurityPolicy-2016-08"
-  certificate_arn = var.api.load_balancer.listener.certificate.arn
+  certificate_arn = var.api.load_balancer.listener_certificate_arn
 
   default_action {
     type             = "forward"
@@ -53,20 +53,6 @@ resource "aws_autoscaling_attachment" "api" {
   lb_target_group_arn    = aws_lb_target_group.api[0].arn
 }
 
-resource "aws_route53_record" "api" {
-  count = var.api.run == true ? 1 : 0
-
-  zone_id = var.api.load_balancer.hosted_zone.id
-  name    = var.api.load_balancer.listener.certificate.domain_name
-  type    = "A"
-
-  alias {
-    name                   = var.api.load_balancer.dns_name
-    zone_id                = var.api.load_balancer.zone_id
-    evaluate_target_health = true
-  }
-}
-
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -75,8 +61,6 @@ resource "aws_route53_record" "api" {
 
 locals {
   lb_output = {
-    domain_name = var.api.load_balancer.listener.certificate.domain_name
-
     target_group = var.api.run == true ? {
       arn = aws_lb_target_group.api[0].arn
       } : {

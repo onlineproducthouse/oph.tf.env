@@ -84,14 +84,6 @@ data "terraform_remote_state" "ssl_www" {
 
 locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
-
-  api_port           = data.terraform_remote_state.cloud.outputs.qa.ports.api
-  api_htmltopdf_port = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf
-
-  dns = {
-    domain_name    = data.terraform_remote_state.dns.outputs.dns.domain_name
-    hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
-  }
 }
 
 module "qa" {
@@ -104,12 +96,12 @@ module "qa" {
     region = var.client_info.region
 
     dns = {
-      hosted_zone_id = local.dns.hosted_zone_id
+      hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
     }
 
     cloud = {
       vpc_id                 = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
-      private_subnet_id_list = data.terraform_remote_state.cloud.outputs.qa.cloud.network.subnet_id_list.private
+      private_subnet_id_list = data.terraform_remote_state.cloud.outputs.qa.cloud.network.subnet.private.id_list
     }
 
     logs = {
@@ -122,19 +114,48 @@ module "qa" {
 
       instance = {
         image_id      = "ami-0ef8272297113026d"
-        instance_type = "t3a.micro"
+        instance_type = "t3a.small"
       }
 
       auto_scaling = {
         minimum = 1
-        maximum = 1
+        maximum = 2
         desired = 1
       }
 
       security_group_rules = [
-        { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], from_port = 0, to_port = 0 },
-        { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = local.api_port, to_port = local.api_port },
-        { name = "htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], from_port = local.api_htmltopdf_port, to_port = local.api_htmltopdf_port },
+        {
+          name        = "public",
+          type        = "egress",
+          protocol    = "-1",
+          cidr_blocks = ["0.0.0.0/0"],
+          from_port   = 0,
+          to_port     = 0,
+        },
+        {
+          name        = "api",
+          type        = "ingress",
+          protocol    = "tcp",
+          cidr_blocks = data.terraform_remote_state.cloud.outputs.qa.cloud.network.subnet.public.cidr_blocks,
+          from_port   = data.terraform_remote_state.cloud.outputs.qa.ports.api,
+          to_port     = data.terraform_remote_state.cloud.outputs.qa.ports.api,
+        },
+        {
+          name        = "htmltopdf",
+          type        = "ingress",
+          protocol    = "tcp",
+          cidr_blocks = data.terraform_remote_state.cloud.outputs.qa.cloud.network.subnet.public.cidr_blocks,
+          from_port   = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf,
+          to_port     = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf,
+        },
+        {
+          name        = "database",
+          type        = "ingress",
+          protocol    = "tcp",
+          cidr_blocks = data.terraform_remote_state.cloud.outputs.qa.cloud.network.subnet.private.cidr_blocks,
+          from_port   = data.terraform_remote_state.cloud.outputs.qa.ports.database,
+          to_port     = data.terraform_remote_state.cloud.outputs.qa.ports.database,
+        },
       ]
     }
   }

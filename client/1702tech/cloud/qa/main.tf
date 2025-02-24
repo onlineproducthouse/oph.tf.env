@@ -53,6 +53,7 @@ locals {
   ports = {
     api       = 7890
     htmltopdf = 7891
+    database  = 5432
   }
 }
 
