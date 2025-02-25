@@ -132,12 +132,12 @@ locals {
     { id = "qa_console_app_url", path = local.paths.qa, key = "CONSOLE_APP_URL", value = local.qa_env.console_app_url },
     { id = "qa_registration_app_url", path = local.paths.qa, key = "REGISTRATION_APP_URL", value = local.qa_env.registration_app_url },
 
-    { id = "qa_client_api_key", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_KEY", value = random_uuid.qa_api_key_v1.result },
-    { id = "qa_client_api_protocol", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_PROTOCOL", value = local.qa_env.api.protocol },
-    { id = "qa_client_ws_api_protocol", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_WS_API_PROTOCOL", value = "ws" },
-    { id = "qa_client_api_host", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_HOST", value = local.qa_env.api.host },
-    { id = "qa_client_api_port", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_PORT", value = local.qa_env.api.port },
-    { id = "qa_client_api_base_path", path = local.paths.qa, key = "VITE_APP_LOCAL_CLIENT_API_BASE_PATH", value = "/api/v1" },
+    { id = "qa_client_api_key", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_KEY", value = random_uuid.qa_api_key_v1.result },
+    { id = "qa_client_api_protocol", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_PROTOCOL", value = local.qa_env.api.protocol },
+    { id = "qa_client_ws_api_protocol", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_WS_API_PROTOCOL", value = "ws" },
+    { id = "qa_client_api_host", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_HOST", value = local.qa_env.api.host },
+    { id = "qa_client_api_port", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_PORT", value = local.qa_env.api.port },
+    { id = "qa_client_api_base_path", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_BASE_PATH", value = "/api/v1" },
   ]
 }
 
