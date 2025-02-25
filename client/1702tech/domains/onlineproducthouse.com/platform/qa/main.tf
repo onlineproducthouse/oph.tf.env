@@ -114,12 +114,12 @@ module "qa" {
 
       instance = {
         image_id      = "ami-0ef8272297113026d"
-        instance_type = "t3a.small"
+        instance_type = "t3a.micro"
       }
 
       auto_scaling = {
         minimum = 1
-        maximum = 2
+        maximum = 1
         desired = 1
       }
 

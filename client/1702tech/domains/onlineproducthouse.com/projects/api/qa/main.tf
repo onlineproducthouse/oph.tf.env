@@ -113,12 +113,12 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.cluster_id
 
-        cpu    = 1000
-        memory = 900
+        cpu    = 900
+        memory = 450
 
         desired_tasks_count                = 1
-        deployment_minimum_healthy_percent = 100
-        deployment_maximum_healthy_percent = 200
+        deployment_minimum_healthy_percent = 0
+        deployment_maximum_healthy_percent = 100
 
         logging = data.terraform_remote_state.platform.outputs.qa.platform.logs.logging
       }
@@ -146,12 +146,12 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.cluster_id
 
-        cpu    = 1000
+        cpu    = 900
         memory = 450
 
         desired_tasks_count                = 1
-        deployment_minimum_healthy_percent = 100
-        deployment_maximum_healthy_percent = 200
+        deployment_minimum_healthy_percent = 0
+        deployment_maximum_healthy_percent = 100
 
         logging = data.terraform_remote_state.platform.outputs.qa.platform.logs.logging
       }
