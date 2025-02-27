@@ -15,8 +15,11 @@ aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$CI_FO
 
 source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
-yarn
+n "22.13.1" && npm i
 
-source $ENV_FILE && yarn build
+node -v
+npm -v
+
+source $ENV_FILE && npm run build
 
 echo "Done."
