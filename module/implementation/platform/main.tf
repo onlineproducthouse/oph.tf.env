@@ -65,6 +65,7 @@ variable "platform" {
 
 output "platform" {
   value = {
+    run          = var.platform.run
     file_service = local.file_service_output
     role         = local.role_output
     logs         = local.logs_output

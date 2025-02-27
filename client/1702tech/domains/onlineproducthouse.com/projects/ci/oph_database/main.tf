@@ -53,13 +53,15 @@ data "terraform_remote_state" "config" {
 }
 
 locals {
+  run = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud == true && data.terraform_remote_state.config.outputs.config.qa.is_running.platform == true
+
   name              = "${var.client_info.project_short_name}-${var.client_info.service_short_name}"
   oph_dev_tools_arn = data.terraform_remote_state.config.outputs.config.oph_dev_tools.arn
   buildspec_key     = data.terraform_remote_state.config.outputs.config.oph_ci_scripts.buildspec
   buildspec         = "${local.oph_dev_tools_arn}${local.buildspec_key}"
 
   deployment_targets = {
-    qa = data.terraform_remote_state.config.outputs.config.qa.run == true ? [{
+    qa = local.run == true ? [{
       name = "qa"
 
       vpc = {
@@ -118,8 +120,7 @@ module "ci" {
       }
 
       git = {
-        branch_names   = ["dev", "qa"]
-        # branch_names   = ["dev"]
+        branch_names   = local.run == true ? ["dev", "qa"] : ["dev"]
         connection_arn = data.terraform_remote_state.config.outputs.config.git_repo_webhook.arn
         repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.db"
       }

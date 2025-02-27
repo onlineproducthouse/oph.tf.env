@@ -185,9 +185,18 @@ output "config" {
     }
 
     qa = {
-      run     = data.terraform_remote_state.qa_platform.outputs.qa.run
       vpc_id  = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.network.vpc.id
       subnets = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.network.subnet.private.id_list
+
+      is_running = {
+        cloud    = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.run
+        platform = data.terraform_remote_state.qa_platform.outputs.qa.platform.run
+
+        project = {
+          api = data.terraform_remote_state.qa_api.outputs.qa.run
+          www = data.terraform_remote_state.qa_www.outputs.qa.run
+        }
+      }
     }
   }
 }

@@ -21,6 +21,10 @@ terraform {
 #                                                   #
 #####################################################
 
+variable "run" {
+  type = bool
+}
+
 variable "client_info" {
   type = object({
     region = string
@@ -140,7 +144,7 @@ module "qa" {
   }
 
   www = {
-    run  = data.terraform_remote_state.platform.outputs.qa.run
+    run  = var.run
     host = local.host
     cdn  = each.value.cdn
   }
@@ -154,7 +158,7 @@ module "qa" {
 
 output "qa" {
   value = {
-    run          = data.terraform_remote_state.platform.outputs.qa.run
+    run          = var.run
     www          = module.qa.www
     storybook    = module.qa.storybook
     portal       = module.qa.portal

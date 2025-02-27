@@ -21,6 +21,10 @@ terraform {
 #                                                   #
 #####################################################
 
+variable "run" {
+  type = bool
+}
+
 variable "client_info" {
   type = object({
     region = string
@@ -73,10 +77,8 @@ data "terraform_remote_state" "dns" {
 }
 
 locals {
-  run = data.terraform_remote_state.platform.outputs.qa.run
-}
+  run = var.run == true && data.terraform_remote_state.cloud.outputs.qa.cloud.run == true && data.terraform_remote_state.platform.outputs.qa.platform.run == true
 
-locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
   health_check_path = "/api/HealthCheck/Ping"
