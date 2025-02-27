@@ -21,7 +21,7 @@ variable "api" {
       arn                      = string
       health_check_path        = string
       listener_certificate_arn = string
-      domain_name                = string
+      domain_name              = string
     })
 
     container = object({
