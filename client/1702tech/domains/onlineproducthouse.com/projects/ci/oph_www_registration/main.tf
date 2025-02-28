@@ -75,7 +75,7 @@ module "ci" {
     name            = local.name
     region          = var.client_info.region
     build_timeout   = "10"
-    is_docker_build = true
+    is_docker_build = false
 
     build_job = {
       buildspec = local.buildspec
@@ -83,10 +83,7 @@ module "ci" {
       environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
         { key = "CI_ACTION", value = "build" },
         { key = "PROJECT_TYPE", value = "client" },
-        { key = "WORKING_DIR", value = "./" },
-        { key = "ENVIRONMENT_NAME", value = var.client_info.environment_short_name },
-        { key = "BUILD_ARTEFACT_PATH", value = "**" },
-        { key = "RELEASE_ARTEFACT_PATH", value = "oph.web/apps/registration/dist" },
+        { key = "TARGET_WORKSPACE", value = "apps/registration" },
         { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
           data.terraform_remote_state.config.outputs.config.paths.shared,
           data.terraform_remote_state.config.outputs.config.paths.qa
@@ -101,7 +98,7 @@ module "ci" {
       environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
         { key = "CI_ACTION", value = "deploy" },
         { key = "PROJECT_TYPE", value = "client" },
-        { key = "WORKING_DIR", value = "./" },
+        { key = "RELEASE_ARTEFACT_PATH", value = "./apps/registration/dist/" },
         { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
           data.terraform_remote_state.config.outputs.config.paths.shared,
           data.terraform_remote_state.config.outputs.config.paths.ci.deploy.website.registration.qa,

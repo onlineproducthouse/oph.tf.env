@@ -17,9 +17,16 @@ source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_
 
 n "22.13.1" && npm i
 
-node -v
-npm -v
+source $ENV_FILE && npm run build \
+  -w packages/config \
+  -w packages/constants \
+  -w packages/utilities \
+  -w packages/contracts \
+  -w packages/api \
+  -w packages/ui
 
-source $ENV_FILE && npm run build
+if [[ -n "$TARGET_WORKSPACE" ]]; then
+  source $ENV_FILE && npm run build -w $TARGET_WORKSPACE
+fi
 
 echo "Done."

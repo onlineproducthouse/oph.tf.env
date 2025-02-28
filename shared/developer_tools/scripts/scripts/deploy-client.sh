@@ -13,7 +13,7 @@ aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") "$(pwd)/$CI_FO
 
 source $(echo "$(pwd)/$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
-aws s3 sync ./ "s3://$S3_HOST_BUCKET_URL"
+aws s3 sync $RELEASE_ARTEFACT_PATH "s3://$S3_HOST_BUCKET_URL"
 
 echo '{
   "Paths": {

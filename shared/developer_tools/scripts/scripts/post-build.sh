@@ -19,15 +19,16 @@ if [[ $CI_ACTION == "build" ]]; then
 
     if [[ "$PROJECT_TYPE" == "client" ]]; then
       # Upload build output
-      zip -r $QA_BRANCH_RELEASE_ARTEFACT_KEY $RELEASE_ARTEFACT_PATH/
+      echo "zip -r $QA_BRANCH_RELEASE_ARTEFACT_KEY $(pwd)"
+      zip -r $QA_BRANCH_RELEASE_ARTEFACT_KEY ./
 
       aws s3 cp "./$QA_BRANCH_RELEASE_ARTEFACT_KEY.zip" "s3://$RELEASE_ARTEFACT_STORE"
     fi
 
     if [[ "$PROJECT_TYPE" == "container" ]]; then
-      # Upload release manifest
-      echo "DKR_IMAGE=$IMAGE_REGISTRY_BASE_URL/$IMAGE_REPOSITORY_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION" >$RELEASE_MANIFEST
+      echo "Uploading release manifest for: $GIT_BRANCH/$PROJECT_TYPE$/IMAGE_REPOSITORY_NAME"
 
+      echo "DKR_IMAGE=$IMAGE_REGISTRY_BASE_URL/$IMAGE_REPOSITORY_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION" >$RELEASE_MANIFEST
       zip $QA_BRANCH_RELEASE_ARTEFACT_KEY $RELEASE_MANIFEST
 
       aws s3 cp "./$QA_BRANCH_RELEASE_ARTEFACT_KEY.zip" "s3://$RELEASE_ARTEFACT_STORE"
