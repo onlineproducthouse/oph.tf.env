@@ -26,8 +26,3 @@ phases:
       - aws s3 cp "$DEV_TOOLS_STORE_SCRIPTS/oph/scripts/post-build.sh" "./post-build.sh"
       - bash "./post-build.sh"
       - echo "Done."
-
-artifacts:
-  type: zip
-  files:
-    - ${BUILD_ARTEFACT_PATH}/**/**/*
