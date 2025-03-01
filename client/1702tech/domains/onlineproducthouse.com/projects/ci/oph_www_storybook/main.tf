@@ -53,7 +53,7 @@ data "terraform_remote_state" "config" {
 }
 
 locals {
-  run = data.terraform_remote_state.config.outputs.config.qa.is_running.project.www == true
+  run = true //data.terraform_remote_state.config.outputs.config.qa.is_running.project.www == true
 
   name              = "${var.client_info.project_short_name}-${var.client_info.service_short_name}"
   oph_dev_tools_arn = data.terraform_remote_state.config.outputs.config.oph_dev_tools.arn

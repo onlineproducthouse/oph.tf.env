@@ -144,7 +144,7 @@ module "qa" {
   }
 
   www = {
-    run  = var.run
+    run  = each.value.name == "storybook" ? true : var.run
     host = local.host
     cdn  = each.value.cdn
   }
