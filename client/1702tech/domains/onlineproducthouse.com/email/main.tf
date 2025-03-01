@@ -97,7 +97,7 @@ output "do_not_reply" {
 }
 
 output "root" {
-  value = "root@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
+  value = "info@${data.terraform_remote_state.dns.outputs.dns.domain_name}"
 }
 
 output "ci_alerts" {
