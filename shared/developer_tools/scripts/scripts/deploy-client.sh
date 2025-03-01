@@ -18,7 +18,7 @@ aws s3 sync $RELEASE_ARTEFACT_PATH "s3://$S3_HOST_BUCKET_URL"
 echo '{
   "Paths": {
     "Quantity": 1,
-    "Items": ["/index.html"]
+    "Items": ["/*"]
   },
   "CallerReference": "'$CODEBUILD_START_TIME'"
 }' >"$(pwd)/$CI_FOLDER/inv-batch.json"
