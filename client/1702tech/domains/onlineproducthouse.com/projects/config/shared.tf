@@ -29,6 +29,9 @@ locals {
     { id = "shared_otp_length", path = local.paths.shared, key = "OTP_LENGTH", value = "6" },
     { id = "shared_otp_time_to_live_in_minutes", path = local.paths.shared, key = "OTP_TIME_TO_LIVE_IN_MINUTES", value = "5" },
 
+    { id = "shared_test_user_email_addr_first", path = local.paths.shared, key = "TEST_USER_EMAIL_ADDR_FIRST", value = "first.${local.test_user_email_addr_templ}" },
+    { id = "shared_test_user_pwd", path = local.paths.shared, key = "TEST_USER_PWD", value = local.shared_secrets.test_user_password },
+
     { id = "shared_portal_user_email_addr", path = local.paths.shared, key = "PORTAL_USER_EMAIL_ADDR", value = data.terraform_remote_state.email.outputs.root },
 
     { id = "shared_sg_street", path = local.paths.shared, key = "SG_SENDER_ADDRESS", value = "13-Zebra-Street" },
