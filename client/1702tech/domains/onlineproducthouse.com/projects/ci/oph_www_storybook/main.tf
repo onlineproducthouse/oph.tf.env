@@ -83,7 +83,6 @@ module "ci" {
       environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
         { key = "CI_ACTION", value = "build" },
         { key = "PROJECT_TYPE", value = "client" },
-        { key = "TARGET_WORKSPACE", value = "" },
         { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
           data.terraform_remote_state.config.outputs.config.paths.shared,
           data.terraform_remote_state.config.outputs.config.paths.qa
