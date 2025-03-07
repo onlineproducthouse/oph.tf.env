@@ -158,11 +158,10 @@ module "config" {
     local.ci.deploy.container.api.qa,
     local.ci.deploy.container.htmltopdf.qa,
 
-    local.ci.deploy.db.api.qa,
-
     local.ci.deploy.container.api.test,
     local.ci.deploy.container.htmltopdf.test,
 
+    local.ci.deploy.db.api.qa,
     local.ci.deploy.db.api.test,
 
     local.ci.deploy.website.storybook.qa,

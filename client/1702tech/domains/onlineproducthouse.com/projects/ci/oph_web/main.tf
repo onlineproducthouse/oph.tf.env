@@ -85,8 +85,8 @@ locals {
           { key = "PROJECT_TYPE", value = "client" },
           { key = "WORKING_DIR", value = "./" },
           { key = "ENVIRONMENT_NAME", value = var.client_info.environment_short_name },
-          { key = "BUILD_ARTEFACT_PATH", value = "**" },
-          { key = "BUILD_ARTEFACT_PATH", value = "./" },
+          { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
+          { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.qa,
@@ -103,8 +103,8 @@ locals {
           { key = "PROJECT_TYPE", value = "client" },
           { key = "WORKING_DIR", value = "./" },
           { key = "ENVIRONMENT_NAME", value = var.client_info.environment_short_name },
-          { key = "BUILD_ARTEFACT_PATH", value = "**" },
-          { key = "BUILD_ARTEFACT_PATH", value = "./" },
+          { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
+          { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.qa,

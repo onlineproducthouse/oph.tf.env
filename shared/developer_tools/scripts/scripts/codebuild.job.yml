@@ -30,4 +30,4 @@ phases:
 artifacts:
   type: zip
   files:
-    - ${BUILD_ARTEFACT_PATH}/**/**/*
+    - ${BUILD_ARTEFACT_PATH}
