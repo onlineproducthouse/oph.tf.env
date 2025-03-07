@@ -67,6 +67,7 @@ locals {
     shared = "/oph/config/shared"
     local  = "/oph/config/local"
     qa     = "/oph/config/qa"
+    test   = "/oph/config/test"
 
     ci = {
       build = {
@@ -91,17 +92,20 @@ locals {
       deploy = {
         container = {
           api = {
-            qa = "/oph/config/ci/deploy/container/api/qa"
+            qa   = "/oph/config/ci/deploy/container/api/qa"
+            test = "/oph/config/ci/deploy/container/api/test"
           }
 
           htmltopdf = {
-            qa = "/oph/config/ci/deploy/container/htmltopdf/qa"
+            qa   = "/oph/config/ci/deploy/container/htmltopdf/qa"
+            test = "/oph/config/ci/deploy/container/htmltopdf/test"
           }
         }
 
         db = {
           api = {
-            qa = "/oph/config/ci/deploy/db/api/qa"
+            qa   = "/oph/config/ci/deploy/db/api/qa"
+            test = "/oph/config/ci/deploy/db/api/test"
           }
         }
 
@@ -138,6 +142,7 @@ module "config" {
     local.shared,
     local.local,
     local.qa,
+    local.test,
 
     local.ci.build.container.api,
     local.ci.build.container.htmltopdf,
@@ -154,6 +159,11 @@ module "config" {
     local.ci.deploy.container.htmltopdf.qa,
 
     local.ci.deploy.db.api.qa,
+
+    local.ci.deploy.container.api.test,
+    local.ci.deploy.container.htmltopdf.test,
+
+    local.ci.deploy.db.api.test,
 
     local.ci.deploy.website.storybook.qa,
     local.ci.deploy.website.www.qa,
@@ -195,6 +205,21 @@ output "config" {
         project = {
           api = data.terraform_remote_state.qa_api.outputs.qa.run
           www = data.terraform_remote_state.qa_www.outputs.qa.run
+        }
+      }
+    }
+
+    test = {
+      vpc_id  = data.terraform_remote_state.test_cloud.outputs.test.cloud.network.vpc.id
+      subnets = data.terraform_remote_state.test_cloud.outputs.test.cloud.network.subnet.private.id_list
+
+      is_running = {
+        cloud    = data.terraform_remote_state.test_cloud.outputs.test.cloud.run
+        platform = data.terraform_remote_state.test_platform.outputs.test.platform.run
+
+        project = {
+          api = data.terraform_remote_state.test_api.outputs.test.run
+          www = false
         }
       }
     }
