@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ $IS_RUNNING == "false" ]]; then
+  echo "Target environment is not running"
+  exit 0
+fi
+
 echo "Changing to working directory: $WORKING_DIR"
 cd $(echo $WORKING_DIR)
 

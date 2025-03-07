@@ -2,6 +2,11 @@
 
 set -euo pipefail
 
+if [[ $IS_RUNNING == "false" ]]; then
+  echo "Target environment is not running"
+  exit 0
+fi
+
 echo "Build starting for container project: $CODEBUILD_BUILD_ID"
 echo "Start time: $CODEBUILD_START_TIME"
 echo "Started by: $CODEBUILD_INITIATOR"
