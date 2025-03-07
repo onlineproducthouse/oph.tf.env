@@ -52,68 +52,63 @@ data "terraform_remote_state" "config" {
   }
 }
 
+resource "random_uuid" "artifact_source_output" {}
+
 locals {
-  name              = "${var.client_info.project_short_name}-${var.client_info.service_short_name}"
+  name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}"
+
   oph_dev_tools_arn = data.terraform_remote_state.config.outputs.config.oph_dev_tools.arn
   buildspec_key     = data.terraform_remote_state.config.outputs.config.oph_ci_scripts.buildspec
-  buildspec         = "${local.oph_dev_tools_arn}${local.buildspec_key}"
 
-  deployment_targets = {
-    qa = []
+  buildspec = "${local.oph_dev_tools_arn}${local.buildspec_key}"
+
+  artifacts = {
+    source = random_uuid.artifact_source_output.result
+  }
+
+  git = {
+    connection_arn = data.terraform_remote_state.config.outputs.config.git_repo_webhook.arn
+    repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.api.comingsoon"
+  }
+
+  jobs = {
+    build = [
+      {
+        buildspec   = local.buildspec
+        timeout     = "5"
+        branch_name = "main"
+
+        environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
+          { key = "CI_ACTION", value = "build" },
+          { key = "PROJECT_TYPE", value = "container" },
+          { key = "WORKING_DIR", value = "./" },
+          { key = "ENVIRONMENT_NAME", value = var.client_info.environment_short_name },
+          { key = "BUILD_ARTEFACT_PATH", value = "**" },
+          { key = "BUILD_ARTEFACT_PATH", value = "./" },
+          { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
+        ])
+      },
+    ]
+
+    release = []
   }
 }
-
 
 module "ci" {
   source = "../../../../../../../module/implementation/projects/ci"
 
   ci = {
-    name            = local.name
-    region          = var.client_info.region
-    build_timeout   = "10"
-    is_docker_build = true
-
-    build_job = {
-      buildspec = local.buildspec
-
-      environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
-        { key = "CI_ACTION", value = "build" },
-        { key = "PROJECT_TYPE", value = "container" },
-        { key = "WORKING_DIR", value = "./" },
-        { key = "ENVIRONMENT_NAME", value = var.client_info.environment_short_name },
-        { key = "BUILD_ARTEFACT_PATH", value = "**" },
-        { key = "RELEASE_ARTEFACT_PATH", value = "./" },
-        { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
-      ])
-    }
-
-    deploy_job = {
-      buildspec          = local.buildspec
-      deployment_targets = []
-
-      environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [])
-    }
-
-    pipeline = {
-      artifacts = {
-        source  = "${local.name}-source-output"
-        build   = "${local.name}-build-output"
-        release = "${local.name}-release-output"
-      }
-
-      git = {
-        branch_names   = ["dev"]
-        connection_arn = data.terraform_remote_state.config.outputs.config.git_repo_webhook.arn
-        repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.api.comingsoon"
-      }
-    }
+    name         = local.name
+    region       = var.client_info.region
+    is_container = true
+    jobs         = local.jobs
   }
 }
 
 module "notifications" {
   source = "../../../../../../../module/implementation/projects/ci/notifications"
 
-  for_each = { for v in module.ci.pipeline : v.name => v }
+  for_each = { for v in aws_codepipeline.pipelines : v.name => v }
 
   notifications = {
     name                = each.value.name
