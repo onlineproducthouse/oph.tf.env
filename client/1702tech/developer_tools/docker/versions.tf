@@ -21,7 +21,7 @@ data "terraform_remote_state" "client" {
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/terraform.tfstate"
+    key    = "client/1702tech/iam/terraform.tfstate"
     region = "eu-west-1"
   }
 }
