@@ -4,25 +4,26 @@
 #                                                   #
 #####################################################
 
-module "deploy_job" {
+module "release_job" {
   source = "../../../interface/aws/developer_tools/codebuild/projects"
 
   for_each = {
-    for i, target in var.ci.deploy_job.deployment_targets : target.name => target
+    for i, release_job in var.ci.jobs.release : release_job.name => release_job
   }
 
   job = {
-    name            = "${var.ci.name}-${each.value.name}-deploy"
+    name            = "${var.ci.name}-${each.value.name}-release"
     service_role    = local.role_output.arn
-    is_docker_build = var.ci.is_docker_build
-    build_timeout   = var.ci.build_timeout
-    buildspec       = var.ci.deploy_job.buildspec
+    is_docker_build = var.ci.is_container
+    build_timeout   = each.value.timeout
+    buildspec       = each.value.buildspec
 
-    environment_variables = concat(var.ci.deploy_job.environment_variables, [
-      { key = "ENVIRONMENT_NAME", value = each.value.name },
+    environment_variables = concat(each.value.environment_variables, [
+      { key = "ENVIRONMENT_NAME", value = each.value.environment_name },
       { key = "IMAGE_REGISTRY_BASE_URL", value = local.registry_output.base_url },
       { key = "IMAGE_REPOSITORY_NAME", value = local.registry_output.name },
       { key = "RELEASE_MANIFEST", value = local.release_manifest },
+      { key = "GIT_BRANCH", value = each.value.branch_name },
     ])
 
     vpc = {
@@ -39,5 +40,5 @@ module "deploy_job" {
 #####################################################
 
 locals {
-  deploy_job_output = module.deploy_job
+  release_job_output = module.release_job
 }

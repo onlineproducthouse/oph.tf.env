@@ -15,6 +15,8 @@ locals {
 module "registry" {
   source = "../../../interface/aws/containers/ecr"
 
+  count = var.ci.is_container == true ? 1 : 0
+
   ecr = {
     name         = var.ci.name
     force_delete = true
@@ -29,7 +31,7 @@ module "registry" {
 
 locals {
   registry_output = {
-    name     = module.registry.name
-    base_url = local.registry.base_url
+    name     = var.ci.is_container == true ? module.registry.0.name : ""
+    base_url = var.ci.is_container == true ? local.registry.base_url : ""
   }
 }

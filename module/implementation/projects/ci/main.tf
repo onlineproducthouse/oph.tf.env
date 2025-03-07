@@ -6,48 +6,39 @@
 
 variable "ci" {
   type = object({
-    name            = string
-    region          = string
-    build_timeout   = string
-    is_docker_build = bool
+    name         = string
+    region       = string
+    is_container = bool
 
-    build_job = object({
-      buildspec = string
-      environment_variables = list(object({
-        key   = string
-        value = string
-      }))
-    })
+    jobs = object({
+      build = list(object({
+        buildspec   = string
+        timeout     = string
+        branch_name = string
 
-    deploy_job = object({
-      buildspec = string
-
-      environment_variables = list(object({
-        key   = string
-        value = string
+        environment_variables = list(object({
+          key   = string
+          value = string
+        }))
       }))
 
-      deployment_targets = list(object({
-        name = string // qa, prod
+      release = list(object({
+        name             = string
+        buildspec        = string
+        timeout          = string
+        branch_name      = string
+        environment_name = string
+
+        environment_variables = list(object({
+          key   = string
+          value = string
+        }))
+
         vpc = object({
           id      = string
           subnets = list(string)
         })
       }))
-    })
-
-    pipeline = object({
-      artifacts = object({
-        source  = string
-        build   = string
-        release = string
-      })
-
-      git = object({
-        connection_arn = string
-        repo_name      = string
-        branch_names   = list(string) # qa, prod
-      })
     })
   })
 }
@@ -62,6 +53,32 @@ locals {
   release_manifest = "ReleaseManifest.sh"
 }
 
-output "pipeline" {
-  value = local.pipeline_output
+#####################################################
+#                                                   #
+#                       OUTPUT                      #
+#                                                   #
+#####################################################
+
+output "role" {
+  value = local.role_output
+}
+
+output "registry" {
+  value = local.registry_output
+}
+
+output "build_artefact" {
+  value = local.build_artefact_output
+}
+
+output "build_job" {
+  value = local.build_job_output
+}
+
+output "release_artefact" {
+  value = local.release_artefact_output
+}
+
+output "release_job" {
+  value = local.release_job_output
 }

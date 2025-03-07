@@ -6,22 +6,37 @@
 
 module "build_artefact" {
   source = "../../../interface/aws/storage/s3/bucket"
+
+  for_each = {
+    for i, build_job in var.ci.jobs.build : build_job.branch_name => build_job
+  }
+
   bucket = {
-    name = "${var.ci.name}-build-artefacts"
+    name = "${var.ci.name}-${each.value.branch_name}-build-artefacts"
   }
 }
 
 module "build_artefact_versioning" {
   source = "../../../interface/aws/storage/s3/bucket/versioning"
+
+  for_each = {
+    for i, build_job in var.ci.jobs.build : build_job.branch_name => build_job
+  }
+
   versioning = {
-    bucket_id = module.build_artefact.id
+    bucket_id = module.build_artefact[each.value.branch_name].id
   }
 }
 
 module "build_artefact_encryption" {
   source = "../../../interface/aws/storage/s3/bucket/server_side_encryption_configuration"
+
+  for_each = {
+    for i, build_job in var.ci.jobs.build : build_job.branch_name => build_job
+  }
+
   encryption_configuration = {
-    bucket_id = module.build_artefact.id
+    bucket_id = module.build_artefact[each.value.branch_name].id
   }
 }
 
@@ -33,6 +48,6 @@ module "build_artefact_encryption" {
 
 locals {
   build_artefact_output = {
-    id = module.build_artefact.id
+    for i, build_job in var.ci.jobs.build : build_job.branch_name => module.build_artefact[build_job.branch_name].id
   }
 }
