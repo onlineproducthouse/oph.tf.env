@@ -73,6 +73,12 @@ locals {
     repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.db"
   }
 
+  deployments_enabled = {
+    test = true
+    qa   = true
+    prod = false
+  }
+
   jobs = {
     build = [
       {
@@ -134,7 +140,8 @@ locals {
           { key = "CI_ACTION", value = "migrate" },
           { key = "PROJECT_TYPE", value = "db" },
           { key = "WORKING_DIR", value = "./" },
-          { key = "IS_RUNNING", value = "${data.terraform_remote_state.config.outputs.config.test.is_running.cloud}" },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.test.is_running.cloud },
+          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.test },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.container.htmltopdf.test,
@@ -158,7 +165,8 @@ locals {
           { key = "CI_ACTION", value = "migrate" },
           { key = "PROJECT_TYPE", value = "db" },
           { key = "WORKING_DIR", value = "./" },
-          { key = "IS_RUNNING", value = "${data.terraform_remote_state.config.outputs.config.qa.is_running.cloud}" },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
+          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.db.api.qa,

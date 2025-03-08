@@ -73,6 +73,12 @@ locals {
     repo_name      = "${data.terraform_remote_state.config.outputs.config.git_repo_webhook.bitbucket_account_name}/oph.web"
   }
 
+  deployments_enabled = {
+    test = true
+    qa   = true
+    prod = false
+  }
+
   jobs = {
     build = [
       {
@@ -127,6 +133,7 @@ locals {
           { key = "PROJECT_TYPE", value = "client" },
           { key = "BUILD_ARTEFACT_PATH", value = "./packages/ui/storybook-static/" },
           { key = "IS_RUNNING", value = true },
+          { key = "ENABLE_DEPLOYMENT", value = true },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.website.storybook.qa,
@@ -150,7 +157,8 @@ locals {
           { key = "CI_ACTION", value = "deploy" },
           { key = "PROJECT_TYPE", value = "client" },
           { key = "BUILD_ARTEFACT_PATH", value = "./apps/www/dist/" },
-          { key = "IS_RUNNING", value = "${data.terraform_remote_state.config.outputs.config.qa.is_running.cloud}" },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
+          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.website.www.qa,
@@ -174,7 +182,8 @@ locals {
           { key = "CI_ACTION", value = "deploy" },
           { key = "PROJECT_TYPE", value = "client" },
           { key = "BUILD_ARTEFACT_PATH", value = "./apps/portal/dist/" },
-          { key = "IS_RUNNING", value = "${data.terraform_remote_state.config.outputs.config.qa.is_running.cloud}" },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
+          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.website.portal.qa,
@@ -198,7 +207,8 @@ locals {
           { key = "CI_ACTION", value = "deploy" },
           { key = "PROJECT_TYPE", value = "client" },
           { key = "BUILD_ARTEFACT_PATH", value = "./apps/registration/dist/" },
-          { key = "IS_RUNNING", value = "${data.terraform_remote_state.config.outputs.config.qa.is_running.cloud}" },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
+          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.website.registration.qa,
@@ -222,7 +232,8 @@ locals {
           { key = "CI_ACTION", value = "deploy" },
           { key = "PROJECT_TYPE", value = "client" },
           { key = "BUILD_ARTEFACT_PATH", value = "./apps/console/dist/" },
-          { key = "IS_RUNNING", value = "${data.terraform_remote_state.config.outputs.config.qa.is_running.cloud}" },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
+          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
             data.terraform_remote_state.config.outputs.config.paths.ci.deploy.website.console.qa,

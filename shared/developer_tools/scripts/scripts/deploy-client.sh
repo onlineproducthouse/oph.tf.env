@@ -2,8 +2,13 @@
 
 set -euo pipefail
 
-if [[ $IS_RUNNING == "false" ]]; then
+if [[ $IS_RUNNING != "true" ]]; then
   echo "Target environment is not running"
+  exit 0
+fi
+
+if [[ $ENABLE_DEPLOYMENT != "true" ]]; then
+  echo "Target environment is not enabled for deployments"
   exit 0
 fi
 
