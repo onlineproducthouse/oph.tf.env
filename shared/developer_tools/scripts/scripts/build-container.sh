@@ -17,7 +17,7 @@ aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$CI_FO
 
 # Download db certs: qa
 echo "Downloading $CERT_STORE$CERT_NAME"
-aws s3 cp $(echo "$CERT_STORE$CERT_NAME") ./root.crt
+aws s3 cp $(echo "$CERT_STORE$CERT_NAME") ./root.cert
 
 source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
 
