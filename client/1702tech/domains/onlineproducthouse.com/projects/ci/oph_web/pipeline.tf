@@ -81,22 +81,6 @@ resource "aws_codepipeline" "pipelines" {
     for_each = each.value.environment_name == "qa" || each.value.environment_name == "prod" ? local.approval : {}
 
     content {
-      name = "approve_deploy_qa"
-
-      action {
-        name     = "approve_deploy_qa"
-        category = stage.value.category
-        owner    = stage.value.owner
-        provider = stage.value.provider
-        version  = stage.value.version
-      }
-    }
-  }
-
-  dynamic "stage" {
-    for_each = each.value.environment_name == "qa" || each.value.environment_name == "prod" ? local.approval : {}
-
-    content {
       name = "deploy_sb_qa"
 
       action {
@@ -194,6 +178,22 @@ resource "aws_codepipeline" "pipelines" {
         configuration = {
           ProjectName = module.ci.release_job["console-qa"].name
         }
+      }
+    }
+  }
+
+  dynamic "stage" {
+    for_each = each.value.environment_name == "prod" ? local.approval : {}
+
+    content {
+      name = "approve_deploy_prod"
+
+      action {
+        name     = "approve_deploy_prod"
+        category = stage.value.category
+        owner    = stage.value.owner
+        provider = stage.value.provider
+        version  = stage.value.version
       }
     }
   }

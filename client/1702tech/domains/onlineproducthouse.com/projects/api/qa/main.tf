@@ -96,7 +96,7 @@ locals {
       run = local.run
 
       region                = var.client_info.region
-      name                  = "api"
+      name                  = "api-${var.client_info.environment_short_name}"
       vpc_id                = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
       port                  = data.terraform_remote_state.cloud.outputs.qa.ports.api
       aws_autoscaling_group = local.aws_autoscaling_group
@@ -129,7 +129,7 @@ locals {
       run = local.run
 
       region                = var.client_info.region
-      name                  = "htmltopdf"
+      name                  = "htmltopdf-${var.client_info.environment_short_name}"
       vpc_id                = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
       port                  = data.terraform_remote_state.cloud.outputs.qa.ports.htmltopdf
       aws_autoscaling_group = local.aws_autoscaling_group
@@ -194,8 +194,8 @@ module "qa" {
 output "qa" {
   value = {
     run         = local.run
-    api         = module.qa.api
-    htmltopdf   = module.qa.htmltopdf
+    api         = module.qa["api-${var.client_info.environment_short_name}"]
+    htmltopdf   = module.qa["htmltopdf-${var.client_info.environment_short_name}"]
     domain_name = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name
   }
 }

@@ -139,7 +139,7 @@ locals {
         environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
           { key = "CI_ACTION", value = "migrate" },
           { key = "PROJECT_TYPE", value = "db" },
-          { key = "WORKING_DIR", value = "./" },
+          { key = "WORKING_DIR", value = "./oph.db.oph" },
           { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.test.is_running.cloud },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.test },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
@@ -164,7 +164,7 @@ locals {
         environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
           { key = "CI_ACTION", value = "migrate" },
           { key = "PROJECT_TYPE", value = "db" },
-          { key = "WORKING_DIR", value = "./" },
+          { key = "WORKING_DIR", value = "./oph.db.oph" },
           { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
