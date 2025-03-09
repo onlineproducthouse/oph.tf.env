@@ -75,10 +75,6 @@ output "build_job" {
   value = local.build_job_output
 }
 
-output "release_artefact" {
-  value = local.release_artefact_output
-}
-
 output "release_job" {
   value = local.release_job_output
 }
