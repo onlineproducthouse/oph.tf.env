@@ -9,8 +9,6 @@ locals {
 }
 
 resource "aws_security_group" "compute" {
-  count = var.platform.run == true ? 1 : 0
-
   name   = "${var.platform.name}-compute-sg"
   vpc_id = var.platform.cloud.vpc_id
 
@@ -20,11 +18,11 @@ resource "aws_security_group" "compute" {
 }
 
 resource "aws_security_group_rule" "compute" {
-  for_each = var.platform.run == true && length(aws_security_group.compute) > 0 ? {
+  for_each = {
     for index, rule in var.platform.compute.security_group_rules : rule.name => rule
-  } : {}
+  }
 
-  security_group_id = aws_security_group.compute[0].id
+  security_group_id = aws_security_group.compute.id
 
   type        = each.value.type
   protocol    = each.value.protocol
@@ -43,12 +41,10 @@ module "cluster" {
 }
 
 resource "aws_launch_template" "compute" {
-  count = var.platform.run == true && length(aws_security_group.compute) > 0 ? 1 : 0
-
   image_id               = var.platform.compute.instance.image_id
   instance_type          = var.platform.compute.instance.instance_type
   name_prefix            = "${var.platform.name}-lt"
-  vpc_security_group_ids = [aws_security_group.compute[0].id]
+  vpc_security_group_ids = [aws_security_group.compute.id]
 
   user_data = base64encode(templatefile("${path.module}/content/user_data.sh", {
     ecs_cluster_name   = local.cluster_name
@@ -63,7 +59,7 @@ resource "aws_launch_template" "compute" {
 }
 
 resource "aws_autoscaling_group" "compute" {
-  count = var.platform.run == true && length(aws_launch_template.compute) > 0 ? 1 : 0
+  count = var.platform.run == true ? 1 : 0
 
   name                      = "${var.platform.name}-asg"
   vpc_zone_identifier       = var.platform.cloud.private_subnet_id_list
@@ -74,7 +70,7 @@ resource "aws_autoscaling_group" "compute" {
   desired_capacity          = var.platform.compute.auto_scaling.desired
 
   launch_template {
-    id      = aws_launch_template.compute[0].id
+    id      = aws_launch_template.compute.id
     version = "$Latest"
   }
 
@@ -93,7 +89,7 @@ resource "aws_ecs_capacity_provider" "compute" {
     managed_termination_protection = "DISABLED"
 
     managed_scaling {
-      maximum_scaling_step_size = 2
+      maximum_scaling_step_size = 1
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
       target_capacity           = var.platform.compute.target_capacity
@@ -104,8 +100,7 @@ resource "aws_ecs_capacity_provider" "compute" {
 resource "aws_ecs_cluster_capacity_providers" "compute" {
   count = var.platform.run == true && length(aws_ecs_capacity_provider.compute) > 0 ? 1 : 0
 
-  cluster_name = module.cluster.name
-
+  cluster_name       = module.cluster.name
   capacity_providers = [aws_autoscaling_group.compute[0].name]
 
   default_capacity_provider_strategy {
@@ -127,22 +122,14 @@ locals {
     cluster_name  = local.cluster_name
     task_role_arn = aws_iam_role.platform.arn
 
-    auto_scaling_group = var.platform.run == true ? {
-      name = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].name : ""
-      id   = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].id : ""
-      arn  = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].arn : ""
-      } : {
-      name = ""
-      id   = ""
-      arn  = ""
+    auto_scaling_group = {
+      name = var.platform.run == true ? aws_autoscaling_group.compute[0].name : ""
+      id   = var.platform.run == true ? aws_autoscaling_group.compute[0].id : ""
+      arn  = var.platform.run == true ? aws_autoscaling_group.compute[0].arn : ""
     }
 
-    security_group = var.platform.run == true ? {
-      id = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].id : ""
-      # rules = aws_security_group_rule.compute
-      } : {
-      id = ""
-      # rules = {}
+    security_group = {
+      id = aws_security_group.compute.id
     }
   }
 }

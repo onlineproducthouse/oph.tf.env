@@ -5,10 +5,8 @@
 #####################################################
 
 resource "aws_security_group" "load_balancer" {
-  count = var.cloud.run == true && length(aws_vpc.cloud) > 0 ? 1 : 0
-
   name   = "${var.cloud.name}-lb-sg"
-  vpc_id = aws_vpc.cloud[0].id
+  vpc_id = local.network_output.vpc.id
 
   lifecycle {
     create_before_destroy = false
@@ -16,11 +14,11 @@ resource "aws_security_group" "load_balancer" {
 }
 
 resource "aws_security_group_rule" "load_balancer" {
-  for_each = var.cloud.run == true && length(aws_security_group.load_balancer) > 0 ? {
+  for_each = var.cloud.run == true ? {
     for index, rule in var.cloud.load_balancer.security_group_rules : rule.name => rule
   } : {}
 
-  security_group_id = aws_security_group.load_balancer[0].id
+  security_group_id = aws_security_group.load_balancer.id
 
   type        = each.value.type
   protocol    = each.value.protocol
@@ -30,12 +28,12 @@ resource "aws_security_group_rule" "load_balancer" {
 }
 
 resource "aws_lb" "cloud" {
-  count = var.cloud.run == true && length(aws_vpc.cloud) > 0 ? 1 : 0
+  count = var.cloud.run == true ? 1 : 0
 
   name               = "${var.cloud.name}-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.load_balancer[0].id]
+  security_groups    = [aws_security_group.load_balancer.id]
   subnets            = local.network_output.subnet.public.id_list
 
   access_logs {
@@ -60,7 +58,7 @@ locals {
 }
 
 locals {
-  load_balancer_output = var.cloud.run == true ? {
+  load_balancer_output = var.cloud.run == true && length(aws_lb.cloud) > 0 ? {
     arn      = aws_lb.cloud[0].arn
     dns_name = aws_lb.cloud[0].dns_name
     zone_id  = aws_lb.cloud[0].zone_id

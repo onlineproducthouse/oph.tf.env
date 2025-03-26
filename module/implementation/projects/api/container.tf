@@ -13,8 +13,6 @@ locals {
 data "aws_caller_identity" "current" {}
 
 resource "aws_ecs_task_definition" "api" {
-  count = var.api.run == true && length(aws_lb_target_group.api) > 0 ? 1 : 0
-
   family                   = local.task_definition_family
   task_role_arn            = var.api.container.role_arn
   execution_role_arn       = var.api.container.role_arn
@@ -69,7 +67,7 @@ resource "aws_ecs_task_definition" "api" {
 }
 
 resource "aws_ecs_service" "api" {
-  count = var.api.run == true && length(aws_ecs_task_definition.api) > 0 ? 1 : 0
+  count = var.api.run == true ? 1 : 0
 
   name                    = local.service_name
   cluster                 = var.api.container.cluster_id
@@ -77,7 +75,7 @@ resource "aws_ecs_service" "api" {
   enable_ecs_managed_tags = true
   iam_role                = var.api.container.role_arn
 
-  task_definition                    = aws_ecs_task_definition.api[0].arn
+  task_definition                    = aws_ecs_task_definition.api.arn
   desired_count                      = var.api.container.desired_tasks_count
   deployment_minimum_healthy_percent = var.api.container.deployment_minimum_healthy_percent
   deployment_maximum_percent         = var.api.container.deployment_maximum_healthy_percent
@@ -92,7 +90,7 @@ resource "aws_ecs_service" "api" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.api[0].arn
+    target_group_arn = local.lb_output.target_group.arn
     container_name   = var.api.container.name
     container_port   = var.api.port
   }
