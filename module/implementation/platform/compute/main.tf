@@ -4,7 +4,7 @@
 #                                                   #
 #####################################################
 
-variable "platform" {
+variable "compute" {
   type = object({
     run = bool
 
@@ -12,34 +12,28 @@ variable "platform" {
     region = string
 
     cloud = object({
-      vpc_id                 = string
       private_subnet_id_list = list(string)
     })
 
-    logs = object({
-      group = string
+    image_id      = string
+    instance_type = string
+
+    auto_scaling = object({
+      minimum = number
+      maximum = number
+      desired = number
     })
 
-    security_group_rules = list(object({
-      name        = string
-      type        = string
-      protocol    = string
-      cidr_blocks = list(string)
-      from_port   = number
-      to_port     = number
-    }))
+    vpc_security_group_ids = list(string)
 
-    compute = list(object({
-      name          = string
-      image_id      = string
-      instance_type = string
+    aws_iam_instance_profile_arn = string
+    task_role_arn                = string
 
-      auto_scaling = object({
-        minimum = number
-        maximum = number
-        desired = number
-      })
-    }))
+    logging = object({
+      prefix = string
+      group  = string
+      driver = string
+    })
   })
 }
 
@@ -55,12 +49,6 @@ variable "platform" {
 #                                                   #
 #####################################################
 
-output "platform" {
-  value = {
-    run          = var.platform.run
-    file_service = local.file_service_output
-    role         = local.role_output
-    logs         = local.logs_output
-    compute      = local.compute_output
-  }
+output "compute" {
+  value = local.compute_output
 }
