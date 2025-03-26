@@ -24,7 +24,7 @@ variable "compute" {
       desired = number
     })
 
-    vpc_security_group_ids = list(string)
+    security_group_id = string
 
     aws_iam_instance_profile_arn = string
     task_role_arn                = string

@@ -48,7 +48,7 @@ module "compute" {
     instance_type = each.value.instance_type
     auto_scaling  = each.value.auto_scaling
 
-    vpc_security_group_ids = [aws_security_group.compute.id]
+    security_group_id = aws_security_group.compute.id
 
     aws_iam_instance_profile_arn = local.role_output.instance.arn
     task_role_arn                = local.role_output.arn

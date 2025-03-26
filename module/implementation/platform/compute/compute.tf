@@ -17,7 +17,7 @@ resource "aws_launch_template" "compute" {
   image_id               = var.compute.image_id
   instance_type          = var.compute.instance_type
   name_prefix            = "${var.compute.name}-lt"
-  vpc_security_group_ids = var.compute.vpc_security_group_ids
+  vpc_security_group_ids = [var.compute.security_group_id]
 
   user_data = base64encode(templatefile("${path.module}/content/user_data.sh", {
     ecs_cluster_name   = var.compute.name
@@ -49,6 +49,7 @@ resource "aws_autoscaling_group" "compute" {
 
   lifecycle {
     create_before_destroy = false
+    ignore_changes        = [tag]
   }
 }
 
@@ -102,7 +103,7 @@ locals {
     }
 
     security_group = {
-      id = aws_security_group.compute.id
+      id = var.compute.security_group_id
     }
   }
 }

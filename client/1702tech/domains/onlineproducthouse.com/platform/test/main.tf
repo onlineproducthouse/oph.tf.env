@@ -87,21 +87,26 @@ data "terraform_remote_state" "ssl_www" {
 }
 
 locals {
-  name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
+  run = var.run == true && data.terraform_remote_state.cloud.outputs.test.cloud.run == true
+
+  name = {
+    platform = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
+
+    compute = {
+      api       = "${var.client_info.project_short_name}-api-${var.client_info.environment_short_name}"
+      htmltopdf = "${var.client_info.project_short_name}-htmltopdf-${var.client_info.environment_short_name}"
+    }
+  }
 }
 
 module "test" {
   source = "../../../../../../module/implementation/platform"
 
   platform = {
-    run = var.run == true && data.terraform_remote_state.cloud.outputs.test.cloud.run == true
+    run = local.run
 
-    name   = local.name
+    name   = local.name.platform
     region = var.client_info.region
-
-    dns = {
-      hosted_zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
-    }
 
     cloud = {
       vpc_id                 = data.terraform_remote_state.cloud.outputs.test.cloud.network.vpc.id
@@ -109,59 +114,68 @@ module "test" {
     }
 
     logs = {
-      group = "${local.name}-log-group"
+      group = "${local.name.platform}-log-group"
     }
 
-    compute = {
-      enable_container_insights = false
-      target_capacity           = 100
+    security_group_rules = [
+      {
+        name        = "public",
+        type        = "egress",
+        protocol    = "-1",
+        cidr_blocks = ["0.0.0.0/0"],
+        from_port   = 0,
+        to_port     = 0,
+      },
+      {
+        name        = "api",
+        type        = "ingress",
+        protocol    = "tcp",
+        cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.public.cidr_blocks,
+        from_port   = data.terraform_remote_state.cloud.outputs.test.ports.api,
+        to_port     = data.terraform_remote_state.cloud.outputs.test.ports.api,
+      },
+      {
+        name        = "htmltopdf",
+        type        = "ingress",
+        protocol    = "tcp",
+        cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.public.cidr_blocks,
+        from_port   = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf,
+        to_port     = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf,
+      },
+      {
+        name        = "database",
+        type        = "ingress",
+        protocol    = "tcp",
+        cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.private.cidr_blocks,
+        from_port   = data.terraform_remote_state.cloud.outputs.test.ports.database,
+        to_port     = data.terraform_remote_state.cloud.outputs.test.ports.database,
+      },
+    ]
 
-      instance = {
+    compute = [
+      {
+        name          = local.name.compute.api
+        image_id      = "ami-0ef8272297113026d"
+        instance_type = "t3a.nano"
+
+        auto_scaling = {
+          minimum = 1
+          maximum = 1
+          desired = 1
+        }
+      },
+      {
+        name          = local.name.compute.htmltopdf
         image_id      = "ami-0ef8272297113026d"
         instance_type = "t3a.micro"
-      }
 
-      auto_scaling = {
-        minimum = 1
-        maximum = 1
-        desired = 1
-      }
-
-      security_group_rules = [
-        {
-          name        = "public",
-          type        = "egress",
-          protocol    = "-1",
-          cidr_blocks = ["0.0.0.0/0"],
-          from_port   = 0,
-          to_port     = 0,
-        },
-        {
-          name        = "api",
-          type        = "ingress",
-          protocol    = "tcp",
-          cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.public.cidr_blocks,
-          from_port   = data.terraform_remote_state.cloud.outputs.test.ports.api,
-          to_port     = data.terraform_remote_state.cloud.outputs.test.ports.api,
-        },
-        {
-          name        = "htmltopdf",
-          type        = "ingress",
-          protocol    = "tcp",
-          cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.public.cidr_blocks,
-          from_port   = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf,
-          to_port     = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf,
-        },
-        {
-          name        = "database",
-          type        = "ingress",
-          protocol    = "tcp",
-          cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.private.cidr_blocks,
-          from_port   = data.terraform_remote_state.cloud.outputs.test.ports.database,
-          to_port     = data.terraform_remote_state.cloud.outputs.test.ports.database,
-        },
-      ]
-    }
+        auto_scaling = {
+          minimum = 1
+          maximum = 1
+          desired = 1
+        }
+      },
+    ]
   }
 }
 
@@ -187,6 +201,20 @@ module "db_certs" {
   }
 }
 
+resource "aws_route53_record" "domain_name" {
+  count = local.run == true ? 1 : 0
+
+  zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
+  name    = data.terraform_remote_state.ssl_api.outputs.certs.api.cert_domain_name
+  type    = "A"
+
+  alias {
+    name                   = data.terraform_remote_state.cloud.outputs.test.cloud.load_balancer.dns_name
+    zone_id                = data.terraform_remote_state.cloud.outputs.test.cloud.load_balancer.zone_id
+    evaluate_target_health = true
+  }
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
@@ -195,8 +223,19 @@ module "db_certs" {
 
 output "test" {
   value = {
-    platform = module.test.platform
     db_certs = module.db_certs
     ssl      = merge(data.terraform_remote_state.ssl_api.outputs.certs, data.terraform_remote_state.ssl_www.outputs.certs)
+
+    platform = {
+      run          = module.test.platform.run
+      file_service = module.test.platform.file_service
+      role         = module.test.platform.role
+      logs         = module.test.platform.logs
+
+      compute = {
+        api       = module.test.platform.compute[local.name.compute.api].compute
+        htmltopdf = module.test.platform.compute[local.name.compute.htmltopdf].compute
+      }
+    }
   }
 }
