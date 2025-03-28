@@ -141,7 +141,7 @@ locals {
 
         environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
           { key = "CI_ACTION", value = "deploy" },
-          { key = "PROJECT_TYPE", value = "container" },
+          { key = "PROJECT_TYPE", value = "-api-container" },
           { key = "WORKING_DIR", value = "./" },
           { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.test.is_running.cloud },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.test },
@@ -166,7 +166,7 @@ locals {
 
         environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
           { key = "CI_ACTION", value = "deploy" },
-          { key = "PROJECT_TYPE", value = "container" },
+          { key = "PROJECT_TYPE", value = "-api-container" },
           { key = "WORKING_DIR", value = "./" },
           { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
