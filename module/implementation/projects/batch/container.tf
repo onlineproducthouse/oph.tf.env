@@ -64,7 +64,6 @@ resource "aws_ecs_service" "api" {
   cluster                 = var.batch.container.cluster_id
   scheduling_strategy     = "REPLICA"
   enable_ecs_managed_tags = true
-  iam_role                = var.batch.container.role_arn
 
   task_definition                    = aws_ecs_task_definition.api.arn
   desired_count                      = var.batch.container.desired_tasks_count
