@@ -102,8 +102,8 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.test.platform.compute.batch.cluster_id
 
-        cpu    = 1600
-        memory = 400
+        cpu    = 1800
+        memory = 350
 
         desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 0

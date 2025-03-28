@@ -115,7 +115,7 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.test.platform.compute.htmltopdf.cluster_id
 
-        cpu    = 1600
+        cpu    = 1800
         memory = 800
 
         desired_tasks_count                = 1
