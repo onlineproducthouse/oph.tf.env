@@ -12,13 +12,13 @@ locals {
     api = {
       protocol = "http"
       host     = "127.0.0.1"
-      port     = data.terraform_remote_state.qa_api.outputs.qa.api.api.container.port
+      port     = data.terraform_remote_state.test_cloud.outputs.test.ports.api
     }
 
     htmltopdf = {
       protocol = "http"
       host     = "127.0.0.1"
-      port     = data.terraform_remote_state.qa_api.outputs.qa.htmltopdf.api.container.port
+      port     = data.terraform_remote_state.test_cloud.outputs.test.ports.htmltopdf
     }
 
     comingsoon = {
@@ -47,7 +47,7 @@ locals {
     { id = "local_redis_host", path = local.paths.local, key = "REDIS_HOST", value = "127.0.0.1" },
     { id = "local_redis_port", path = local.paths.local, key = "REDIS_PORT", value = "6379" },
     { id = "local_sg_api_key", path = local.paths.local, key = "SG_API_KEY", value = local.qa_secrets.sg_api_key },
-    { id = "local_fs_s3_bucket_name", path = local.paths.local, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.qa_platform.outputs.qa.platform.file_service.id },
+    { id = "local_fs_s3_bucket_name", path = local.paths.local, key = "FS_S3_BUCKET_NAME", value = data.terraform_remote_state.test_platform.outputs.test.platform.file_service.id },
 
     { id = "local_paystack_public_key", path = local.paths.local, key = "PAYSTACK_PUBLIC_KEY", value = local.qa_secrets.paystack.public_key },
     { id = "local_paystack_secret_key", path = local.paths.local, key = "PAYSTACK_SECRET_KEY", value = local.qa_secrets.paystack.secret_key },

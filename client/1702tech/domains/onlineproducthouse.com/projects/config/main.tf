@@ -196,6 +196,7 @@ output "config" {
     qa = {
       vpc_id  = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.network.vpc.id
       subnets = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.network.subnet.private.id_list
+      ports   = data.terraform_remote_state.qa_cloud.outputs.qa.ports
 
       is_running = {
         cloud    = data.terraform_remote_state.qa_cloud.outputs.qa.cloud.run
@@ -211,6 +212,7 @@ output "config" {
     test = {
       vpc_id  = data.terraform_remote_state.test_cloud.outputs.test.cloud.network.vpc.id
       subnets = data.terraform_remote_state.test_cloud.outputs.test.cloud.network.subnet.private.id_list
+      ports   = data.terraform_remote_state.test_cloud.outputs.test.ports
 
       is_running = {
         cloud    = data.terraform_remote_state.test_cloud.outputs.test.cloud.run

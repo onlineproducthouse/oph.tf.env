@@ -29,7 +29,17 @@ data "terraform_remote_state" "test_api" {
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/projects/api/test/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/api/test/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "test_htmltopdf" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/htmltopdf/test/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -41,14 +51,14 @@ locals {
   test_env = {
     api = {
       protocol = "https"
-      host     = data.terraform_remote_state.test_api.outputs.test.domain_name
-      port     = data.terraform_remote_state.test_api.outputs.test.api.api.container.port
+      host     = data.terraform_remote_state.test_platform.outputs.test.ssl.api.cert_domain_name
+      port     = data.terraform_remote_state.test_cloud.outputs.test.ports.api
     }
 
     htmltopdf = {
       protocol = "https"
-      host     = data.terraform_remote_state.test_api.outputs.test.domain_name
-      port     = data.terraform_remote_state.test_api.outputs.test.htmltopdf.api.container.port
+      host     = data.terraform_remote_state.test_platform.outputs.test.ssl.api.cert_domain_name
+      port     = data.terraform_remote_state.test_cloud.outputs.test.ports.htmltopdf
     }
 
     db_connection_string = join("", [
