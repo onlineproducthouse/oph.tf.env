@@ -14,7 +14,12 @@ echo "Downloading $DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT"
 aws s3 cp $(echo "$DEV_TOOLS_STORE_SCRIPTS$LOAD_ENV_VARS_SCRIPT") $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT")
 
 source $(echo "$CI_FOLDER$LOAD_ENV_VARS_SCRIPT") $AWS_REGION $AWS_SSM_PARAMETER_PATHS $(pwd)
+
 cp $ENV_FILE $(pwd)/packages/ui
+cp $ENV_FILE $(pwd)/apps/www
+cp $ENV_FILE $(pwd)/apps/portal
+cp $ENV_FILE $(pwd)/apps/registration
+cp $ENV_FILE $(pwd)/apps/console
 
 n "22.13.1" && npm i
 
