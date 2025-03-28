@@ -227,8 +227,10 @@ output "config" {
         platform = data.terraform_remote_state.test_platform.outputs.test.platform.run
 
         project = {
-          api = data.terraform_remote_state.test_api.outputs.test.run
-          www = false
+          api       = data.terraform_remote_state.test_api.outputs.test.run
+          htmltopdf = data.terraform_remote_state.test_htmltopdf.outputs.test.run
+          batch     = data.terraform_remote_state.test_batch.outputs.test.run
+          www       = false
         }
       }
     }

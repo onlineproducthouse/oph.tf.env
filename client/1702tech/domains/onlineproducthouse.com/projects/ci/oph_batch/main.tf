@@ -143,7 +143,7 @@ locals {
           { key = "CI_ACTION", value = "deploy" },
           { key = "PROJECT_TYPE", value = "-batch-container" },
           { key = "WORKING_DIR", value = "./" },
-          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.test.is_running.cloud },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.test.is_running.project.batch },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.test },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
