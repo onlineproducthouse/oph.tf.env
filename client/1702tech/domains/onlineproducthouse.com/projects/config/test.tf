@@ -44,6 +44,16 @@ data "terraform_remote_state" "test_htmltopdf" {
   }
 }
 
+data "terraform_remote_state" "test_batch" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/batch/test/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 resource "random_uuid" "test_api_key_v1" {}
 resource "random_uuid" "test_htmltopdf_api_key_v1" {}
 
@@ -109,6 +119,10 @@ locals {
     { id = "test_htmltopdf_keys", path = local.paths.test, key = "HTMLTOPDF_KEYS", value = join(",", [
       random_uuid.test_htmltopdf_api_key_v1.result,
     ]) },
+
+    { id = "test_comingsoon_protocol", path = local.paths.test, key = "COMINGSOON_PROTOCOL", value = local.local_env.comingsoon.protocol },
+    { id = "test_comingsoon_host", path = local.paths.test, key = "COMINGSOON_HOST", value = local.local_env.comingsoon.host },
+    { id = "test_comingsoon_port", path = local.paths.test, key = "COMINGSOON_PORT", value = local.local_env.comingsoon.port },
 
     { id = "test_www_app_url", path = local.paths.test, key = "WWW_APP_URL", value = local.local_env.www_app_url },
     { id = "test_portal_app_url", path = local.paths.test, key = "PORTAL_APP_URL", value = local.local_env.portal_app_url },

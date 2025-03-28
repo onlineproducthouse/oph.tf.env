@@ -127,6 +127,10 @@ locals {
       random_uuid.qa_htmltopdf_api_key_v1.result,
     ]) },
 
+    { id = "qa_comingsoon_protocol", path = local.paths.qa, key = "COMINGSOON_PROTOCOL", value = local.local_env.comingsoon.protocol },
+    { id = "qa_comingsoon_host", path = local.paths.qa, key = "COMINGSOON_HOST", value = local.local_env.comingsoon.host },
+    { id = "qa_comingsoon_port", path = local.paths.qa, key = "COMINGSOON_PORT", value = local.local_env.comingsoon.port },
+
     { id = "qa_www_app_url", path = local.paths.qa, key = "WWW_APP_URL", value = local.qa_env.www_app_url },
     { id = "qa_portal_app_url", path = local.paths.qa, key = "PORTAL_APP_URL", value = local.qa_env.portal_app_url },
     { id = "qa_console_app_url", path = local.paths.qa, key = "CONSOLE_APP_URL", value = local.qa_env.console_app_url },

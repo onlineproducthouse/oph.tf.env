@@ -74,6 +74,7 @@ locals {
         container = {
           api       = "/oph/config/ci/build/container/api"
           htmltopdf = "/oph/config/ci/build/container/htmltopdf"
+          batch     = "/oph/config/ci/build/container/batch"
         }
 
         db = {
@@ -99,6 +100,11 @@ locals {
           htmltopdf = {
             qa   = "/oph/config/ci/deploy/container/htmltopdf/qa"
             test = "/oph/config/ci/deploy/container/htmltopdf/test"
+          }
+
+          batch = {
+            qa   = "/oph/config/ci/deploy/container/batch/qa"
+            test = "/oph/config/ci/deploy/container/batch/test"
           }
         }
 
@@ -146,6 +152,7 @@ module "config" {
 
     local.ci.build.container.api,
     local.ci.build.container.htmltopdf,
+    local.ci.build.container.batch,
 
     local.ci.build.db.api,
 
@@ -160,6 +167,7 @@ module "config" {
 
     local.ci.deploy.container.api.test,
     local.ci.deploy.container.htmltopdf.test,
+    local.ci.deploy.container.batch.test,
 
     local.ci.deploy.db.api.qa,
     local.ci.deploy.db.api.test,

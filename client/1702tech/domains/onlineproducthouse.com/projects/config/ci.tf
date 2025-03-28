@@ -38,6 +38,7 @@ locals {
       container = {
         api       = []
         htmltopdf = []
+        batch     = []
       }
 
       db = {
@@ -128,6 +129,24 @@ locals {
 
             { id = "ci_deploy_cntnr_htmltopdf_test_port_mapping_name", path = local.paths.ci.deploy.container.htmltopdf.test, key = "PORT_MAPPING_NAME", value = data.terraform_remote_state.test_htmltopdf.outputs.test.htmltopdf.api.container.port_mapping_name },
             { id = "ci_deploy_cntnr_htmltopdf_test_network_mode", path = local.paths.ci.deploy.container.htmltopdf.test, key = "NETWORK_MODE", value = data.terraform_remote_state.test_htmltopdf.outputs.test.htmltopdf.api.container.network_mode },
+          ]
+        }
+
+        batch = {
+          test = [
+            { id = "ci_deploy_cntnr_batch_test_task_fam", path = local.paths.ci.deploy.container.batch.test, key = "TASK_FAMILY", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.task_definition_family },
+            { id = "ci_deploy_cntnr_batch_test_task_role_arn", path = local.paths.ci.deploy.container.batch.test, key = "TASK_ROLE_ARN", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.task_role_arn },
+            { id = "ci_deploy_cntnr_batch_test_cntnr_name", path = local.paths.ci.deploy.container.batch.test, key = "CONTAINER_NAME", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.container_name },
+            { id = "ci_deploy_cntnr_batch_test_cntnr_cpu", path = local.paths.ci.deploy.container.batch.test, key = "CONTAINER_CPU", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.cpu },
+            { id = "ci_deploy_cntnr_batch_test_cntnr_mem_res", path = local.paths.ci.deploy.container.batch.test, key = "CONTAINER_MEMORY_RESERVATION", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.memory },
+            { id = "ci_deploy_cntnr_batch_test_cluster_name", path = local.paths.ci.deploy.container.batch.test, key = "CLUSTER_NAME", value = data.terraform_remote_state.test_platform.outputs.test.platform.compute.batch.cluster_name },
+            { id = "ci_deploy_cntnr_batch_test_svc_name", path = local.paths.ci.deploy.container.batch.test, key = "SERVICE_NAME", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.service_name },
+
+            { id = "ci_deploy_cntnr_batch_test_log_driver", path = local.paths.ci.deploy.container.batch.test, key = "LOG_DRIVER", value = data.terraform_remote_state.test_platform.outputs.test.platform.logs.logging.driver },
+            { id = "ci_deploy_cntnr_batch_test_log_group", path = local.paths.ci.deploy.container.batch.test, key = "LOG_GROUP", value = data.terraform_remote_state.test_platform.outputs.test.platform.logs.logging.group },
+            { id = "ci_deploy_cntnr_batch_test_log_prefix", path = local.paths.ci.deploy.container.batch.test, key = "LOG_PREFIX", value = data.terraform_remote_state.test_platform.outputs.test.platform.logs.logging.prefix },
+
+            { id = "ci_deploy_cntnr_batch_test_network_mode", path = local.paths.ci.deploy.container.batch.test, key = "NETWORK_MODE", value = data.terraform_remote_state.test_batch.outputs.test.batch.batch.container.network_mode },
           ]
         }
       }
