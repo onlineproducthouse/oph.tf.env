@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/projects/htmltopdf/test/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/api/test/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -84,7 +84,7 @@ locals {
   health_check_path = "/api/HealthCheck/Ping"
 
   aws_autoscaling_group = {
-    name = data.terraform_remote_state.platform.outputs.test.platform.compute.htmltopdf.auto_scaling_group.name
+    name = data.terraform_remote_state.platform.outputs.test.platform.compute.api.auto_scaling_group.name
   }
 
   hosted_zone = {
@@ -96,9 +96,9 @@ locals {
       run = local.run
 
       region                = var.client_info.region
-      name                  = "htmltopdf-${var.client_info.environment_short_name}"
+      name                  = "api-${var.client_info.environment_short_name}"
       vpc_id                = data.terraform_remote_state.cloud.outputs.test.cloud.network.vpc.id
-      port                  = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf
+      port                  = data.terraform_remote_state.cloud.outputs.test.ports.api
       aws_autoscaling_group = local.aws_autoscaling_group
 
       load_balancer = {
@@ -109,14 +109,14 @@ locals {
       }
 
       container = {
-        name         = "${local.name}-htmltopdf-cntnr"
+        name         = "${local.name}-api-cntnr"
         role_arn     = data.terraform_remote_state.platform.outputs.test.platform.role.arn
         network_mode = "host"
         launch_type  = "EC2"
-        cluster_id   = data.terraform_remote_state.platform.outputs.test.platform.compute.htmltopdf.cluster_id
+        cluster_id   = data.terraform_remote_state.platform.outputs.test.platform.compute.api.cluster_id
 
         cpu    = 1600
-        memory = 800
+        memory = 400
 
         desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 0
@@ -143,7 +143,7 @@ locals {
 # }
 
 module "test" {
-  source = "../../../../../../../module/implementation/projects/api"
+  source = "../../../../../../../../module/implementation/projects/api"
 
   for_each = {
     for index, api in local.api : api.name => api
@@ -160,8 +160,8 @@ module "test" {
 
 output "test" {
   value = {
-    run       = local.run
-    htmltopdf = module.test["htmltopdf-${var.client_info.environment_short_name}"]
+    run = local.run
+    api = module.test["api-${var.client_info.environment_short_name}"]
     # domain_name = data.terraform_remote_state.platform.outputs.test.ssl.api.cert_domain_name
   }
 }

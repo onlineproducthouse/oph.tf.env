@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/projects/www/qa/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/www/qa/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -137,7 +137,7 @@ locals {
 }
 
 module "qa" {
-  source = "../../../../../../../module/implementation/projects/www"
+  source = "../../../../../../../../module/implementation/projects/www"
 
   for_each = {
     for index, web in local.www : web.name => web
