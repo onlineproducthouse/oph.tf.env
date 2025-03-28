@@ -89,12 +89,15 @@ data "terraform_remote_state" "ssl_www" {
 locals {
   run = var.run == true && data.terraform_remote_state.cloud.outputs.test.cloud.run == true
 
+  image_id = "ami-0ef8272297113026d"
+
   name = {
     platform = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
     compute = {
       api       = "${var.client_info.project_short_name}-api-${var.client_info.environment_short_name}"
       htmltopdf = "${var.client_info.project_short_name}-htmltopdf-${var.client_info.environment_short_name}"
+      batch     = "${var.client_info.project_short_name}-batch-${var.client_info.environment_short_name}"
     }
   }
 }
@@ -155,8 +158,8 @@ module "test" {
     compute = [
       {
         name          = local.name.compute.api
-        image_id      = "ami-0ef8272297113026d"
-        instance_type = "t3a.nano"
+        image_id      = local.image_id
+        instance_type = "t3a.micro"
 
         auto_scaling = {
           minimum = 1
@@ -166,8 +169,19 @@ module "test" {
       },
       {
         name          = local.name.compute.htmltopdf
-        image_id      = "ami-0ef8272297113026d"
+        image_id      = local.image_id
         instance_type = "t3a.micro"
+
+        auto_scaling = {
+          minimum = 1
+          maximum = 1
+          desired = 1
+        }
+      },
+      {
+        name          = local.name.compute.batch
+        image_id      = local.image_id
+        instance_type = "t3a.nano"
 
         auto_scaling = {
           minimum = 1
@@ -235,6 +249,7 @@ output "test" {
       compute = {
         api       = module.test.platform.compute[local.name.compute.api].compute
         htmltopdf = module.test.platform.compute[local.name.compute.htmltopdf].compute
+        batch     = module.test.platform.compute[local.name.compute.batch].compute
       }
     }
   }
