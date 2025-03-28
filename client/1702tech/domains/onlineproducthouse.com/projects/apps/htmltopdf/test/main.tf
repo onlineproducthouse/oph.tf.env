@@ -128,20 +128,6 @@ locals {
   ]
 }
 
-# resource "aws_route53_record" "domain_name" {
-#   count = local.run == true ? 1 : 0
-
-#   zone_id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
-#   name    = data.terraform_remote_state.platform.outputs.test.ssl.api.cert_domain_name
-#   type    = "A"
-
-#   alias {
-#     name                   = data.terraform_remote_state.cloud.outputs.test.cloud.load_balancer.dns_name
-#     zone_id                = data.terraform_remote_state.cloud.outputs.test.cloud.load_balancer.zone_id
-#     evaluate_target_health = true
-#   }
-# }
-
 module "test" {
   source = "../../../../../../../../module/implementation/projects/api"
 
@@ -162,6 +148,5 @@ output "test" {
   value = {
     run       = local.run
     htmltopdf = module.test["htmltopdf-${var.client_info.environment_short_name}"]
-    # domain_name = data.terraform_remote_state.platform.outputs.test.ssl.api.cert_domain_name
   }
 }
