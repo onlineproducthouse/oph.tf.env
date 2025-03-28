@@ -50,6 +50,10 @@ variable "client_info" {
 
 output "tech_stack" {
   value = {
+    business = ["GSuite", "Jira", "Confluence", "draw.io", "Quickbooks"]
+
+    thirdparty = ["Cloudinary", "RedisLabs", "SendGrid", "ScaleGrid", "Paystack", "Twilio"]
+
     frontend = {
       languages  = ["html", "css", "javascript"]
       frameworks = ["bootstrap", "vue", "storybook", "react", "angular"]
@@ -67,37 +71,33 @@ output "tech_stack" {
       storage        = ["AWS S3", "Sharepoint"]
       infrastructure = ["Afrihost", "AWS", "Azure", "Heroku"]
       scm            = ["bitbucket"]
-    }
 
-    os = ["linux", "windows", "mac"]
+      os = ["linux", "windows", "mac"]
 
-    business = ["GSuite", "Jira", "Confluence", "draw.io", "Quickbooks"]
-
-    thirdparty = ["Cloudinary", "RedisLabs", "SendGrid", "ScaleGrid", "Paystack", "Twilio"]
-
-    cloud = {
-      aws = [
-        "IAM",
-        "S3",
-        "SSM",
-        "ACM",
-        "Route53",
-        "VPC",
-        "CodeStar",
-        "CodeBuild",
-        "CodePipeline",
-        "DynamoDB",
-        "ECR",
-        "ECS",
-        "ALB",
-        "EC2",
-        "ASG",
-        "CloudWatch",
-        "SQS",
-        "SNS",
-        "SES",
-        "CloudFront",
-      ]
+      cloud = {
+        aws = [
+          "IAM",
+          "S3",
+          "SSM",
+          "ACM",
+          "Route53",
+          "VPC",
+          "CodeStar",
+          "CodeBuild",
+          "CodePipeline",
+          "DynamoDB",
+          "ECR",
+          "ECS",
+          "ALB",
+          "EC2",
+          "ASG",
+          "CloudWatch",
+          "SQS",
+          "SNS",
+          "SES",
+          "CloudFront",
+        ]
+      }
     }
   }
 }
