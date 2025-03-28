@@ -157,31 +157,31 @@ locals {
           subnets = data.terraform_remote_state.config.outputs.config.test.subnets
         }
       },
-      {
-        name             = "qa"
-        buildspec        = local.buildspec
-        timeout          = "10"
-        branch_name      = "qa"
-        environment_name = "qa"
+      # {
+      #   name             = "qa"
+      #   buildspec        = local.buildspec
+      #   timeout          = "10"
+      #   branch_name      = "qa"
+      #   environment_name = "qa"
 
-        environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
-          { key = "CI_ACTION", value = "deploy" },
-          { key = "PROJECT_TYPE", value = "-batch-container" },
-          { key = "WORKING_DIR", value = "./" },
-          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.cloud },
-          { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
-          { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
-            data.terraform_remote_state.config.outputs.config.paths.shared,
-            data.terraform_remote_state.config.outputs.config.paths.ci.deploy.container.batch.qa,
-            data.terraform_remote_state.config.outputs.config.paths.qa,
-          ]) },
-        ])
+      #   environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
+      #     { key = "CI_ACTION", value = "deploy" },
+      #     { key = "PROJECT_TYPE", value = "-batch-container" },
+      #     { key = "WORKING_DIR", value = "./" },
+      #     { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.project.batch },
+      #     { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
+      #     { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
+      #       data.terraform_remote_state.config.outputs.config.paths.shared,
+      #       data.terraform_remote_state.config.outputs.config.paths.ci.deploy.container.batch.qa,
+      #       data.terraform_remote_state.config.outputs.config.paths.qa,
+      #     ]) },
+      #   ])
 
-        vpc = {
-          id      = data.terraform_remote_state.config.outputs.config.qa.vpc_id
-          subnets = data.terraform_remote_state.config.outputs.config.qa.subnets
-        }
-      },
+      #   vpc = {
+      #     id      = data.terraform_remote_state.config.outputs.config.qa.vpc_id
+      #     subnets = data.terraform_remote_state.config.outputs.config.qa.subnets
+      #   }
+      # },
     ]
   }
 }

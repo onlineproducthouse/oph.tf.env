@@ -106,42 +106,42 @@ resource "aws_codepipeline" "pipelines" {
     }
   }
 
-  dynamic "stage" {
-    for_each = each.value.environment_name == "qa" || each.value.environment_name == "prod" ? local.approval : {}
+  # dynamic "stage" {
+  #   for_each = each.value.environment_name == "qa" || each.value.environment_name == "prod" ? local.approval : {}
 
-    content {
-      name = "deploy_qa"
+  #   content {
+  #     name = "deploy_qa"
 
-      action {
-        name            = "deploy_qa"
-        category        = "Build"
-        owner           = "AWS"
-        provider        = "CodeBuild"
-        input_artifacts = [local.artifacts.build]
-        version         = "1"
+  #     action {
+  #       name            = "deploy_qa"
+  #       category        = "Build"
+  #       owner           = "AWS"
+  #       provider        = "CodeBuild"
+  #       input_artifacts = [local.artifacts.build]
+  #       version         = "1"
 
-        configuration = {
-          ProjectName = module.ci.release_job.qa.name
-        }
-      }
-    }
-  }
+  #       configuration = {
+  #         ProjectName = module.ci.release_job.qa.name
+  #       }
+  #     }
+  #   }
+  # }
 
-  dynamic "stage" {
-    for_each = each.value.environment_name == "prod" ? local.approval : {}
+  # dynamic "stage" {
+  #   for_each = each.value.environment_name == "prod" ? local.approval : {}
 
-    content {
-      name = "approve_deploy_prod"
+  #   content {
+  #     name = "approve_deploy_prod"
 
-      action {
-        name     = "approve_deploy_prod"
-        category = stage.value.category
-        owner    = stage.value.owner
-        provider = stage.value.provider
-        version  = stage.value.version
-      }
-    }
-  }
+  #     action {
+  #       name     = "approve_deploy_prod"
+  #       category = stage.value.category
+  #       owner    = stage.value.owner
+  #       provider = stage.value.provider
+  #       version  = stage.value.version
+  #     }
+  #   }
+  # }
 }
 
 #####################################################
