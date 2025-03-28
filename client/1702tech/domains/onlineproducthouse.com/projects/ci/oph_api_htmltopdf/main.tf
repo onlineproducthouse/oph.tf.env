@@ -94,7 +94,7 @@ locals {
           { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
           { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
-          { key = "DOCKERFILE", value = "Dockerfile" },
+          { key = "DOCKERFILE", value = "./Dockerfile" },
         ])
       },
       {
@@ -110,7 +110,7 @@ locals {
           { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
           { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
-          { key = "DOCKERFILE", value = "Dockerfile" },
+          { key = "DOCKERFILE", value = "./Dockerfile" },
         ])
       },
       {
@@ -126,7 +126,7 @@ locals {
           { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
           { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
-          { key = "DOCKERFILE", value = "Dockerfile" },
+          { key = "DOCKERFILE", value = "./Dockerfile" },
         ])
       },
     ]
@@ -141,7 +141,7 @@ locals {
 
         environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
           { key = "CI_ACTION", value = "deploy" },
-          { key = "PROJECT_TYPE", value = "-api-container" },
+          { key = "PROJECT_TYPE", value = "api-container" },
           { key = "WORKING_DIR", value = "./" },
           { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.test.is_running.project.htmltopdf },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.test },
@@ -166,9 +166,10 @@ locals {
 
         environment_variables = concat(data.terraform_remote_state.config.outputs.config.shared_ci_env_vars, [
           { key = "CI_ACTION", value = "deploy" },
-          { key = "PROJECT_TYPE", value = "-api-container" },
+          { key = "PROJECT_TYPE", value = "api-container" },
           { key = "WORKING_DIR", value = "./" },
-          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.project.htmltopdf },
+          { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.project.api },
+          # { key = "IS_RUNNING", value = data.terraform_remote_state.config.outputs.config.qa.is_running.project.htmltopdf },
           { key = "ENABLE_DEPLOYMENT", value = local.deployments_enabled.qa },
           { key = "AWS_SSM_PARAMETER_PATHS", value = join(";", [
             data.terraform_remote_state.config.outputs.config.paths.shared,
