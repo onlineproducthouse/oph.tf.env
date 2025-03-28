@@ -49,6 +49,7 @@ docker buildx build --push \
   --platform=linux/arm64,linux/amd64 \
   --tag $IMAGE_REGISTRY_BASE_URL/$IMAGE_TAG \
   --build-arg IMAGE_REGISTRY_BASE_URL=$IMAGE_REGISTRY_BASE_URL \
+  --file $DOCKERFILE \
   .
 
 echo "Docker image successfully built: $IMAGE_TAG"

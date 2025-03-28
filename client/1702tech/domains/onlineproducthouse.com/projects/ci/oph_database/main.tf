@@ -94,6 +94,7 @@ locals {
           { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
           { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
+          { key = "DOCKERFILE", value = "Dockerfile" },
         ])
       },
       {
@@ -109,6 +110,7 @@ locals {
           { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
           { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
+          { key = "DOCKERFILE", value = "Dockerfile" },
         ])
       },
       {
@@ -124,6 +126,7 @@ locals {
           { key = "BUILD_ARTEFACT_PATH", value = "**/**/*" },
           { key = "RELEASE_ARTEFACT_PATH", value = "./" },
           { key = "AWS_SSM_PARAMETER_PATHS", value = data.terraform_remote_state.config.outputs.config.paths.shared },
+          { key = "DOCKERFILE", value = "Dockerfile" },
         ])
       },
     ]
