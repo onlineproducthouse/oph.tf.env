@@ -85,11 +85,13 @@ echo $(cat ${ECS_TASK_DEFINITION_TEMPLATE}) >${ECS_TASK}
 echo "Registering ECS task definition"
 aws ecs register-task-definition --family ${TASK_FAMILY} --cli-input-json file://${ECS_TASK}
 
-echo "Updating ECS service: $SERVICE_NAME"
-
 echo "Getting task revision"
 TASK_REVISION=$(aws ecs describe-task-definition --task-definition ${TASK_FAMILY} | jq '.taskDefinition.revision')
 echo "Task revision: ${TASK_REVISION}"
+
+echo "Updating ECS service: $SERVICE_NAME"
+echo "ECS cluster: $CLUSTER_NAME"
+echo "ECS task definition: ${TASK_FAMILY}:${TASK_REVISION}"
 
 aws ecs update-service --force-new-deployment \
   --cluster ${CLUSTER_NAME} \
