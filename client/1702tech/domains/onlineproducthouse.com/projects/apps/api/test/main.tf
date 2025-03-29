@@ -115,12 +115,12 @@ locals {
         launch_type  = "EC2"
         cluster_id   = data.terraform_remote_state.platform.outputs.test.platform.compute.api.cluster_id
 
-        cpu    = 800
-        memory = 400
+        cpu    = 1800
+        memory = 350
 
         desired_tasks_count                = 2
-        deployment_minimum_healthy_percent = 0
-        deployment_maximum_healthy_percent = 100
+        deployment_minimum_healthy_percent = 100
+        deployment_maximum_healthy_percent = 150
 
         logging = data.terraform_remote_state.platform.outputs.test.platform.logs.logging
       }

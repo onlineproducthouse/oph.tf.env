@@ -159,12 +159,12 @@ module "test" {
       {
         name          = local.name.compute.api
         image_id      = local.image_id
-        instance_type = "t3a.micro"
+        instance_type = "t3a.nano"
 
         auto_scaling = {
-          minimum = 1
-          maximum = 1
-          desired = 1
+          minimum = 2
+          maximum = 3
+          desired = 2
         }
       },
       {
