@@ -82,7 +82,7 @@ locals {
             { id = "ci_deploy_cntnr_api_test_cntnr_cpu", path = local.paths.ci.deploy.container.api.test, key = "CONTAINER_CPU", value = data.terraform_remote_state.test_api.outputs.test.api.api.container.cpu },
             { id = "ci_deploy_cntnr_api_test_cntnr_mem_res", path = local.paths.ci.deploy.container.api.test, key = "CONTAINER_MEMORY_RESERVATION", value = data.terraform_remote_state.test_api.outputs.test.api.api.container.memory },
             { id = "ci_deploy_cntnr_api_test_cntnr_port", path = local.paths.ci.deploy.container.api.test, key = "CONTAINER_PORT", value = data.terraform_remote_state.test_api.outputs.test.api.api.container.port },
-            { id = "ci_deploy_cntnr_api_test_cluster_name", path = local.paths.ci.deploy.container.api.test, key = "CLUSTER_NAME", value = data.terraform_remote_state.test_platform.outputs.test.platform.compute.htmltopdf.cluster_name },
+            { id = "ci_deploy_cntnr_api_test_cluster_name", path = local.paths.ci.deploy.container.api.test, key = "CLUSTER_NAME", value = data.terraform_remote_state.test_platform.outputs.test.platform.compute.api.cluster_name },
             { id = "ci_deploy_cntnr_api_test_svc_name", path = local.paths.ci.deploy.container.api.test, key = "SERVICE_NAME", value = data.terraform_remote_state.test_api.outputs.test.api.api.container.service_name },
 
             { id = "ci_deploy_cntnr_api_test_log_driver", path = local.paths.ci.deploy.container.api.test, key = "LOG_DRIVER", value = data.terraform_remote_state.test_platform.outputs.test.platform.logs.logging.driver },
