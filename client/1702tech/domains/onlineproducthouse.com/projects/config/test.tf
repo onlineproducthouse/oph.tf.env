@@ -29,7 +29,7 @@ data "terraform_remote_state" "test_api" {
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/api/test/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/services/api/test/terraform.tfstate"
     region = "eu-west-1"
   }
 }
@@ -39,7 +39,7 @@ data "terraform_remote_state" "test_htmltopdf" {
 
   config = {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/projects/apps/htmltopdf/test/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/services/htmltopdf/test/terraform.tfstate"
     region = "eu-west-1"
   }
 }
