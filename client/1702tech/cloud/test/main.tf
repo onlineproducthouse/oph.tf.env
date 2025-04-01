@@ -51,9 +51,8 @@ locals {
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
   ports = {
-    api       = 7890
-    htmltopdf = 7891
-    database  = 5432
+    api      = 7890
+    database = 5432
   }
 }
 
@@ -84,7 +83,6 @@ module "test" {
       security_group_rules = [
         { name = "public", type = "egress", protocol = "-1", cidr_blocks = ["0.0.0.0/0"], port = 0 },
         { name = "api", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.api },
-        { name = "htmltopdf", type = "ingress", protocol = "tcp", cidr_blocks = ["0.0.0.0/0"], port = local.ports.htmltopdf },
       ]
     }
   }

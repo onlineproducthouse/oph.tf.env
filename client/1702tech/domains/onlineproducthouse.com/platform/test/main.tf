@@ -97,7 +97,6 @@ locals {
     compute = {
       api       = "${var.client_info.project_short_name}-api-${var.client_info.environment_short_name}"
       htmltopdf = "${var.client_info.project_short_name}-htmltopdf-${var.client_info.environment_short_name}"
-      batch     = "${var.client_info.project_short_name}-batch-${var.client_info.environment_short_name}"
     }
   }
 }
@@ -138,14 +137,6 @@ module "test" {
         to_port     = data.terraform_remote_state.cloud.outputs.test.ports.api,
       },
       {
-        name        = "htmltopdf",
-        type        = "ingress",
-        protocol    = "tcp",
-        cidr_blocks = data.terraform_remote_state.cloud.outputs.test.cloud.network.subnet.public.cidr_blocks,
-        from_port   = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf,
-        to_port     = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf,
-      },
-      {
         name        = "database",
         type        = "ingress",
         protocol    = "tcp",
@@ -174,18 +165,7 @@ module "test" {
 
         auto_scaling = {
           minimum = 1
-          maximum = 1
-          desired = 1
-        }
-      },
-      {
-        name          = local.name.compute.batch
-        image_id      = local.image_id
-        instance_type = "t3a.nano"
-
-        auto_scaling = {
-          minimum = 1
-          maximum = 1
+          maximum = 2
           desired = 1
         }
       },
@@ -249,7 +229,6 @@ output "test" {
       compute = {
         api       = module.test.platform.compute[local.name.compute.api].compute
         htmltopdf = module.test.platform.compute[local.name.compute.htmltopdf].compute
-        batch     = module.test.platform.compute[local.name.compute.batch].compute
       }
     }
   }

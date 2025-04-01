@@ -5,7 +5,6 @@
 #####################################################
 
 resource "random_uuid" "local_api_key_v1" {}
-resource "random_uuid" "local_htmltopdf_api_key_v1" {}
 
 locals {
   local_env = {
@@ -13,18 +12,6 @@ locals {
       protocol = "http"
       host     = "127.0.0.1"
       port     = data.terraform_remote_state.test_cloud.outputs.test.ports.api
-    }
-
-    htmltopdf = {
-      protocol = "http"
-      host     = "127.0.0.1"
-      port     = data.terraform_remote_state.test_cloud.outputs.test.ports.htmltopdf
-    }
-
-    comingsoon = {
-      protocol = "http"
-      host     = "127.0.0.1"
-      port     = 17020
     }
 
     www_app_url          = "http://127.0.0.1:3000"
@@ -59,16 +46,9 @@ locals {
       random_uuid.local_api_key_v1.result,
     ]) },
 
-    { id = "local_htmltopdf_protocol", path = local.paths.local, key = "HTMLTOPDF_PROTOCOL", value = local.local_env.htmltopdf.protocol },
-    { id = "local_htmltopdf_host", path = local.paths.local, key = "HTMLTOPDF_HOST", value = local.local_env.htmltopdf.host },
-    { id = "local_htmltopdf_port", path = local.paths.local, key = "HTMLTOPDF_PORT", value = local.local_env.htmltopdf.port },
-    { id = "local_htmltopdf_keys", path = local.paths.local, key = "HTMLTOPDF_KEYS", value = join(",", [
-      random_uuid.local_htmltopdf_api_key_v1.result,
-    ]) },
-
-    { id = "local_comingsoon_protocol", path = local.paths.local, key = "COMINGSOON_PROTOCOL", value = local.local_env.comingsoon.protocol },
-    { id = "local_comingsoon_host", path = local.paths.local, key = "COMINGSOON_HOST", value = local.local_env.comingsoon.host },
-    { id = "local_comingsoon_port", path = local.paths.local, key = "COMINGSOON_PORT", value = local.local_env.comingsoon.port },
+    { id = "local_comingsoon_protocol", path = local.paths.local, key = "COMINGSOON_PROTOCOL", value = local.local_env.api.protocol },
+    { id = "local_comingsoon_host", path = local.paths.local, key = "COMINGSOON_HOST", value = local.local_env.api.host },
+    { id = "local_comingsoon_port", path = local.paths.local, key = "COMINGSOON_PORT", value = local.local_env.api.port },
 
     { id = "local_www_app_url", path = local.paths.local, key = "WWW_APP_URL", value = local.local_env.www_app_url },
     { id = "local_portal_app_url", path = local.paths.local, key = "PORTAL_APP_URL", value = local.local_env.portal_app_url },

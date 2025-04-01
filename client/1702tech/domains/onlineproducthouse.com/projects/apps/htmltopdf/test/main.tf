@@ -81,32 +81,18 @@ locals {
 
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
-  health_check_path = "/api/HealthCheck/Ping"
-
   aws_autoscaling_group = {
     name = data.terraform_remote_state.platform.outputs.test.platform.compute.htmltopdf.auto_scaling_group.name
   }
 
-  hosted_zone = {
-    id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
-  }
-
-  api = [
+  batch = [
     {
       run = local.run
 
       region                = var.client_info.region
       name                  = "htmltopdf-${var.client_info.environment_short_name}"
       vpc_id                = data.terraform_remote_state.cloud.outputs.test.cloud.network.vpc.id
-      port                  = data.terraform_remote_state.cloud.outputs.test.ports.htmltopdf
       aws_autoscaling_group = local.aws_autoscaling_group
-
-      load_balancer = {
-        arn                      = data.terraform_remote_state.cloud.outputs.test.cloud.load_balancer.arn
-        health_check_path        = local.health_check_path
-        listener_certificate_arn = data.terraform_remote_state.platform.outputs.test.ssl.api.cert_arn
-        domain_name              = data.terraform_remote_state.platform.outputs.test.ssl.api.cert_domain_name
-      }
 
       container = {
         name         = "${local.name}-htmltopdf-cntnr"
@@ -119,8 +105,8 @@ locals {
         memory = 800
 
         desired_tasks_count                = 1
-        deployment_minimum_healthy_percent = 0
-        deployment_maximum_healthy_percent = 100
+        deployment_minimum_healthy_percent = 100
+        deployment_maximum_healthy_percent = 200
 
         logging = data.terraform_remote_state.platform.outputs.test.platform.logs.logging
       }
@@ -129,13 +115,13 @@ locals {
 }
 
 module "test" {
-  source = "../../../../../../../../module/implementation/projects/api"
+  source = "../../../../../../../../module/implementation/projects/batch"
 
   for_each = {
-    for index, api in local.api : api.name => api
+    for index, batch in local.batch : batch.name => batch
   }
 
-  api = each.value
+  batch = each.value
 }
 
 #####################################################
