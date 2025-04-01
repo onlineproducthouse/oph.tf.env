@@ -22,7 +22,7 @@ resource "aws_cloudwatch_log_group" "platform" {
   }
 
   name              = each.value.value
-  retention_in_days = 30
+  retention_in_days = 7
 }
 
 #####################################################
