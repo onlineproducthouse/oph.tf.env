@@ -204,7 +204,7 @@ output "config" {
 
         project = {
           api = data.terraform_remote_state.qa_api.outputs.qa.run
-          # htmltopdf = data.terraform_remote_state.qa_htmltopdf.outputs.qa.run
+          htmltopdf = data.terraform_remote_state.qa_htmltopdf.outputs.qa.run
           www = data.terraform_remote_state.qa_www.outputs.qa.run
         }
       }

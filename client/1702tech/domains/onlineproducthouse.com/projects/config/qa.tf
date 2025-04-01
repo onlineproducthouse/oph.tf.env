@@ -44,8 +44,17 @@ data "terraform_remote_state" "qa_www" {
   }
 }
 
+data "terraform_remote_state" "qa_htmltopdf" {
+  backend = "s3"
+
+  config = {
+    bucket = "oph-cloud-terraform-remote-state"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/services/htmltopdf/qa/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
+
 resource "random_uuid" "qa_api_key_v1" {}
-resource "random_uuid" "qa_htmltopdf_api_key_v1" {}
 
 locals {
   qa_env = {
@@ -53,12 +62,6 @@ locals {
       protocol = "https"
       host     = data.terraform_remote_state.qa_platform.outputs.qa.ssl.api.cert_domain_name
       port     = data.terraform_remote_state.qa_cloud.outputs.qa.ports.api
-    }
-
-    htmltopdf = {
-      protocol = "https"
-      host     = data.terraform_remote_state.qa_platform.outputs.qa.ssl.api.cert_domain_name
-      port     = data.terraform_remote_state.qa_cloud.outputs.qa.ports.htmltopdf
     }
 
     www_app_url          = data.terraform_remote_state.qa_www.outputs.qa.www.www.host.id
@@ -118,13 +121,6 @@ locals {
     { id = "qa_api_port", path = local.paths.qa, key = "API_PORT", value = local.qa_env.api.port },
     { id = "qa_api_keys", path = local.paths.qa, key = "API_KEYS", value = join(",", [
       random_uuid.qa_api_key_v1.result,
-    ]) },
-
-    { id = "qa_htmltopdf_protocol", path = local.paths.qa, key = "HTMLTOPDF_PROTOCOL", value = local.qa_env.htmltopdf.protocol },
-    { id = "qa_htmltopdf_host", path = local.paths.qa, key = "HTMLTOPDF_HOST", value = local.qa_env.htmltopdf.host },
-    { id = "qa_htmltopdf_port", path = local.paths.qa, key = "HTMLTOPDF_PORT", value = local.qa_env.htmltopdf.port },
-    { id = "qa_htmltopdf_keys", path = local.paths.qa, key = "HTMLTOPDF_KEYS", value = join(",", [
-      random_uuid.qa_htmltopdf_api_key_v1.result,
     ]) },
 
     { id = "qa_comingsoon_protocol", path = local.paths.qa, key = "COMINGSOON_PROTOCOL", value = local.qa_env.api.protocol },

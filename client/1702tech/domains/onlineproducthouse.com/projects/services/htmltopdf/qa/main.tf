@@ -7,7 +7,7 @@
 terraform {
   backend "s3" {
     bucket = "oph-cloud-terraform-remote-state"
-    key    = "client/1702tech/domains/onlineproducthouse.com/projects/services/api/qa/terraform.tfstate"
+    key    = "client/1702tech/domains/onlineproducthouse.com/projects/services/htmltopdf/qa/terraform.tfstate"
     region = "eu-west-1"
 
     dynamodb_table = "oph-cloud-terraform-remote-state-locks"
@@ -81,46 +81,32 @@ locals {
 
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
-  health_check_path = "/api/HealthCheck/Ping"
-
   aws_autoscaling_group = {
-    name = data.terraform_remote_state.platform.outputs.qa.platform.compute.api.auto_scaling_group.name
+    name = data.terraform_remote_state.platform.outputs.qa.platform.compute.htmltopdf.auto_scaling_group.name
   }
 
-  hosted_zone = {
-    id = data.terraform_remote_state.dns.outputs.dns.hosted_zone_id
-  }
-
-  api = [
+  batch = [
     {
       run = local.run
 
       region                = var.client_info.region
-      name                  = "api-${var.client_info.environment_short_name}"
+      name                  = "htmltopdf-${var.client_info.environment_short_name}"
       vpc_id                = data.terraform_remote_state.cloud.outputs.qa.cloud.network.vpc.id
-      port                  = data.terraform_remote_state.cloud.outputs.qa.ports.api
       aws_autoscaling_group = local.aws_autoscaling_group
 
-      load_balancer = {
-        arn                      = data.terraform_remote_state.cloud.outputs.qa.cloud.load_balancer.arn
-        health_check_path        = local.health_check_path
-        listener_certificate_arn = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_arn
-        domain_name              = data.terraform_remote_state.platform.outputs.qa.ssl.api.cert_domain_name
-      }
-
       container = {
-        name         = "${local.name}-api-cntnr"
+        name         = "${local.name}-htmltopdf-cntnr"
         role_arn     = data.terraform_remote_state.platform.outputs.qa.platform.role.arn
         network_mode = "host"
         launch_type  = "EC2"
-        cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.api.cluster_id
+        cluster_id   = data.terraform_remote_state.platform.outputs.qa.platform.compute.htmltopdf.cluster_id
 
         cpu    = 1800
-        memory = 350
+        memory = 800
 
-        desired_tasks_count                = 2
+        desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 100
-        deployment_maximum_healthy_percent = 150
+        deployment_maximum_healthy_percent = 200
 
         logging = data.terraform_remote_state.platform.outputs.qa.platform.logs.logging
       }
@@ -129,13 +115,13 @@ locals {
 }
 
 module "qa" {
-  source = "../../../../../../../../module/implementation/projects/api"
+  source = "../../../../../../../../module/implementation/projects/batch"
 
   for_each = {
-    for index, api in local.api : api.name => api
+    for index, batch in local.batch : batch.name => batch
   }
 
-  api = each.value
+  batch = each.value
 }
 
 #####################################################
@@ -146,7 +132,7 @@ module "qa" {
 
 output "qa" {
   value = {
-    run = local.run
-    api = module.qa["api-${var.client_info.environment_short_name}"]
+    run       = local.run
+    htmltopdf = module.qa["htmltopdf-${var.client_info.environment_short_name}"]
   }
 }
