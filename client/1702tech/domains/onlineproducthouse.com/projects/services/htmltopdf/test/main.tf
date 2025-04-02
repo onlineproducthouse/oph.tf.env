@@ -102,7 +102,7 @@ locals {
         cluster_id   = data.terraform_remote_state.platform.outputs.test.platform.compute.htmltopdf.cluster_id
 
         cpu    = 1800
-        memory = 800
+        memory = 1600
 
         desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 100

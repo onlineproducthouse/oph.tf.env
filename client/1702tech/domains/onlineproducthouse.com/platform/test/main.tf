@@ -161,7 +161,7 @@ module "test" {
       {
         name          = local.name.compute.htmltopdf
         image_id      = local.image_id
-        instance_type = "t3a.micro"
+        instance_type = "t3a.small"
 
         auto_scaling = {
           minimum = 1
