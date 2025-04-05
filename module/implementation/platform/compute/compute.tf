@@ -32,7 +32,7 @@ resource "aws_launch_template" "compute" {
 }
 
 resource "aws_autoscaling_group" "compute" {
-  count = var.compute.run == true ? 1 : 0
+  count = var.compute.run == true && var.compute.auto_scaling.desired > 0 ? 1 : 0
 
   name                      = "${var.compute.name}-asg"
   vpc_zone_identifier       = var.compute.cloud.private_subnet_id_list
@@ -97,9 +97,9 @@ locals {
     task_role_arn = var.compute.task_role_arn
 
     auto_scaling_group = {
-      name = var.compute.run == true ? aws_autoscaling_group.compute[0].name : ""
-      id   = var.compute.run == true ? aws_autoscaling_group.compute[0].id : ""
-      arn  = var.compute.run == true ? aws_autoscaling_group.compute[0].arn : ""
+      name = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].name : ""
+      id   = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].id : ""
+      arn  = length(aws_autoscaling_group.compute) > 0 ? aws_autoscaling_group.compute[0].arn : ""
     }
 
     security_group = {

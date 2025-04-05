@@ -166,7 +166,7 @@ module "qa" {
         auto_scaling = {
           minimum = 1
           maximum = 2
-          desired = 1
+          desired = 0
         }
       },
     ]
