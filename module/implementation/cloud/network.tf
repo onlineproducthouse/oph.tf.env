@@ -28,6 +28,8 @@ module "subnet" {
 }
 
 module "eip" {
+  count = var.cloud.run == true ? 1 : 0
+
   source = "../../interface/aws/networking/vpc/elastic_ip"
 
   elastic_ip = {
@@ -36,9 +38,9 @@ module "eip" {
 }
 
 resource "aws_nat_gateway" "cloud" {
-  count = var.cloud.run == true ? length(module.subnet["public"].id_list) : 0
+  count = var.cloud.run == true && length(module.eip) > 0 ? length(module.subnet["public"].id_list) : 0
 
-  allocation_id = element(module.eip.eip_nat_id_list, count.index)
+  allocation_id = element(module.eip[0].eip_nat_id_list, count.index)
   subnet_id     = element(module.subnet["public"].id_list, count.index)
 }
 
@@ -56,8 +58,9 @@ module "route_table" {
 }
 
 module "public_route" {
+  count = var.cloud.run == true ? length(module.route_table["public"].route_table_id_list) : 0
+
   source = "../../interface/aws/networking/vpc/route_table/route"
-  count  = var.cloud.run == true ? length(module.route_table["public"].route_table_id_list) : 0
 
   route = {
     is_private = false
@@ -71,8 +74,9 @@ module "public_route" {
 }
 
 module "private_route" {
+  count = var.cloud.run == true ? length(module.route_table["private"].route_table_id_list) : 0
+
   source = "../../interface/aws/networking/vpc/route_table/route"
-  count  = var.cloud.run == true ? length(module.route_table["private"].route_table_id_list) : 0
 
   route = {
     is_private = true
@@ -98,7 +102,7 @@ locals {
       cidr_block = var.cloud.network.cidr_blocks.vpc
     }
 
-    eip = module.eip.eip_public_ip_list
+    eip = length(module.eip) > 0 ? module.eip[0].eip_public_ip_list : []
 
     subnet = {
       private = {
