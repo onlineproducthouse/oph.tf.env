@@ -77,7 +77,7 @@ data "terraform_remote_state" "dns" {
 }
 
 locals {
-  run = var.run == true && data.terraform_remote_state.cloud.outputs.qa.cloud.run == true && data.terraform_remote_state.platform.outputs.qa.platform.run == true
+  run = var.run == true && data.terraform_remote_state.cloud.outputs.qa.cloud.run == true && data.terraform_remote_state.platform.outputs.qa.platform.run == true && local.aws_autoscaling_group.name != ""
 
   name = "${var.client_info.project_short_name}-${var.client_info.service_short_name}-${var.client_info.environment_short_name}"
 
@@ -147,6 +147,35 @@ module "qa" {
 output "qa" {
   value = {
     run = local.run
-    api = module.qa["api-${var.client_info.environment_short_name}"]
+    api = local.aws_autoscaling_group.name == "" ? {
+      api = {
+        port = 0
+
+        container = {
+          container_name = ""
+          cpu            = 0
+
+          logging = {
+            driver = ""
+            group  = ""
+            prefix = ""
+          }
+
+          memory                 = 0
+          network_mode           = ""
+          port                   = 0
+          port_mapping_name      = ""
+          service_name           = ""
+          task_definition_family = ""
+          task_role_arn          = ""
+        }
+
+        load_balancer = {
+          target_group = {
+            arn = ""
+          }
+        }
+      }
+    } : module.qa["api-${var.client_info.environment_short_name}"]
   }
 }
