@@ -118,9 +118,9 @@ locals {
         cpu    = 1800
         memory = 350
 
-        desired_tasks_count                = 2
+        desired_tasks_count                = 1
         deployment_minimum_healthy_percent = 100
-        deployment_maximum_healthy_percent = 150
+        deployment_maximum_healthy_percent = 200
 
         logging = data.terraform_remote_state.platform.outputs.qa.platform.logs.logging
       }

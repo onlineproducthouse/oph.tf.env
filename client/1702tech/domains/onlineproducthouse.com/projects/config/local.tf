@@ -14,10 +14,10 @@ locals {
       port     = data.terraform_remote_state.test_cloud.outputs.test.ports.api
     }
 
-    www_app_url          = "http://127.0.0.1:3000"
-    portal_app_url       = "http://127.0.0.1:3001"
-    console_app_url      = "http://127.0.0.1:3002"
-    registration_app_url = "http://127.0.0.1:3003"
+    portal_app_url       = "http://localhost:3000"
+    registration_app_url = "http://localhost:3001"
+    console_app_url      = "http://localhost:3002"
+    www_app_url          = "http://localhost:3003"
   }
 
   local = [
@@ -52,8 +52,8 @@ locals {
 
     { id = "local_www_app_url", path = local.paths.local, key = "WWW_APP_URL", value = local.local_env.www_app_url },
     { id = "local_portal_app_url", path = local.paths.local, key = "PORTAL_APP_URL", value = local.local_env.portal_app_url },
-    { id = "local_console_app_url", path = local.paths.local, key = "CONSOLE_APP_URL", value = local.local_env.console_app_url },
     { id = "local_registration_app_url", path = local.paths.local, key = "REGISTRATION_APP_URL", value = local.local_env.registration_app_url },
+    { id = "local_console_app_url", path = local.paths.local, key = "CONSOLE_APP_URL", value = local.local_env.console_app_url },
 
     { id = "local_client_api_key", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_KEY", value = random_uuid.local_api_key_v1.result },
     { id = "local_client_api_protocol", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_PROTOCOL", value = local.local_env.api.protocol },
@@ -61,6 +61,9 @@ locals {
     { id = "local_client_api_host", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_HOST", value = local.local_env.api.host },
     { id = "local_client_api_port", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_PORT", value = local.local_env.api.port },
     { id = "local_client_api_base_path", path = local.paths.local, key = "VITE_APP_LOCAL_CLIENT_API_BASE_PATH", value = "/api/v1" },
+    { id = "local_client_web_app_portal_url", path = local.paths.local, key = "VITE_APP_LOCAL_WEB_APP_PORTAL_URL", value = local.local_env.portal_app_url },
+    { id = "local_client_web_app_registration_url", path = local.paths.local, key = "VITE_APP_LOCAL_WEB_APP_REGISTRATION_URL", value = local.local_env.registration_app_url },
+    { id = "local_client_web_app_console_url", path = local.paths.local, key = "VITE_APP_LOCAL_WEB_APP_CONSOLE_URL", value = local.local_env.console_app_url },
   ]
 }
 

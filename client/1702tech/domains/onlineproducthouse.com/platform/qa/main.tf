@@ -153,9 +153,9 @@ module "qa" {
         instance_type = "t3a.nano"
 
         auto_scaling = {
-          minimum = 2
-          maximum = 3
-          desired = 2
+          minimum = 1
+          maximum = 2
+          desired = 1
         }
       },
       {
