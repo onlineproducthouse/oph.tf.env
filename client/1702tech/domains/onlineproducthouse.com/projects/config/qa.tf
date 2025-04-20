@@ -138,6 +138,9 @@ locals {
     { id = "qa_client_api_host", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_HOST", value = local.qa_env.api.host },
     { id = "qa_client_api_port", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_PORT", value = local.qa_env.api.port },
     { id = "qa_client_api_base_path", path = local.paths.qa, key = "VITE_APP_QA_CLIENT_API_BASE_PATH", value = "/api/v1" },
+    { id = "qa_client_web_app_portal_url", path = local.paths.qa, key = "VITE_APP_QA_WEB_APP_PORTAL_URL", value = "https://${local.qa_env.portal_app_url}" },
+    { id = "qa_client_web_app_registration_url", path = local.paths.qa, key = "VITE_APP_QA_WEB_APP_REGISTRATION_URL", value = "https://${local.qa_env.registration_app_url}" },
+    { id = "qa_client_web_app_console_url", path = local.paths.qa, key = "VITE_APP_QA_WEB_APP_CONSOLE_URL", value = "https://${local.qa_env.console_app_url}" },
   ]
 }
 
