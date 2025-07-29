@@ -4,44 +4,10 @@
 #                                                   #
 #####################################################
 
-variable "platform" {
+variable "cors_configuration" {
   type = object({
-    run = bool
-
-    name   = string
-    region = string
-
-    cloud = object({
-      vpc_id                 = string
-      private_subnet_id_list = list(string)
-    })
-
-    logs = object({
-      group = string
-    })
-
-    security_group_rules = list(object({
-      name        = string
-      type        = string
-      protocol    = string
-      cidr_blocks = list(string)
-      from_port   = number
-      to_port     = number
-    }))
-
-    compute = list(object({
-      name          = string
-      image_id      = string
-      instance_type = string
-
-      auto_scaling = object({
-        minimum = number
-        maximum = number
-        desired = number
-      })
-    }))
-
-    fs_cors_rules = list(object({
+    bucket_id = string
+    rules = list(object({
       allowed_headers = list(string)
       allowed_methods = list(string)
       allowed_origins = list(string)
@@ -57,18 +23,27 @@ variable "platform" {
 #                                                   #
 #####################################################
 
+resource "aws_s3_bucket_cors_configuration" "cors_configuration" {
+  count  = length(var.cors_configuration.rules) > 0 ? 1 : 0
+  bucket = var.cors_configuration.bucket_id
+
+  dynamic "cors_rule" {
+    for_each = var.cors_configuration.rules
+
+    content {
+      allowed_headers = cors_rule.value.allowed_headers
+      allowed_methods = cors_rule.value.allowed_methods
+      allowed_origins = cors_rule.value.allowed_origins
+      expose_headers  = cors_rule.value.expose_headers
+      max_age_seconds = cors_rule.value.max_age_seconds
+    }
+  }
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #
 #                                                   #
 #####################################################
 
-output "platform" {
-  value = {
-    run          = var.platform.run
-    file_service = local.file_service_output
-    role         = local.role_output
-    logs         = local.logs_output
-    compute      = local.compute_output
-  }
-}
+

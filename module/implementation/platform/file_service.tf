@@ -25,6 +25,14 @@ module "encryption" {
   }
 }
 
+module "cors" {
+  source = "../../interface/aws/storage/s3/bucket/cors_configuration"
+  cors_configuration = {
+    bucket_id = module.file_service.id
+    rules     = var.platform.fs_cors_rules
+  }
+}
+
 #####################################################
 #                                                   #
 #                       OUTPUT                      #

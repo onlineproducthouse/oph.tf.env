@@ -170,6 +170,25 @@ module "test" {
         }
       },
     ]
+
+    fs_cors_rules = [
+      {
+        allowed_methods = ["PUT", "POST"]
+        allowed_origins = ["http://localhost:3000", "http://localhost:3002"]
+
+        allowed_headers = ["*"]
+        expose_headers  = ["ETag"]
+        max_age_seconds = 3000
+      },
+      {
+        allowed_methods = ["GET"]
+        allowed_origins = ["*"]
+
+        allowed_headers = null
+        expose_headers  = null
+        max_age_seconds = null
+      },
+    ]
   }
 }
 
