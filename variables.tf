@@ -17,6 +17,10 @@ variable "network" {
       cidr_blocks = list(string)
       port        = number
     }))
+
+    sb_eip         = bool
+    sb_nat_gateway = bool
+    sb_alb         = bool
   }))
 }
 
