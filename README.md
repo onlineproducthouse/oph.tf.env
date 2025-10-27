@@ -5,8 +5,8 @@ This modules provisions all required resources for OPH applications. The resourc
 ## Usage
 
 There are two ways to consume this module, that is:
-1. Use root module to provision the entire environment.
-2. Use specific module directly.
+1. Use root module to provision an entire environment.
+2. Use a specific module directly.
 
 The architecture provisioned here is distinguished between three layers, namely:
 
@@ -16,7 +16,7 @@ The architecture provisioned here is distinguished between three layers, namely:
 
 3. Project layer - this layer provisions project specific infrastructure on an existing platform. only "runtime" infrastructure is provisioned on this layer. [Read more here.](./modules/project/README.md)
 
-Our recommendation is to use the root version if you don't have already components you wish to use. Each subsequent layer depends on one or more layers, with the network layer as the base. The platform layer is built on top of the network layer, and project layer on top of the playform layer.
+Our recommendation is to use the root version if you don't already have components you wish to use. Each subsequent layer depends on one or more layers, with the network layer as the base. The platform layer is built on top of the network layer, and project layer on top of the playform layer.
 
 This means, in the event you wish to use one layer and not another, the requirements of that layer must be met whether the suppoting native module is used or not.
 
@@ -41,10 +41,10 @@ The benefits from this approach where twofold:
 
 This approach presented limitations because it was primarily base on managing infrastructure costs.
 
-For simplicity's sake, the negative impact on strategically important components to a business, such as IP addresses, was compromised. Furthermore this approach meant that some resources could not be provisioned if depending on a costly resource, and therefore one could not choose which costly services they are will to bear the expense of.
+For simplicity's sake, the negative impact on strategically important components to a business, such as IP addresses, was compromised. Furthermore this approach meant that some resources could not be provisioned if depending on a costly resource, and therefore one could not choose which costly services they are willing to bear the expense of.
 
 ### What is a switchboard?
 
-A switchboard is a set of variables in each module, prefixed with `sb_`, that determines the resources that must be provisioned. Each module's switchboard will be unique to its resources and managed indepedently, so the user is expected to ensure correlation among dependencies of one resource and another.
+A switchboard is a set of variables in each module, prefixed with `sb_`, that determine the resources that must be provisioned. Each module's switchboard will be unique to its resources and managed indepedently, so the user is expected to ensure they supply the correct `sb_` variables for a given module.
 
 A switchboard enables the provisioning of resources based on what is required while continuing to only run the `terraform apply` command for as long the resources are required. However, the switchboard will instead dictate which resources to provision or destroy.
