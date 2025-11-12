@@ -19,13 +19,13 @@ variable "api" {
     cluster_role_arn            = string
     task_network_mode           = string
     task_launch_type            = string
-    task_cpu                    = string
-    task_memory                 = string
+    task_cpu                    = number
+    task_memory                 = number
     task_image                  = string
     cw_log_group                = string
-    ecs_svc_desired_tasks_count = string
-    ecs_svc_min_health_perc     = string
-    ecs_svc_max_health_perc     = string
+    ecs_svc_desired_tasks_count = number
+    ecs_svc_min_health_perc     = number
+    ecs_svc_max_health_perc     = number
   }))
 }
 
@@ -42,22 +42,23 @@ variable "batch" {
     cluster_role_arn            = string
     task_network_mode           = string
     task_launch_type            = string
-    task_cpu                    = string
-    task_memory                 = string
+    task_cpu                    = number
+    task_memory                 = number
     task_image                  = string
     cw_log_group                = string
-    ecs_svc_desired_tasks_count = string
-    ecs_svc_min_health_perc     = string
-    ecs_svc_max_health_perc     = string
+    ecs_svc_desired_tasks_count = number
+    ecs_svc_min_health_perc     = number
+    ecs_svc_max_health_perc     = number
   }))
 }
 
-variable "www" {
-  description = "Variables required by the WWW module"
+variable "web" {
+  description = "Variables required by the web project module"
   default     = []
   nullable    = false
 
   type = list(object({
+    name           = string
     hosted_zone_id = string
     domain_name    = string
     index_page     = string

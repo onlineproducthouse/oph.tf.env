@@ -52,8 +52,26 @@ module "platform" {
   asg_max     = each.value.asg_max
   asg_desired = each.value.asg_desired
 
-  cluster_sg_rule     = each.value.cluster_sg_rule
-  fs_cors_config_rule = each.value.fs_cors_config_rule
+  cluster_sg_rule = each.value.cluster_sg_rule
+
+  fs_cors_config_rule = [
+    {
+      allowed_methods = ["PUT", "POST"]
+      allowed_origins = compact([for i, v in var.project.api : v.platform_name == each.value.name ? v.domain_name : null])
+
+      allowed_headers = ["*"]
+      expose_headers  = ["ETag"]
+      max_age_seconds = 3000
+    },
+    {
+      allowed_methods = ["GET"]
+      allowed_origins = ["*"]
+
+      allowed_headers = null
+      expose_headers  = null
+      max_age_seconds = null
+    },
+  ]
 }
 
 module "project" {
@@ -61,20 +79,22 @@ module "project" {
 
   api = [
     for i, v in var.project.api : {
-      name                        = v.name
-      region                      = v.region
-      hosted_zone_id              = v.hosted_zone_id
-      port                        = v.port
-      domain_name                 = v.domain_name
-      task_network_mode           = v.task_network_mode
-      task_launch_type            = v.task_launch_type
-      task_cpu                    = v.task_cpu
-      task_memory                 = v.task_memory
-      task_image                  = v.task_image
+      name                  = v.name
+      region                = v.region
+      hosted_zone_id        = v.hosted_zone_id
+      domain_name           = v.domain_name
+      port                  = v.port
+      alb_health_check_path = v.alb_health_check_path
+
+      task_network_mode = v.task_network_mode
+      task_launch_type  = v.task_launch_type
+      task_cpu          = v.task_cpu
+      task_memory       = v.task_memory
+      task_image        = v.task_image
+
       ecs_svc_desired_tasks_count = v.ecs_svc_desired_tasks_count
       ecs_svc_min_health_perc     = v.ecs_svc_min_health_perc
       ecs_svc_max_health_perc     = v.ecs_svc_max_health_perc
-      alb_health_check_path       = v.alb_health_check_path
 
       vpc_id             = module.network[v.network_name].vpc_id
       alb_arn            = module.network[v.network_name].alb_arn
@@ -90,13 +110,16 @@ module "project" {
 
   batch = [
     for i, v in var.project.batch : {
-      name                        = v.name
-      region                      = v.region
-      task_network_mode           = v.task_network_mode
-      task_launch_type            = v.task_launch_type
-      task_cpu                    = v.task_cpu
-      task_memory                 = v.task_memory
-      task_image                  = v.task_image
+      name = v.name
+
+      region = v.region
+
+      task_network_mode = v.task_network_mode
+      task_launch_type  = v.task_launch_type
+      task_cpu          = v.task_cpu
+      task_memory       = v.task_memory
+      task_image        = v.task_image
+
       ecs_svc_desired_tasks_count = v.ecs_svc_desired_tasks_count
       ecs_svc_min_health_perc     = v.ecs_svc_min_health_perc
       ecs_svc_max_health_perc     = v.ecs_svc_max_health_perc
@@ -108,8 +131,9 @@ module "project" {
     }
   ]
 
-  www = [
-    for i, v in var.project.www : {
+  web = [
+    for i, v in var.project.web : {
+      name           = v.name
       hosted_zone_id = v.hosted_zone_id
       domain_name    = v.domain_name
       index_page     = v.index_page

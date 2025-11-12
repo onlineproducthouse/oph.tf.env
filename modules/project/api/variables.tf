@@ -94,13 +94,13 @@ variable "task_launch_type" {
 
 variable "task_cpu" {
   description = "CPU"
-  type        = string
+  type        = number
   nullable    = false
 }
 
 variable "task_memory" {
   description = "Memory"
-  type        = string
+  type        = number
   nullable    = false
 }
 
@@ -118,18 +118,18 @@ variable "cw_log_group" {
 
 variable "ecs_svc_desired_tasks_count" {
   description = "Desired number of tasks to run for API"
-  type        = string
+  type        = number
   nullable    = false
 }
 
 variable "ecs_svc_min_health_perc" {
   description = "Deployment minimum healthy percentage"
-  type        = string
+  type        = number
   nullable    = false
 }
 
 variable "ecs_svc_max_health_perc" {
   description = "Deployment maximum healthy percentage"
-  type        = string
+  type        = number
   nullable    = false
 }

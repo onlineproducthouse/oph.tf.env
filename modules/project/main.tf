@@ -52,11 +52,11 @@ module "batch" {
   ecs_svc_max_health_perc     = each.value.ecs_svc_max_health_perc
 }
 
-module "www" {
-  source = "./www"
+module "web" {
+  source = "./web"
 
   for_each = {
-    for i, v in var.www : v.name => v
+    for i, v in var.web : v.name => v
   }
 
   hosted_zone_id = each.value.hosted_zone_id

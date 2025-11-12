@@ -50,14 +50,6 @@ variable "platform" {
       from_port   = number
       to_port     = number
     }))
-
-    fs_cors_config_rule = list(object({
-      allowed_headers = list(string)
-      allowed_methods = list(string)
-      allowed_origins = list(string)
-      expose_headers  = list(string)
-      max_age_seconds = number
-    }))
   }))
 }
 
@@ -68,7 +60,7 @@ variable "project" {
   default = {
     api   = []
     batch = []
-    www   = []
+    web   = []
   }
 
   type = object({
@@ -85,8 +77,6 @@ variable "project" {
 
       alb_health_check_path = string
 
-      cluster_role_arn = string
-
       task_network_mode = string
       task_launch_type  = string
       task_cpu          = string
@@ -100,24 +90,24 @@ variable "project" {
 
     batch = list(object({
       name          = string
+      network_name  = string
       platform_name = string
 
-      region                      = string
-      asg_name                    = string
-      cluster_id                  = string
-      cluster_role_arn            = string
-      task_network_mode           = string
-      task_launch_type            = string
-      task_cpu                    = string
-      task_memory                 = string
-      task_image                  = string
-      cw_log_group                = string
-      ecs_svc_desired_tasks_count = string
-      ecs_svc_min_health_perc     = string
-      ecs_svc_max_health_perc     = string
+      region = string
+
+      task_network_mode = string
+      task_launch_type  = string
+      task_cpu          = string
+      task_memory       = string
+      task_image        = string
+
+      ecs_svc_desired_tasks_count = number
+      ecs_svc_min_health_perc     = number
+      ecs_svc_max_health_perc     = number
     }))
 
-    www = list(object({
+    web = list(object({
+      name           = string
       hosted_zone_id = string
       domain_name    = string
       index_page     = string

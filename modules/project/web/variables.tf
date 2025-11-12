@@ -1,11 +1,11 @@
 variable "hosted_zone_id" {
-  description = "The Route53 DNS for the WWW"
+  description = "The Route53 DNS for web project"
   type        = string
   nullable    = false
 }
 
 variable "domain_name" {
-  description = "The WWW domain name"
+  description = "The web project domain name"
   type        = string
   nullable    = false
 }

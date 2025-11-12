@@ -8,6 +8,16 @@ output "subnet_private_id" {
   value       = aws_subnet.subnet_private.*.id
 }
 
+output "subnet_private_cidr_block" {
+  description = "List of private AWS Subnet CIDR blocks"
+  value       = aws_subnet.subnet_private.*.cidr_block
+}
+
+output "subnet_public_cidr_block" {
+  description = "List of public AWS Subnet CIDR blocks"
+  value       = aws_subnet.subnet_public.*.cidr_block
+}
+
 output "alb_arn" {
   description = "ARN of the load balancer"
   value       = local.switchboard.alb ? aws_lb.alb[0].arn : ""
