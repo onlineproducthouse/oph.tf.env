@@ -13,7 +13,7 @@ extends:
   template: pipeline.yml@templates
   parameters:
     projectName: oph.tf.env
+    buildProjectType: cloud
 
     build:
-      projectType: cloud
       tfChildDir: ./module
