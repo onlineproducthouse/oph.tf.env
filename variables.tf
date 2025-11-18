@@ -77,15 +77,13 @@ variable "project" {
 
       alb_health_check_path = string
 
-      task_network_mode = string
-      task_launch_type  = string
-      task_cpu          = string
-      task_memory       = string
-      task_image        = string
+      task_cpu    = number
+      task_memory = number
+      task_image  = string
 
-      ecs_svc_desired_tasks_count = string
-      ecs_svc_min_health_perc     = string
-      ecs_svc_max_health_perc     = string
+      ecs_svc_desired_tasks_count = number
+      ecs_svc_min_health_perc     = number
+      ecs_svc_max_health_perc     = number
     }))
 
     batch = list(object({
@@ -95,11 +93,9 @@ variable "project" {
 
       region = string
 
-      task_network_mode = string
-      task_launch_type  = string
-      task_cpu          = string
-      task_memory       = string
-      task_image        = string
+      task_cpu    = number
+      task_memory = number
+      task_image  = string
 
       ecs_svc_desired_tasks_count = number
       ecs_svc_min_health_perc     = number

@@ -11,6 +11,7 @@ module "api" {
   hosted_zone_id              = each.value.hosted_zone_id
   port                        = each.value.port
   domain_name                 = each.value.domain_name
+  alb_available               = each.value.alb_available
   alb_arn                     = each.value.alb_arn
   alb_hosted_zone_id          = each.value.alb_hosted_zone_id
   alb_dns_name                = each.value.alb_dns_name
@@ -18,8 +19,6 @@ module "api" {
   asg_name                    = each.value.asg_name
   cluster_id                  = each.value.cluster_id
   cluster_role_arn            = each.value.cluster_role_arn
-  task_network_mode           = each.value.task_network_mode
-  task_launch_type            = each.value.task_launch_type
   task_cpu                    = each.value.task_cpu
   task_memory                 = each.value.task_memory
   task_image                  = each.value.task_image
@@ -41,8 +40,6 @@ module "batch" {
   asg_name                    = each.value.asg_name
   cluster_id                  = each.value.cluster_id
   cluster_role_arn            = each.value.cluster_role_arn
-  task_network_mode           = each.value.task_network_mode
-  task_launch_type            = each.value.task_launch_type
   task_cpu                    = each.value.task_cpu
   task_memory                 = each.value.task_memory
   task_image                  = each.value.task_image

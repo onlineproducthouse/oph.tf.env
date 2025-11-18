@@ -24,7 +24,7 @@ variable "sb_alb" {
 
 locals {
   switchboard = {
-    eip = var.sb_eip || var.sb_nat_gateway ? var.subnet_cidr_block_public : []
+    eip = var.sb_eip || var.sb_nat_gateway
     alb = var.sb_alb
   }
 }
