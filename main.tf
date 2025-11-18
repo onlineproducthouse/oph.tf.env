@@ -150,52 +150,11 @@ resource "aws_ssm_parameter" "parameters" {
 }
 
 locals {
+  fs_s3_bucket_name = var.config.fs_platform_name == "" ? "" : module.platform[var.config.fs_platform_name].fs_s3_bucket_name
+
   config = {
     variables = concat(var.config.variables, [
-      { key : "FS_S3_BUCKET_NAME", value : "" },
-
-      # { key : "ENVIRONMENT_NAME", value : "" }, # get from root module
-
-      # { key : "RUN_SWAGGER", value : "" }, # get from root module
-
-      # { key : "DB_CONNECTION_STRING", value : "" }, # get from root module
-      # { key : "DB_PROTOCOL", value : "" },          # get from root module
-      # { key : "DB_USERNAME", value : "" },          # get from root module
-      # { key : "DB_PASSWORD", value : "" },          # get from root module
-      # { key : "DB_HOST", value : "" },              # get from root module
-      # { key : "DB_PORT", value : "" },              # get from root module
-      # { key : "DB_NAME", value : "" },              # get from root module
-
-      # { key : "REDIS_CONNECTION_STRING", value : "" }, # get from root module
-      # { key : "REDIS_HOST", value : "" },              # get from root module
-      # { key : "REDIS_PORT", value : "" },              # get from root module
-      # { key : "REDIS_PWD", value : "" },               # get from root module
-
-      # { key : "SG_API_KEY", value : "" }, # get from root module
-
-      # { key : "PAYSTACK_PUBLIC_KEY", value : "" }, # get from root module
-      # { key : "PAYSTACK_SECRET_KEY", value : "" }, # get from root module
-
-      # { key : "API_PROTOCOL", value : "" }, # get from root module
-      # { key : "API_HOST", value : "" },     # get from root module
-      # { key : "API_PORT", value : "" },     # get from root module
-      # { key : "API_KEYS", value : "" },     # get from root module
-
-      # { key : "WWW_APP_URL", value : "" },          # get from root module
-      # { key : "PORTAL_APP_URL", value : "" },       # get from root module
-      # { key : "CONSOLE_APP_URL", value : "" },      # get from root module
-      # { key : "REGISTRATION_APP_URL", value : "" }, # get from root module
-
-      # { key : "VITE_APP_CLIENT_API_KEY", value : "" },         # get from root module
-      # { key : "VITE_APP_CLIENT_API_PROTOCOL", value : "" },    # get from root module
-      # { key : "VITE_APP_CLIENT_WS_API_PROTOCOL", value : "" }, # get from root module
-      # { key : "VITE_APP_CLIENT_API_HOST", value : "" },        # get from root module
-      # { key : "VITE_APP_CLIENT_API_PORT", value : "" },        # get from root module
-      # { key : "VITE_APP_CLIENT_API_BASE_PATH", value : "" },   # get from root module
-
-      # { key : "VITE_APP_WEB_APP_PORTAL_URL", value : "" },       # get from root module
-      # { key : "VITE_APP_WEB_APP_REGISTRATION_URL", value : "" }, # get from root module
-      # { key : "VITE_APP_WEB_APP_CONSOLE_URL", value : "" },      # get from root module
+      { key : "FS_S3_BUCKET_NAME", value : local.fs_s3_bucket_name },
     ])
   }
 }

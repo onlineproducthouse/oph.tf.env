@@ -2,12 +2,14 @@ variable "config" {
   description = "List of configuration variables to add to AWS SSM Parameter Store"
 
   default = {
-    ssm_param_path = ""
-    variables      = []
+    ssm_param_path   = ""
+    fs_platform_name = ""
+    variables        = []
   }
 
   type = object({
-    ssm_param_path = string
+    ssm_param_path   = string
+    fs_platform_name = string
 
     variables = list(object({
       key   = string
