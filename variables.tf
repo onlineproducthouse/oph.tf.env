@@ -1,3 +1,21 @@
+variable "config" {
+  description = "List of configuration variables to add to AWS SSM Parameter Store"
+
+  default = {
+    ssm_param_path = ""
+    variables      = []
+  }
+
+  type = object({
+    ssm_param_path = string
+
+    variables = list(object({
+      key   = string
+      value = string
+    }))
+  })
+}
+
 variable "network" {
   description = ""
   default     = []
