@@ -13,3 +13,7 @@ output "cluster_role_arn" {
 output "cw_log_group" {
   value = aws_cloudwatch_log_group.lg.name
 }
+
+output "fs_s3_bucket_name" {
+  value = aws_s3_bucket.bucket.id
+}
