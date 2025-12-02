@@ -10,6 +10,7 @@ variable "api" {
     hosted_zone_id              = string
     port                        = number
     domain_name                 = string
+    alb_available               = string
     alb_arn                     = string
     alb_hosted_zone_id          = string
     alb_dns_name                = string
@@ -17,8 +18,6 @@ variable "api" {
     asg_name                    = string
     cluster_id                  = string
     cluster_role_arn            = string
-    task_network_mode           = string
-    task_launch_type            = string
     task_cpu                    = number
     task_memory                 = number
     task_image                  = string
@@ -40,8 +39,6 @@ variable "batch" {
     asg_name                    = string
     cluster_id                  = string
     cluster_role_arn            = string
-    task_network_mode           = string
-    task_launch_type            = string
     task_cpu                    = number
     task_memory                 = number
     task_image                  = string

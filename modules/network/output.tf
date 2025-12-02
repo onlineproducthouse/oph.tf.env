@@ -18,6 +18,11 @@ output "subnet_public_cidr_block" {
   value       = aws_subnet.subnet_public.*.cidr_block
 }
 
+output "alb_available" {
+  description = "Indicator whether the consuming module can expect an ALB to have been provisioned"
+  value       = local.switchboard.alb
+}
+
 output "alb_arn" {
   description = "ARN of the load balancer"
   value       = local.switchboard.alb ? aws_lb.alb[0].arn : ""

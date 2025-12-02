@@ -34,6 +34,12 @@ variable "domain_name" {
   nullable    = false
 }
 
+variable "alb_available" {
+  description = "Indicator whether the module can expect an ALB to have been provisioned"
+  type        = bool
+  # default     = false
+}
+
 variable "alb_arn" {
   description = "ARN for application load balancer"
   type        = string
@@ -76,18 +82,6 @@ variable "cluster_id" {
 
 variable "cluster_role_arn" {
   description = "AWS IAM Role ARN for ECS cluster"
-  type        = string
-  nullable    = false
-}
-
-variable "task_network_mode" {
-  description = "Network mode"
-  type        = string
-  nullable    = false
-}
-
-variable "task_launch_type" {
-  description = "Launch type"
   type        = string
   nullable    = false
 }
