@@ -123,28 +123,28 @@ resource "aws_iam_role" "role" {
     Version : "2012-10-17",
     Statement : [
       {
+        Sid : "OPHEC2AssumedRole",
         Action : "sts:AssumeRole",
+        Effect : "Allow",
         Principal : {
           Service : "ec2.amazonaws.com"
-        },
-        Effect : "Allow",
-        Sid : "OPHEC2AssumedRole"
+        }
       },
       {
+        Sid : "OPHECSTASKAssumedRole",
         Action : "sts:AssumeRole",
+        Effect : "Allow",
         Principal : {
           Service : "ecs-tasks.amazonaws.com"
-        },
-        Effect : "Allow",
-        Sid : "OPHECSTASKAssumedRole"
+        }
       },
       {
+        Sid : "OPHECSAssumedRole",
         Action : "sts:AssumeRole",
+        Effect : "Allow",
         Principal : {
           Service : "ecs.amazonaws.com"
-        },
-        Effect : "Allow",
-        Sid : "OPHECSAssumedRole"
+        }
       }
     ]
   })
