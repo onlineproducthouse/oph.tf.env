@@ -29,18 +29,6 @@ variable "cluster_role_arn" {
   nullable    = false
 }
 
-variable "task_network_mode" {
-  description = "Network mode"
-  type        = string
-  nullable    = false
-}
-
-variable "task_launch_type" {
-  description = "Launch type"
-  type        = string
-  nullable    = false
-}
-
 variable "task_cpu" {
   description = "CPU"
   type        = number

@@ -31,7 +31,7 @@ resource "aws_acm_certificate_validation" "acm_cert_validation" {
 }
 
 resource "aws_route53_record" "domain_name" {
-  count = var.alb_arn == "" ? 0 : 1
+  count = var.alb_available ? 1 : 0
 
   zone_id = var.hosted_zone_id
   name    = aws_acm_certificate.acm.domain_name
@@ -49,7 +49,7 @@ resource "aws_route53_record" "domain_name" {
 #region Load Balancer
 
 resource "aws_lb_target_group" "alb_tg" {
-  name        = "${aws_acm_certificate.acm.domain_name}:${var.port}"
+  name        = var.name
   target_type = "instance"
   vpc_id      = var.vpc_id
 
@@ -72,7 +72,7 @@ resource "aws_lb_target_group" "alb_tg" {
 }
 
 resource "aws_lb_listener" "api" {
-  count = var.alb_arn == "" ? 0 : 1
+  count = var.alb_available ? 1 : 0
 
   load_balancer_arn = var.alb_arn
 
@@ -103,8 +103,8 @@ resource "aws_ecs_task_definition" "task" {
   family                   = var.name
   task_role_arn            = var.cluster_role_arn
   execution_role_arn       = var.cluster_role_arn
-  network_mode             = var.task_network_mode
-  requires_compatibilities = [var.task_launch_type]
+  network_mode             = "host"
+  requires_compatibilities = ["EC2"]
   cpu                      = var.task_cpu
   memory                   = var.task_memory
 

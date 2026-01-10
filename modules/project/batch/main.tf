@@ -2,8 +2,8 @@ resource "aws_ecs_task_definition" "task" {
   family                   = var.name
   task_role_arn            = var.cluster_role_arn
   execution_role_arn       = var.cluster_role_arn
-  network_mode             = var.task_network_mode
-  requires_compatibilities = [var.task_launch_type]
+  network_mode             = "host"
+  requires_compatibilities = ["EC2"]
   cpu                      = var.task_cpu
   memory                   = var.task_memory
 

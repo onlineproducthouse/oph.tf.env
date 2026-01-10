@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "6.17.0"
+      version = "6.23.0"
     }
   }
 }
@@ -86,17 +86,16 @@ module "project" {
       port                  = v.port
       alb_health_check_path = v.alb_health_check_path
 
-      task_network_mode = v.task_network_mode
-      task_launch_type  = v.task_launch_type
-      task_cpu          = v.task_cpu
-      task_memory       = v.task_memory
-      task_image        = v.task_image
+      task_cpu    = v.task_cpu
+      task_memory = v.task_memory
+      task_image  = v.task_image
 
       ecs_svc_desired_tasks_count = v.ecs_svc_desired_tasks_count
       ecs_svc_min_health_perc     = v.ecs_svc_min_health_perc
       ecs_svc_max_health_perc     = v.ecs_svc_max_health_perc
 
       vpc_id             = module.network[v.network_name].vpc_id
+      alb_available      = module.network[v.network_name].alb_available
       alb_arn            = module.network[v.network_name].alb_arn
       alb_hosted_zone_id = module.network[v.network_name].alb_hosted_zone_id
       alb_dns_name       = module.network[v.network_name].alb_dns_name
@@ -114,11 +113,9 @@ module "project" {
 
       region = v.region
 
-      task_network_mode = v.task_network_mode
-      task_launch_type  = v.task_launch_type
-      task_cpu          = v.task_cpu
-      task_memory       = v.task_memory
-      task_image        = v.task_image
+      task_cpu    = v.task_cpu
+      task_memory = v.task_memory
+      task_image  = v.task_image
 
       ecs_svc_desired_tasks_count = v.ecs_svc_desired_tasks_count
       ecs_svc_min_health_perc     = v.ecs_svc_min_health_perc
@@ -140,4 +137,24 @@ module "project" {
       error_page     = v.error_page
     }
   ]
+}
+
+resource "aws_ssm_parameter" "parameters" {
+  for_each = {
+    for v in local.config.variables : v.key => v
+  }
+
+  type  = "SecureString"
+  name  = "${var.config.ssm_param_path}/${each.value.key}"
+  value = each.value.value
+}
+
+locals {
+  fs_s3_bucket_name = var.config.fs_platform_name == "" ? "" : module.platform[var.config.fs_platform_name].fs_s3_bucket_name
+
+  config = {
+    variables = concat(var.config.variables, [
+      { key : "FS_S3_BUCKET_NAME", value : local.fs_s3_bucket_name },
+    ])
+  }
 }
