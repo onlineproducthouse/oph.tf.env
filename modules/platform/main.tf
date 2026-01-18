@@ -236,10 +236,10 @@ resource "aws_security_group" "sg" {
 
 resource "aws_security_group_rule" "sg_rule" {
   for_each = {
-    for index, rule in var.cluster_sg_rule : rule.name => rule
+    for index, rule in local.switchboard.compute ? [] : var.cluster_sg_rule : rule.name => rule
   }
 
-  security_group_id = local.switchboard.compute ? aws_security_group.sg[0].id : ""
+  security_group_id = aws_security_group.sg[0].id
 
   type        = each.value.type
   protocol    = each.value.protocol
