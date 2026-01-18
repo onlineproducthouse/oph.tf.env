@@ -57,6 +57,7 @@ locals {
           asg_desired           = 0
 
           cluster_sg_rule = []
+          fs_cors_origins = ["localhost:3000"]
 
           sb_cloudwatch = false
           sb_iam        = false
@@ -112,6 +113,8 @@ locals {
           asg_max               = 3
           asg_desired           = 2
 
+          fs_cors_origins = ["localhost:3000"]
+
           cluster_sg_rule = [
             {
               name        = "public",
@@ -144,6 +147,8 @@ locals {
           asg_min               = 1
           asg_max               = 1
           asg_desired           = 1
+
+          fs_cors_origins = ["localhost:3000"]
 
           cluster_sg_rule = [
             {

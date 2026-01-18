@@ -57,7 +57,7 @@ module "platform" {
   fs_cors_config_rule = [
     {
       allowed_methods = ["PUT", "POST"]
-      allowed_origins = compact([for i, v in var.project.api : v.platform_name == each.value.name ? v.domain_name : null])
+      allowed_origins = each.value.fs_cors_origins
 
       allowed_headers = ["*"]
       expose_headers  = ["ETag"]

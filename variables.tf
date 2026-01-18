@@ -62,6 +62,8 @@ variable "platform" {
     asg_max     = number
     asg_desired = number
 
+    fs_cors_origins = list(string)
+
     cluster_sg_rule = list(object({
       name        = string
       type        = string
