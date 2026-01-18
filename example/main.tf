@@ -35,57 +35,34 @@ locals {
       name = "local"
 
       config = {
-        fs_platform_name = ""
-        ssm_param_path   = local.ssm_param_path
+        fs_platform_name = "app-local"
+        ssm_param_path   = "${local.ssm_param_path}/local"
 
         variables = [
           { key : "ENVIRONMENT_NAME", value : "local" },
-
-          # { key : "RUN_SWAGGER", value : "" }, # get from root module
-
-          # { key : "DB_CONNECTION_STRING", value : "" }, # get from root module
-          # { key : "DB_PROTOCOL", value : "" },          # get from root module
-          # { key : "DB_USERNAME", value : "" },          # get from root module
-          # { key : "DB_PASSWORD", value : "" },          # get from root module
-          # { key : "DB_HOST", value : "" },              # get from root module
-          # { key : "DB_PORT", value : "" },              # get from root module
-          # { key : "DB_NAME", value : "" },              # get from root module
-
-          # { key : "REDIS_CONNECTION_STRING", value : "" }, # get from root module
-          # { key : "REDIS_HOST", value : "" },              # get from root module
-          # { key : "REDIS_PORT", value : "" },              # get from root module
-          # { key : "REDIS_PWD", value : "" },               # get from root module
-
-          # { key : "SG_API_KEY", value : "" }, # get from root module
-
-          # { key : "PAYSTACK_PUBLIC_KEY", value : "" }, # get from root module
-          # { key : "PAYSTACK_SECRET_KEY", value : "" }, # get from root module
-
-          # { key : "API_PROTOCOL", value : "" }, # get from root module
-          # { key : "API_HOST", value : "" },     # get from root module
-          # { key : "API_PORT", value : "" },     # get from root module
-          # { key : "API_KEYS", value : "" },     # get from root module
-
-          # { key : "WWW_APP_URL", value : "" },          # get from root module
-          # { key : "PORTAL_APP_URL", value : "" },       # get from root module
-          # { key : "CONSOLE_APP_URL", value : "" },      # get from root module
-          # { key : "REGISTRATION_APP_URL", value : "" }, # get from root module
-
-          # { key : "VITE_APP_CLIENT_API_KEY", value : "" },         # get from root module
-          # { key : "VITE_APP_CLIENT_API_PROTOCOL", value : "" },    # get from root module
-          # { key : "VITE_APP_CLIENT_WS_API_PROTOCOL", value : "" }, # get from root module
-          # { key : "VITE_APP_CLIENT_API_HOST", value : "" },        # get from root module
-          # { key : "VITE_APP_CLIENT_API_PORT", value : "" },        # get from root module
-          # { key : "VITE_APP_CLIENT_API_BASE_PATH", value : "" },   # get from root module
-
-          # { key : "VITE_APP_WEB_APP_PORTAL_URL", value : "" },       # get from root module
-          # { key : "VITE_APP_WEB_APP_REGISTRATION_URL", value : "" }, # get from root module
-          # { key : "VITE_APP_WEB_APP_CONSOLE_URL", value : "" },      # get from root module
         ]
       }
 
-      network  = []
-      platform = []
+      network = []
+
+      platform = [
+        {
+          name                  = "app-local"
+          network_name          = ""
+          cw_log_retention_days = 1
+          ec2_image_id          = ""
+          ec2_instance_type     = ""
+          asg_min               = 0
+          asg_max               = 0
+          asg_desired           = 0
+
+          cluster_sg_rule = []
+
+          sb_cloudwatch = false
+          sb_iam        = false
+          sb_compute    = false
+        },
+      ]
 
       project = {
         api   = []
@@ -153,6 +130,10 @@ locals {
               to_port     = 3000,
             },
           ]
+
+          sb_cloudwatch = true
+          sb_iam        = true
+          sb_compute    = true
         },
         {
           name                  = "batch"
@@ -174,6 +155,10 @@ locals {
               to_port     = 0,
             },
           ]
+
+          sb_cloudwatch = true
+          sb_iam        = true
+          sb_compute    = true
         },
       ]
 

@@ -70,6 +70,10 @@ variable "platform" {
       from_port   = number
       to_port     = number
     }))
+
+    sb_cloudwatch = bool
+    sb_iam        = bool
+    sb_compute    = bool
   }))
 }
 

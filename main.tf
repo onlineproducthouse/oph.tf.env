@@ -40,8 +40,8 @@ module "platform" {
 
   name = each.value.name
 
-  vpc_id    = module.network[each.value.network_name].vpc_id
-  subnet_id = module.network[each.value.network_name].subnet_private_id
+  vpc_id    = each.value.network_name == "" ? "" : module.network[each.value.network_name].vpc_id
+  subnet_id = each.value.network_name == "" ? [] : module.network[each.value.network_name].subnet_private_id
 
   cw_log_retention_days = each.value.cw_log_retention_days
 
@@ -72,6 +72,10 @@ module "platform" {
       max_age_seconds = null
     },
   ]
+
+  sb_cloudwatch = each.value.sb_cloudwatch
+  sb_iam        = each.value.sb_iam
+  sb_compute    = each.value.sb_compute
 }
 
 module "project" {

@@ -1,4 +1,5 @@
 resource "aws_cloudwatch_log_group" "lg" {
+  count             = local.switchboard.cw ? 1 : 0
   name              = var.name
   retention_in_days = var.cw_log_retention_days
 }
@@ -6,6 +7,7 @@ resource "aws_cloudwatch_log_group" "lg" {
 #region IAM
 
 resource "aws_iam_policy" "policy" {
+  count       = local.switchboard.iam ? 1 : 0
   name        = var.name
   path        = "/system/"
   description = "${var.name} policy for launch template"
@@ -113,6 +115,7 @@ resource "aws_iam_policy" "policy" {
 }
 
 resource "aws_iam_role" "role" {
+  count                = length(aws_iam_policy.policy)
   name                 = var.name
   path                 = "/system/"
   permissions_boundary = ""
@@ -151,18 +154,21 @@ resource "aws_iam_role" "role" {
 }
 
 resource "aws_iam_instance_profile" "profile" {
-  name = "${var.name}-ecs"
-  path = "/system/"
-  role = aws_iam_role.role.name
+  count = length(aws_iam_policy.policy)
+  name  = "${var.name}-ecs"
+  path  = "/system/"
+  role  = aws_iam_role.role[count.index].name
 }
 
 resource "aws_iam_role_policy_attachment" "policy_att" {
-  role       = aws_iam_role.role.name
-  policy_arn = aws_iam_policy.policy.arn
+  count      = length(aws_iam_policy.policy)
+  role       = aws_iam_role.role[count.index].name
+  policy_arn = aws_iam_policy.policy[count.index].arn
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_policy_att" {
-  role       = aws_iam_role.role.name
+  count      = length(aws_iam_policy.policy)
+  role       = aws_iam_role.role[count.index].name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
@@ -210,7 +216,8 @@ resource "aws_s3_bucket_cors_configuration" "cors_config" {
 #region Compute
 
 resource "aws_ecs_cluster" "cluster" {
-  name = var.name
+  count = local.switchboard.compute ? 1 : 0
+  name  = var.name
   setting {
     name  = "containerInsights"
     value = "disabled"
@@ -218,7 +225,8 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_security_group" "sg" {
-  name   = "${aws_ecs_cluster.cluster.name}-cluster"
+  count  = length(aws_ecs_cluster.cluster)
+  name   = "${aws_ecs_cluster.cluster[count.index].name}-cluster"
   vpc_id = var.vpc_id
 
   lifecycle {
@@ -231,7 +239,7 @@ resource "aws_security_group_rule" "sg_rule" {
     for index, rule in var.cluster_sg_rule : rule.name => rule
   }
 
-  security_group_id = aws_security_group.sg.id
+  security_group_id = length(aws_security_group.sg) > 0 ? aws_security_group.sg[0].id : ""
 
   type        = each.value.type
   protocol    = each.value.protocol
@@ -241,27 +249,28 @@ resource "aws_security_group_rule" "sg_rule" {
 }
 
 resource "aws_launch_template" "lt" {
+  count       = length(aws_ecs_cluster.cluster)
   name_prefix = var.name
 
   image_id      = var.ec2_image_id
   instance_type = var.ec2_instance_type
 
-  vpc_security_group_ids = [aws_security_group.sg.id]
+  vpc_security_group_ids = [aws_security_group.sg[count.index].id]
 
   iam_instance_profile {
-    arn = aws_iam_instance_profile.profile.arn
+    arn = aws_iam_instance_profile.profile[count.index].arn
   }
 
   user_data = base64encode(templatefile("${path.module}/content/user_data.sh", {
-    ecs_cluster_name   = aws_ecs_cluster.cluster.name
+    ecs_cluster_name   = aws_ecs_cluster.cluster[count.index].name
     ecs_log_driver     = "[\"awslogs\"]"
-    logs_group         = aws_cloudwatch_log_group.lg.name
+    logs_group         = aws_cloudwatch_log_group.lg[count.index].name
     logs_stream_prefix = "ecs"
   }))
 }
 
 resource "aws_autoscaling_group" "asg" {
-  count = var.asg_desired > 0 ? 1 : 0
+  count = length(aws_ecs_cluster.cluster)
 
   name = var.name
 
@@ -273,7 +282,7 @@ resource "aws_autoscaling_group" "asg" {
   desired_capacity          = var.asg_desired
 
   launch_template {
-    id      = aws_launch_template.lt.id
+    id      = aws_launch_template.lt[count.index].id
     version = "$Latest"
   }
 
@@ -284,12 +293,12 @@ resource "aws_autoscaling_group" "asg" {
 }
 
 resource "aws_ecs_capacity_provider" "ecs_cap_provider" {
-  count = length(aws_autoscaling_group.asg) > 0 ? 1 : 0
+  count = length(aws_autoscaling_group.asg)
 
-  name = aws_autoscaling_group.asg[0].name
+  name = aws_autoscaling_group.asg[count.index].name
 
   auto_scaling_group_provider {
-    auto_scaling_group_arn         = aws_autoscaling_group.asg[0].arn
+    auto_scaling_group_arn         = aws_autoscaling_group.asg[count.index].arn
     managed_termination_protection = "DISABLED"
 
     managed_scaling {
@@ -302,15 +311,15 @@ resource "aws_ecs_capacity_provider" "ecs_cap_provider" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "cluster_cap_provider" {
-  count = length(aws_autoscaling_group.asg) > 0 ? 1 : 0
+  count = length(aws_autoscaling_group.asg)
 
-  cluster_name       = aws_ecs_cluster.cluster.name
-  capacity_providers = [aws_autoscaling_group.asg[0].name]
+  cluster_name       = aws_ecs_cluster.cluster[count.index].name
+  capacity_providers = [aws_autoscaling_group.asg[count.index].name]
 
   default_capacity_provider_strategy {
     base              = 1
     weight            = 100
-    capacity_provider = aws_autoscaling_group.asg[0].name
+    capacity_provider = aws_autoscaling_group.asg[count.index].name
   }
 }
 
