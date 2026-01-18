@@ -141,20 +141,18 @@ module "project" {
 
 resource "aws_ssm_parameter" "parameters" {
   for_each = {
-    for v in local.config.variables : v.key => v
+    for v in local.config.variables : v.key => v.value
   }
 
   type  = "SecureString"
-  name  = "${var.config.ssm_param_path}/${each.value.key}"
-  value = each.value.value
+  name  = "${var.config.ssm_param_path}/${each.key}"
+  value = each.value
 }
 
 locals {
-  fs_s3_bucket_name = var.config.fs_platform_name == "" ? "" : module.platform[var.config.fs_platform_name].fs_s3_bucket_name
-
   config = {
-    variables = concat(var.config.variables, [
-      { key : "FS_S3_BUCKET_NAME", value : local.fs_s3_bucket_name },
+    variables = concat(var.config.variables, var.config.fs_platform_name == "" ? [] : [
+      { key : "FS_S3_BUCKET_NAME", value : module.platform[var.config.fs_platform_name].fs_s3_bucket_name },
     ])
   }
 }
