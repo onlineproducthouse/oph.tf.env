@@ -1,3 +1,9 @@
+variable "region" {
+  description = "AWS region to provision cloudfront in"
+  type        = string
+  nullable    = false
+}
+
 variable "hosted_zone_id" {
   description = "The Route53 DNS for web project"
   type        = string

@@ -56,6 +56,7 @@ module "web" {
     for i, v in var.web : v.name => v
   }
 
+  region         = "us-east-1"
   hosted_zone_id = each.value.hosted_zone_id
   domain_name    = each.value.domain_name
   index_page     = each.value.index_page

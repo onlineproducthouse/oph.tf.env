@@ -1,6 +1,7 @@
 #region URL
 
 resource "aws_acm_certificate" "acm" {
+  region            = var.region
   domain_name       = var.domain_name
   validation_method = "DNS"
 
