@@ -1,5 +1,5 @@
 output "asg_name" {
-  value = var.asg_desired > 0 ? aws_autoscaling_group.asg[0].name : ""
+  value = length(aws_autoscaling_group.asg) > 0 ? aws_autoscaling_group.asg[0].name : ""
 }
 
 output "cluster_id" {
