@@ -51,7 +51,7 @@ resource "aws_ecs_service" "service" {
   cluster                 = var.cluster_id
   scheduling_strategy     = "REPLICA"
   enable_ecs_managed_tags = true
-  iam_role                = var.cluster_role_arn
+  # iam_role                = var.cluster_role_arn
 
   task_definition                    = aws_ecs_task_definition.task.arn
   desired_count                      = var.ecs_svc_desired_tasks_count
