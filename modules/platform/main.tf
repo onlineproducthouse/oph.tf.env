@@ -16,7 +16,8 @@ resource "aws_iam_policy" "policy" {
     Version : "2012-10-17",
     Statement : [
       {
-        Sid = "Stmt1664390969881",
+        Effect   = "Allow",
+        Resource = "*",
         Action = [
           "elasticloadbalancing:AddListenerCertificates",
           "elasticloadbalancing:AddTags",
@@ -44,71 +45,128 @@ resource "aws_iam_policy" "policy" {
           "elasticloadbalancing:SetSubnets",
           "elasticloadbalancing:SetWebAcl"
         ],
-        Effect   = "Allow",
-        Resource = "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "s3:*"
+          "s3:DeleteObject",
+          "s3:DeleteObjectTagging",
+          "s3:DeleteObjectVersion",
+          "s3:Describe*",
+          "s3:GetObject",
+          "s3:GetObjectAttributes",
+          "s3:GetObjectTagging",
+          "s3:GetObjectVersion",
+          "s3:GetObjectVersionAttributes",
+          "s3:GetObjectVersionTagging",
+          "s3:ListAllMyBuckets",
+          "s3:ListBucket",
+          "s3:ListBucketVersions",
+          "s3:ListTagsForResource",
+          "s3:PutObject",
+          "s3:PutObjectTagging",
+          "s3:PutObjectVersionTagging",
+          "s3:TagResource",
+          "s3:UntagResource",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "ecr:*"
+          "ecr:BatchGetImage",
+          "ecr:Describe*",
+          "ecr:Get*",
+          "ecr:List*",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "ec2:*"
+          "ec2:AssociateAddress",
+          "ec2:AssociateIamInstanceProfile",
+          "ec2:AssociateNatGatewayAddress",
+          "ec2:AttachNetworkInterface",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:CreateCapacityReservation",
+          "ec2:Describe*",
+          "ec2:DetachNetworkInterface",
+          "ec2:DisassociateAddress",
+          "ec2:DisassociateIamInstanceProfile",
+          "ec2:DisassociateNatGatewayAddress",
+          "ec2:Get*",
+          "ec2:List*",
+          "ec2:ReleaseAddress",
+          "ec2:RevokeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "ecs:*"
+          "ecs:DeregisterContainerInstance",
+          "ecs:DeregisterTaskDefinition",
+          "ecs:Describe*",
+          "ecs:List*",
+          "ecs:PutClusterCapacityProviders",
+          "ecs:RegisterContainerInstance",
+          "ecs:RegisterTaskDefinition",
+          "ecs:RunTask",
+          "ecs:StartTask",
+          "ecs:StopTask",
+          "ecs:TagResource",
+          "ecs:UntagResource",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "iam:*"
+          "iam:AddRoleToInstanceProfile",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:Get*",
+          "iam:List*",
+          "iam:PassRole",
+          "iam:TagInstanceProfile",
+          "iam:TagPolicy",
+          "iam:TagRole",
+          "iam:Untag*",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "ssm:*"
+          "ssm:Describe*",
+          "ssm:Get*",
+          "ssm:List*",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "autoscaling:CreateOrUpdateTags"
+          "autoscaling:CreateOrUpdateTags",
+          "autoscaling:Describe*",
         ],
-        Resource : "*"
       },
       {
         Effect : "Allow",
+        Resource : "*",
         Action : [
-          "ses:*"
+          "logs:CreateDelivery",
+          "logs:CreateLogDelivery",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:Describe*",
+          "logs:Get*",
+          "logs:List*",
         ],
-        Resource : "*"
-      },
-      {
-        Effect : "Allow",
-        Action : [
-          "logs:*"
-        ],
-        Resource : "*"
       }
     ]
   })
