@@ -27,6 +27,7 @@ resource "aws_route53_record" "acm" {
 }
 
 resource "aws_acm_certificate_validation" "acm_cert_validation" {
+  region = var.region
   certificate_arn         = aws_acm_certificate.acm.arn
   validation_record_fqdns = [for item in aws_route53_record.acm : item.fqdn]
 }
