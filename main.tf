@@ -145,13 +145,13 @@ module "project" {
 
 resource "aws_ssm_parameter" "parameters" {
   for_each = {
-    for v in var.config.variables : v.key => {
+    for i, v in var.config.variables : "${v.key}_${i}" => {
       path  = v.value
       value = v.value
     }
   }
 
   type  = "SecureString"
-  name  = "${each.value.path}/${each.key}"
+  name  = "${each.value.path}/${each.value.key}"
   value = each.value.value
 }
