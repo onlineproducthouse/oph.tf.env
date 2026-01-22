@@ -16,8 +16,6 @@ module "env" {
 }
 
 locals {
-  ssm_param_path = "/path/to/params"
-
   root_domain = {
     example = "example.org"
   }
@@ -35,11 +33,8 @@ locals {
       name = "local"
 
       config = {
-        fs_platform_name = "app-local"
-        ssm_param_path   = "${local.ssm_param_path}/local"
-
         variables = [
-          { key : "ENVIRONMENT_NAME", value : "local" },
+          { path = "/path/to/ssm/parameter", key = "ENVIRONMENT_NAME", value = "local" },
         ]
       }
 
@@ -75,11 +70,8 @@ locals {
       name = "test"
 
       config = {
-        fs_platform_name = "app"
-        ssm_param_path   = local.ssm_param_path
-
         variables = [
-          { key : "ENVIRONMENT_NAME", value : "test" },
+          { path = "/path/to/ssm/parameter", key : "ENVIRONMENT_NAME", value : "test" },
         ]
       }
 
