@@ -57,12 +57,12 @@ resource "aws_s3_bucket_versioning" "host" {
   }
 }
 
-resource "aws_s3_bucket_ownership_controls" "host" {
-  bucket = aws_s3_bucket.host.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
+# resource "aws_s3_bucket_ownership_controls" "host" {
+#   bucket = aws_s3_bucket.host.id
+#   rule {
+#     object_ownership = "BucketOwnerPreferred"
+#   }
+# }
 
 resource "aws_s3_bucket_public_access_block" "host" {
   bucket = aws_s3_bucket.host.id
@@ -103,7 +103,6 @@ resource "aws_s3_bucket_policy" "host" {
     "Id" : "MYBUCKETPOLICY",
     "Statement" : [
       {
-        "Sid" : "AddPerm",
         "Effect" : "Allow",
         "Principal" : "*",
         "Action" : "s3:GetObject",
