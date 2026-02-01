@@ -6,6 +6,10 @@ output "cluster_id" {
   value = length(aws_ecs_cluster.cluster) > 0 ? aws_ecs_cluster.cluster[0].id : ""
 }
 
+output "cluster_name" {
+  value = length(aws_ecs_cluster.cluster) > 0 ? aws_ecs_cluster.cluster[0].name : ""
+}
+
 output "cluster_role_arn" {
   value = length(aws_iam_role.role) > 0 ? aws_iam_role.role[0].arn : ""
 }
