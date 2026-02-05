@@ -38,6 +38,11 @@ output "alb_hosted_zone_id" {
   value       = local.switchboard.alb ? aws_lb.alb[0].zone_id : ""
 }
 
+output "alb_security_group_id" {
+  description = "Network, ALB based, security group"
+  value       = aws_security_group.alb.id
+}
+
 # output "eip_id" {
 #   description = "List of AWS Elastic IP IDs"
 #   value       = aws_eip.eip.*.id
