@@ -156,10 +156,10 @@ resource "aws_lb_target_group" "alb_tg" {
   health_check {
     enabled = true
 
-    interval            = 30
+    interval            = 60
     timeout             = 5
     matcher             = 200
-    healthy_threshold   = 5
+    healthy_threshold   = 3
     unhealthy_threshold = 5
 
     protocol = "HTTP"
