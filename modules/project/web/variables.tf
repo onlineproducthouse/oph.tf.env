@@ -16,6 +16,12 @@ variable "domain_name" {
   nullable    = false
 }
 
+variable "acm_certificate_arn" {
+  description = "The web project domain name ACM certificate ARN"
+  type        = string
+  nullable    = false
+}
+
 variable "index_page" {
   description = "e.g. index.html"
   type        = string

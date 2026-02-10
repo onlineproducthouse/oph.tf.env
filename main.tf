@@ -19,12 +19,14 @@ module "network" {
   name              = each.value.name
   availability_zone = each.value.availability_zone
 
-  vpc_cidr_block = each.value.vpc_cidr_block
-
+  vpc_cidr_block            = each.value.vpc_cidr_block
   subnet_cidr_block_private = each.value.subnet_cidr_block_private
   subnet_cidr_block_public  = each.value.subnet_cidr_block_public
 
-  alb_sg_rule = each.value.alb_sg_rule
+  alb_domain_name_alias         = each.value.alb_domain_name_alias
+  alb_domain_name_alias_zone_id = each.value.alb_domain_name_alias_zone_id
+  alb_sg_rule                   = each.value.alb_sg_rule
+  alb_target_groups             = each.value.alb_target_groups
 
   sb_eip         = each.value.sb_eip
   sb_nat_gateway = each.value.sb_nat_gateway
@@ -38,12 +40,28 @@ module "platform" {
     for i, v in var.platform : v.name => v
   }
 
-  name = each.value.name
+  name = each.key
 
-  vpc_id    = each.value.network_name == "" ? "" : module.network[each.value.network_name].vpc_id
   subnet_id = each.value.network_name == "" ? [] : module.network[each.value.network_name].subnet_private_id
 
-  cw_log_retention_days = each.value.cw_log_retention_days
+  fs_cors_config_rule = [
+    {
+      id              = "write"
+      allowed_methods = ["PUT", "POST"]
+      allowed_origins = each.value.fs_cors_origins
+      allowed_headers = ["*"]
+      expose_headers  = ["ETag"]
+      max_age_seconds = 3000
+    },
+    {
+      id              = "read"
+      allowed_methods = ["GET"]
+      allowed_origins = ["*"]
+      allowed_headers = null
+      expose_headers  = null
+      max_age_seconds = null
+    },
+  ]
 
   ec2_image_id      = each.value.ec2_image_id
   ec2_instance_type = each.value.ec2_instance_type
@@ -52,30 +70,15 @@ module "platform" {
   asg_max     = each.value.asg_max
   asg_desired = each.value.asg_desired
 
-  cluster_sg_rule = each.value.cluster_sg_rule
+  log_group_name     = each.value.log_group_name
+  log_stream_prefix  = each.value.log_stream_prefix
+  log_retention_days = each.value.log_retention_days
 
-  fs_cors_config_rule = [
-    {
-      allowed_methods = ["PUT", "POST"]
-      allowed_origins = each.value.fs_cors_origins
+  alb_target_groups     = [for k, v in module.network[each.value.network_name].alb_target_groups : v.arn]
+  alb_security_group_id = module.network[each.value.network_name].alb_security_group_id
 
-      allowed_headers = ["*"]
-      expose_headers  = ["ETag"]
-      max_age_seconds = 3000
-    },
-    {
-      allowed_methods = ["GET"]
-      allowed_origins = ["*"]
-
-      allowed_headers = null
-      expose_headers  = null
-      max_age_seconds = null
-    },
-  ]
-
-  sb_cloudwatch = each.value.sb_cloudwatch
-  sb_iam        = each.value.sb_iam
-  sb_compute    = each.value.sb_compute
+  sb_compute = each.value.sb_compute
+  sb_storage = each.value.sb_storage
 }
 
 module "project" {
@@ -83,62 +86,61 @@ module "project" {
 
   api = [
     for i, v in var.project.api : {
-      name                  = v.name
-      region                = v.region
-      hosted_zone_id        = v.hosted_zone_id
-      domain_name           = v.domain_name
-      port                  = v.port
-      alb_health_check_path = v.alb_health_check_path
+      name   = v.name
+      region = v.region
+
+      port                 = v.port
+      domain_name          = v.domain_name
+      alb_target_group_arn = module.network[v.network_name].alb_target_groups[v.alb_target_group_id].arn
+      asg_name             = module.platform[v.platform_name].asg_name
+
+      cluster_id       = module.platform[v.platform_name].cluster_id
+      cluster_role_arn = module.platform[v.platform_name].cluster_role_arn
 
       task_cpu    = v.task_cpu
       task_memory = v.task_memory
       task_image  = v.task_image
 
+      log_group_name    = module.platform[v.platform_name].log_group_name
+      log_stream_prefix = module.platform[v.platform_name].log_stream_prefix
+
       ecs_svc_desired_tasks_count = v.ecs_svc_desired_tasks_count
       ecs_svc_min_health_perc     = v.ecs_svc_min_health_perc
       ecs_svc_max_health_perc     = v.ecs_svc_max_health_perc
-
-      vpc_id             = module.network[v.network_name].vpc_id
-      alb_available      = module.network[v.network_name].alb_available
-      alb_arn            = module.network[v.network_name].alb_arn
-      alb_hosted_zone_id = module.network[v.network_name].alb_hosted_zone_id
-      alb_dns_name       = module.network[v.network_name].alb_dns_name
-
-      asg_name         = module.platform[v.platform_name].asg_name
-      cluster_id       = module.platform[v.platform_name].cluster_id
-      cluster_role_arn = module.platform[v.platform_name].cluster_role_arn
-      cw_log_group     = module.platform[v.platform_name].cw_log_group
     }
   ]
 
   batch = [
     for i, v in var.project.batch : {
-      name = v.name
-
+      name   = v.name
       region = v.region
+
+      asg_name = module.platform[v.platform_name].asg_name
+
+      cluster_id       = module.platform[v.platform_name].cluster_id
+      cluster_role_arn = module.platform[v.platform_name].cluster_role_arn
 
       task_cpu    = v.task_cpu
       task_memory = v.task_memory
       task_image  = v.task_image
 
+      log_group_name    = module.platform[v.platform_name].log_group_name
+      log_stream_prefix = module.platform[v.platform_name].log_stream_prefix
+
       ecs_svc_desired_tasks_count = v.ecs_svc_desired_tasks_count
       ecs_svc_min_health_perc     = v.ecs_svc_min_health_perc
       ecs_svc_max_health_perc     = v.ecs_svc_max_health_perc
-
-      asg_name         = module.platform[v.platform_name].asg_name
-      cluster_id       = module.platform[v.platform_name].cluster_id
-      cluster_role_arn = module.platform[v.platform_name].cluster_role_arn
-      cw_log_group     = module.platform[v.platform_name].cw_log_group
     }
   ]
 
   web = [
     for i, v in var.project.web : {
-      name           = v.name
-      hosted_zone_id = v.hosted_zone_id
-      domain_name    = v.domain_name
-      index_page     = v.index_page
-      error_page     = v.error_page
+      name                = v.name
+      hosted_zone_id      = v.hosted_zone_id
+      acm_certificate_arn = v.acm_certificate_arn
+      domain_name         = v.domain_name
+      index_page          = v.index_page
+      error_page          = v.error_page
     }
   ]
 }

@@ -10,18 +10,6 @@ variable "region" {
   nullable    = false
 }
 
-variable "vpc_id" {
-  description = "VPC ID where the API project is provisioned"
-  type        = string
-  nullable    = false
-}
-
-variable "hosted_zone_id" {
-  description = "The Route53 DNS for the API"
-  type        = string
-  nullable    = false
-}
-
 variable "port" {
   description = "The port that will be exposed for API"
   type        = number
@@ -34,36 +22,10 @@ variable "domain_name" {
   nullable    = false
 }
 
-variable "alb_available" {
-  description = "Indicator whether the module can expect an ALB to have been provisioned"
-  type        = bool
-  # default     = false
-}
-
-variable "alb_arn" {
-  description = "ARN for application load balancer"
+variable "alb_target_group_arn" {
+  description = "ARN for application load balancer target group"
   type        = string
   default     = ""
-  nullable    = false
-}
-
-variable "alb_hosted_zone_id" {
-  description = "DNS for application load balancer"
-  type        = string
-  default     = ""
-  nullable    = false
-}
-
-variable "alb_dns_name" {
-  description = "dns name for application load balancer"
-  type        = string
-  default     = ""
-  nullable    = false
-}
-
-variable "alb_health_check_path" {
-  description = "Health check path for application load balancer"
-  type        = string
   nullable    = false
 }
 
@@ -104,9 +66,17 @@ variable "task_image" {
   nullable    = false
 }
 
-variable "cw_log_group" {
-  description = "AWS CloudWatch Log Group"
+variable "log_group_name" {
+  description = "AWS CloudWatch log group name"
   type        = string
+  default     = ""
+  nullable    = false
+}
+
+variable "log_stream_prefix" {
+  description = "AWS CloudWatch log stream prefix"
+  type        = string
+  default     = ""
   nullable    = false
 }
 

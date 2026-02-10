@@ -17,9 +17,9 @@ resource "aws_ecs_task_definition" "task" {
       "logConfiguration" : {
         "logDriver" : "awslogs",
         "options" : {
-          "awslogs-group" : "${var.cw_log_group}",
+          "awslogs-group" : "${var.log_group_name}",
           "awslogs-region" : "${var.region}",
-          "awslogs-stream-prefix" : "ecs"
+          "awslogs-stream-prefix" : "${var.log_stream_prefix}"
         }
       },
       "environment" : [
@@ -29,11 +29,11 @@ resource "aws_ecs_task_definition" "task" {
         },
         {
           "name" : "COMINGSOON_HOST",
-          "value" : "example.org"
+          "value" : "localhost"
         },
         {
           "name" : "COMINGSOON_PORT",
-          "value" : "80"
+          "value" : "8080"
         },
         {
           "name" : "COMINGSOON_FOR_PROJECT",
@@ -51,7 +51,8 @@ resource "aws_ecs_service" "service" {
   cluster                 = var.cluster_id
   scheduling_strategy     = "REPLICA"
   enable_ecs_managed_tags = true
-  # iam_role                = var.cluster_role_arn
+  iam_role                = var.cluster_role_arn
+  force_new_deployment    = true
 
   task_definition                    = aws_ecs_task_definition.task.arn
   desired_count                      = var.ecs_svc_desired_tasks_count

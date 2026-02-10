@@ -7,7 +7,7 @@ variable "config" {
 
   type = object({
     variables = list(object({
-      path   = string
+      path  = string
       key   = string
       value = string
     }))
@@ -20,11 +20,15 @@ variable "network" {
   nullable    = false
 
   type = list(object({
-    name                      = string
-    availability_zone         = list(string)
+    name              = string
+    availability_zone = list(string)
+
     vpc_cidr_block            = string
     subnet_cidr_block_private = list(string)
     subnet_cidr_block_public  = list(string)
+
+    alb_domain_name_alias         = string
+    alb_domain_name_alias_zone_id = string
 
     alb_sg_rule = list(object({
       name        = string
@@ -32,6 +36,15 @@ variable "network" {
       protocol    = string
       cidr_blocks = list(string)
       port        = number
+    }))
+
+    alb_target_groups = list(object({
+      id                    = string
+      name                  = string
+      domain_name           = string
+      port                  = number
+      acm_certificate_arn   = string
+      alb_health_check_path = string
     }))
 
     sb_eip         = bool
@@ -49,7 +62,7 @@ variable "platform" {
     name         = string
     network_name = string
 
-    cw_log_retention_days = number
+    fs_cors_origins = list(string)
 
     ec2_image_id      = string
     ec2_instance_type = string
@@ -58,20 +71,12 @@ variable "platform" {
     asg_max     = number
     asg_desired = number
 
-    fs_cors_origins = list(string)
+    log_group_name     = string
+    log_stream_prefix  = string
+    log_retention_days = number
 
-    cluster_sg_rule = list(object({
-      name        = string
-      type        = string
-      protocol    = string
-      cidr_blocks = list(string)
-      from_port   = number
-      to_port     = number
-    }))
-
-    sb_cloudwatch = bool
-    sb_iam        = bool
-    sb_compute    = bool
+    sb_compute = bool
+    sb_storage = bool
   }))
 }
 
@@ -87,17 +92,15 @@ variable "project" {
 
   type = object({
     api = list(object({
-      name          = string
       network_name  = string
       platform_name = string
 
-      region         = string
-      hosted_zone_id = string
+      name   = string
+      region = string
 
-      port        = number
-      domain_name = string
-
-      alb_health_check_path = string
+      port                = number
+      domain_name         = string
+      alb_target_group_id = string
 
       task_cpu    = number
       task_memory = number
@@ -109,10 +112,10 @@ variable "project" {
     }))
 
     batch = list(object({
-      name          = string
       network_name  = string
       platform_name = string
 
+      name   = string
       region = string
 
       task_cpu    = number
@@ -125,11 +128,12 @@ variable "project" {
     }))
 
     web = list(object({
-      name           = string
-      hosted_zone_id = string
-      domain_name    = string
-      index_page     = string
-      error_page     = string
+      name                = string
+      hosted_zone_id      = string
+      acm_certificate_arn = string
+      domain_name         = string
+      index_page          = string
+      error_page          = string
     }))
   })
 }

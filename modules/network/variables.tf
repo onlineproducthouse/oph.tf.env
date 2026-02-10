@@ -28,6 +28,18 @@ variable "subnet_cidr_block_public" {
   nullable    = false
 }
 
+variable "alb_domain_name_alias" {
+  description = "Alias DNS record for ALB"
+  type        = string
+  nullable    = false
+}
+
+variable "alb_domain_name_alias_zone_id" {
+  description = "Alias DNS record hosted zone id for ALB"
+  type        = string
+  nullable    = false
+}
+
 variable "alb_sg_rule" {
   description = "A list of AWS security group rules to create for the security group created"
   nullable    = false
@@ -38,5 +50,16 @@ variable "alb_sg_rule" {
     protocol    = string
     cidr_blocks = list(string)
     port        = number
+  }))
+}
+
+variable "alb_target_groups" {
+  type = list(object({
+    id                    = string
+    name                  = string
+    domain_name           = string
+    port                  = number
+    acm_certificate_arn   = string
+    alb_health_check_path = string
   }))
 }

@@ -47,9 +47,17 @@ variable "task_image" {
   nullable    = false
 }
 
-variable "cw_log_group" {
-  description = "AWS CloudWatch Log Group"
+variable "log_group_name" {
+  description = "AWS CloudWatch log group name"
   type        = string
+  default     = ""
+  nullable    = false
+}
+
+variable "log_stream_prefix" {
+  description = "AWS CloudWatch log stream prefix"
+  type        = string
+  default     = ""
   nullable    = false
 }
 

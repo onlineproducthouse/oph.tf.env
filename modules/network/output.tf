@@ -43,6 +43,15 @@ output "alb_security_group_id" {
   value       = aws_security_group.alb.id
 }
 
+output "alb_target_groups" {
+  value = {
+    for v in var.alb_target_groups : v.id => {
+      arn  = aws_lb_target_group.alb_tg[v.id].arn
+      name = aws_lb_target_group.alb_tg[v.id].name
+    }
+  }
+}
+
 # output "eip_id" {
 #   description = "List of AWS Elastic IP IDs"
 #   value       = aws_eip.eip.*.id

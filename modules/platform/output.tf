@@ -3,21 +3,25 @@ output "asg_name" {
 }
 
 output "cluster_id" {
-  value = length(aws_ecs_cluster.cluster) > 0 ? aws_ecs_cluster.cluster[0].id : ""
+  value = aws_ecs_cluster.cluster.id
 }
 
 output "cluster_name" {
-  value = length(aws_ecs_cluster.cluster) > 0 ? aws_ecs_cluster.cluster[0].name : ""
+  value = aws_ecs_cluster.cluster.name
 }
 
 output "cluster_role_arn" {
-  value = length(aws_iam_role.role) > 0 ? aws_iam_role.role[0].arn : ""
-}
-
-output "cw_log_group" {
-  value = length(aws_cloudwatch_log_group.lg) > 0 ? aws_cloudwatch_log_group.lg[0].name : ""
+  value = aws_iam_role.role.arn
 }
 
 output "fs_s3_bucket_name" {
-  value = aws_s3_bucket.bucket.id
+  value = length(aws_s3_bucket.bucket) > 0 ? aws_s3_bucket.bucket[0].id : ""
+}
+
+output "log_group_name" {
+  value = aws_cloudwatch_log_group.lg.name
+}
+
+output "log_stream_prefix" {
+  value = var.log_stream_prefix
 }
