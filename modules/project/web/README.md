@@ -2,6 +2,8 @@
 
 This module provisions infrastructure for hosting static website using AWS S3 for hosting, AWS CloudFront for distribution and ACM for an SSL certificate.
 
+![diagram](../../../assets/oph.tf.env.web.png)
+
 ## Resources
 
 The resources provisioned by this module are as follows:

@@ -4,6 +4,8 @@ This module is for provisioning network infrastructure required for running dock
 
 This module *does not* deal with docker or container specific networking, rather networking on AWS infrastructure to support container applications.
 
+![diagram](../../assets/oph.tf.env.network.png)
+
 ## Resources provisioned
 
 The resources provisioned by this module are as follows:

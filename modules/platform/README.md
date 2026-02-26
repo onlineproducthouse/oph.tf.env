@@ -1,10 +1,10 @@
 # OPH Environment Terraform Modules - Application Platform
 
+![diagram](../../assets/oph.tf.env.platform.png)
+
 ## Dependencies
 
-This module assumes the native network module, or something similar, is provisioned. From the network module, this module requires:
-- VPC ID
-- Private subnet IDs
+This module assumes the native network module is provisioned.
 
 ## Resources provisioned
 

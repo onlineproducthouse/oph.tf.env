@@ -2,21 +2,11 @@
 
 This module provisions infrastructure required for hosting an API
 
+![diagram](../../../assets/oph.tf.env.container.png)
+
 ## Dependencies
 
-This module assumes the native network and platform modules, or something similar, is provisioned.
-
-From the network module, this module requires:
-- VPC ID
-- ALB ARN
-- ALB Hosted Zone ID
-- ALB DNS Name
-
-From the platform module, this module requires:
-- ASG Name
-- Cluster ID
-- Cluster Role ARN
-- CloudWatch Log Group
+This module assumes the native network and platform modules are provisioned.
 
 ## Resources
 
