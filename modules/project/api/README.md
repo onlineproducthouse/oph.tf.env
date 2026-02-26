@@ -6,7 +6,7 @@ This module provisions infrastructure required for hosting an API
 
 ## Dependencies
 
-This module assumes the native network and platform modules are provisioned.
+This module assumes the [network](../../network/README.md) and [platform](../../platform/README.md) modules are provisioned.
 
 ## Resources
 

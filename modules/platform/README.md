@@ -4,7 +4,7 @@
 
 ## Dependencies
 
-This module assumes the native network module is provisioned.
+This module assumes the [network](../network/README.md) module is provisioned.
 
 ## Resources provisioned
 
@@ -18,3 +18,13 @@ The resources provisioned by this module are as follows:
 - AWS Security Group
 - AWS EC2 Launch Template
 - AWS Auto Scaling Group for AWS ECS Cluster
+
+## Switchboard
+
+Switchboard variables for the platform module are as follows:
+
+- sb_compute - Type: `bool`
+  Provisions compute resources for use in ECS.
+
+- sb_storage - Type: `bool`
+  Provisions an AWS S3 bucket for use by container applications.

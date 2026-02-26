@@ -23,11 +23,11 @@ The resources provisioned by this module are as follows:
 
 Switchboard variables for the network module are as follows:
 
-- sb_eip - Type: `bool`  
+- sb_eip - Type: `bool`
   Creates an Elastic IP for each public subnet. Elastic IPs are required for creating a NAT Gateway. If the NAT Gateway value `sb_nat_gateway` is set to `true`, this will be true as well.
 
-- sb_nat_gateway - Type: `bool`  
+- sb_nat_gateway - Type: `bool`
   Creates a NAT Gateway in each public subnet. Requires an Elastic IP is provisioned for each public subnet. Setting this value to `true` automatically provisions Elastic IPs in the network created
 
-- sb_alb - Type: `bool`  
+- sb_alb - Type: `bool`
   Creates an Application Load Balancer in the network created.
