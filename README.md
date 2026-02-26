@@ -22,20 +22,6 @@ A switchboard is a set of variables in each module, prefixed with `sb_`, that de
 
 A switchboard enables the provisioning of resources based on what is required while continuing to only run the `terraform apply` command for as long the resources are required. However, the switchboard will instead dictate which resources to provision or destroy.
 
-## Layers
-### Network
-![diagram](./assets/oph.tf.env.network.png)
-
-### Platform
-![diagram](./assets/oph.tf.env.platform.png)
-
-### Project
-#### API and Batch
-![diagram](./assets/oph.tf.env.container.png)
-
-#### Web
-![diagram](./assets/oph.tf.env.web.png)
-
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
