@@ -1,4 +1,4 @@
-# OPH DevOps Terraform Modules
+# OPH Environment Terraform Modules
 This module provisions resources for running container applications and static websites on AWS, for a given environment e.g. "prod".
 
 ## Installation
