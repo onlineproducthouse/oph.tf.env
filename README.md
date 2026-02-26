@@ -11,10 +11,7 @@ See [example/main.tf](./example/main.tf) for an example configuration.
 This module is made of three layers, that is:
 1. Network - base layer of networking infrastructure for the typical container applications. [Read more here.](./modules/network/README.md)
 2. Platform - a layer provisioned on an existing network. this layer aims to provide services that are required by projects to execute their operations. [Read more here.](./modules/platform/README.md)
-3. Project - this layer provisions project specific infrastructure on an existing platform. only "runtime" infrastructure is provisioned on this layer. [Read more here.](./modules/project/README.md):
-   1. API (container)
-   2. Batch (container)
-   3. Web (static website)
+3. Project - this layer provisions project specific infrastructure on an existing platform. only "runtime" infrastructure is provisioned on this layer. [Read more here.](./modules/project/README.md)
 
 ### What is a switchboard?
 
